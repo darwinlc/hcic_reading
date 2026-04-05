@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chapter 1 — Mechanical & Robot Structure | HCIC Study Guide</title>
+
+<!-- MathJax for LaTeX formulas -->
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$','$'],['\\(','\\)']],
+    displayMath: [['$$','$$'],['\\[','\\]']]
+  },
+  svg: { fontCache: 'global' },
+  options: { skipHtmlTags: ['script','noscript','style','textarea'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg: #0f1117;
+  --surface: #1a1d2e;
+  --surface2: #222540;
+  --border: #2e3356;
+  --accent1: #6c63ff;
+  --accent2: #ff6584;
+  --accent3: #43e97b;
+  --accent4: #f7971e;
+  --accent5: #38b6ff;
+  --text: #e8eaf6;
+  --text-muted: #8892b0;
+  --heading: #ccd6f6;
+  --card-glow: rgba(108,99,255,0.15);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Nunito', sans-serif;
+  font-size: 17px;
+  line-height: 1.75;
+  overflow-x: hidden;
+}
+
+/* ── ANIMATED BACKGROUND ── */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background:
+    radial-gradient(ellipse 80% 50% at 10% 20%, rgba(108,99,255,0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 90% 80%, rgba(56,182,255,0.07) 0%, transparent 60%);
+  pointer-events: none; z-index: 0;
+}
+
+/* ── HERO ── */
+.hero {
+  position: relative;
+  padding: 70px 40px 60px;
+  text-align: center;
+  overflow: hidden;
+}
+.hero-badge {
+  display: inline-block;
+  background: linear-gradient(135deg, var(--accent1), var(--accent5));
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  padding: 6px 20px;
+  border-radius: 20px;
+  margin-bottom: 20px;
+  animation: fadeDown 0.6s ease both;
+}
+.hero h1 {
+  font-size: clamp(2rem, 5vw, 3.4rem);
+  font-weight: 900;
+  color: #fff;
+  line-height: 1.1;
+  animation: fadeDown 0.7s 0.1s ease both;
+}
+.hero h1 span {
+  background: linear-gradient(90deg, var(--accent1), var(--accent5));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.hero-sub {
+  margin-top: 14px;
+  color: var(--text-muted);
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+  animation: fadeDown 0.8s 0.2s ease both;
+}
+/* floating robot */
+.hero-robot {
+  font-size: 5rem;
+  display: block;
+  margin: 24px auto 0;
+  animation: float 3s ease-in-out infinite, fadeDown 0.9s 0.3s ease both;
+}
+
+/* ── TOC ── */
+.toc {
+  max-width: 860px;
+  margin: 0 auto 60px;
+  padding: 0 24px;
+  animation: fadeUp 0.8s 0.4s ease both;
+}
+.toc-inner {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 28px 32px;
+}
+.toc-title {
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--accent1);
+  margin-bottom: 16px;
+}
+.toc-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 10px;
+}
+.toc-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  text-decoration: none;
+  color: var(--text);
+  font-weight: 700;
+  font-size: 0.9rem;
+  transition: all 0.2s;
+}
+.toc-item:hover {
+  border-color: var(--accent1);
+  background: rgba(108,99,255,0.12);
+  transform: translateX(4px);
+}
+.toc-emoji { font-size: 1.2rem; }
+
+/* ── MAIN ── */
+main {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 0 24px 100px;
+  position: relative; z-index: 1;
+}
+
+/* ── SECTION CARD ── */
+.section {
+  margin-bottom: 60px;
+  animation: fadeUp 0.7s ease both;
+}
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 28px;
+}
+.section-number {
+  background: linear-gradient(135deg, var(--accent1), var(--accent5));
+  color: #fff;
+  font-size: 0.8rem;
+  font-weight: 900;
+  padding: 4px 12px;
+  border-radius: 8px;
+  letter-spacing: 1px;
+  white-space: nowrap;
+}
+.section-title {
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: var(--heading);
+}
+.section-emoji { font-size: 1.8rem; }
+
+h3 {
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--accent5);
+  margin: 28px 0 12px;
+  display: flex; align-items: center; gap: 8px;
+}
+h3::before { content: '▸'; color: var(--accent1); }
+
+p { margin-bottom: 14px; color: var(--text); }
+
+/* ── ICO CARDS ── */
+.ico-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin: 24px 0;
+}
+.ico-card {
+  border-radius: 16px;
+  padding: 24px 20px;
+  text-align: center;
+  border: 2px solid transparent;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s, box-shadow 0.3s;
+  cursor: default;
+}
+.ico-card:hover { transform: translateY(-6px); }
+.ico-card::before {
+  content: '';
+  position: absolute; inset: 0;
+  opacity: 0.12;
+  transition: opacity 0.3s;
+}
+.ico-card:hover::before { opacity: 0.22; }
+.ico-i { background: rgba(108,99,255,0.1); border-color: var(--accent1); }
+.ico-i::before { background: var(--accent1); }
+.ico-c { background: rgba(56,182,255,0.1); border-color: var(--accent5); }
+.ico-c::before { background: var(--accent5); }
+.ico-o { background: rgba(67,233,123,0.1); border-color: var(--accent3); }
+.ico-o::before { background: var(--accent3); }
+.ico-letter {
+  font-size: 3rem; font-weight: 900; line-height: 1;
+  display: block; margin-bottom: 8px;
+}
+.ico-i .ico-letter { color: var(--accent1); }
+.ico-c .ico-letter { color: var(--accent5); }
+.ico-o .ico-letter { color: var(--accent3); }
+.ico-name { font-weight: 800; font-size: 1rem; margin-bottom: 6px; }
+.ico-desc { font-size: 0.85rem; color: var(--text-muted); line-height: 1.4; }
+
+/* ── TABLES ── */
+.table-wrap { overflow-x: auto; margin: 20px 0; border-radius: 14px; border: 1px solid var(--border); }
+table { width: 100%; border-collapse: collapse; }
+thead tr {
+  background: linear-gradient(90deg, rgba(108,99,255,0.3), rgba(56,182,255,0.2));
+}
+thead th {
+  padding: 14px 18px;
+  text-align: left;
+  font-size: 0.8rem;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--accent5);
+}
+tbody tr {
+  border-top: 1px solid var(--border);
+  transition: background 0.2s;
+}
+tbody tr:hover { background: rgba(108,99,255,0.07); }
+td { padding: 13px 18px; font-size: 0.95rem; }
+td:first-child { font-weight: 700; color: var(--accent4); }
+
+/* ── DOF ARM VISUAL ── */
+.arm-visual {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 28px;
+  margin: 24px 0;
+  display: flex;
+  align-items: center;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+.arm-svg-wrap { flex: 0 0 auto; }
+.arm-legend { flex: 1; min-width: 200px; }
+.arm-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+.arm-row:last-child { border-bottom: none; }
+.arm-joint {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.75rem; font-weight: 900;
+  flex-shrink: 0;
+}
+.joint-shoulder { background: rgba(108,99,255,0.3); border: 2px solid var(--accent1); color: var(--accent1); }
+.joint-elbow    { background: rgba(56,182,255,0.3); border: 2px solid var(--accent5); color: var(--accent5); }
+.joint-wrist    { background: rgba(67,233,123,0.3); border: 2px solid var(--accent3); color: var(--accent3); }
+.arm-info { flex: 1; }
+.arm-label { font-weight: 800; font-size: 0.95rem; }
+.arm-dof {
+  display: inline-block;
+  font-size: 0.8rem; font-weight: 800;
+  padding: 2px 10px; border-radius: 20px;
+  margin-left: 8px;
+}
+.dof-3 { background: rgba(108,99,255,0.2); color: var(--accent1); }
+.dof-2 { background: rgba(67,233,123,0.2); color: var(--accent3); }
+.dof-1 { background: rgba(56,182,255,0.2); color: var(--accent5); }
+.arm-desc { font-size: 0.82rem; color: var(--text-muted); margin-top: 2px; }
+.arm-total {
+  margin-top: 16px;
+  background: linear-gradient(135deg, rgba(108,99,255,0.2), rgba(56,182,255,0.15));
+  border: 1px solid var(--accent1);
+  border-radius: 10px;
+  padding: 12px 18px;
+  font-weight: 800;
+  font-size: 1rem;
+  text-align: center;
+}
+
+/* ── DIFF DRIVE VISUAL ── */
+.diff-drive {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin: 20px 0;
+}
+.dd-card {
+  border-radius: 14px;
+  padding: 20px 16px;
+  text-align: center;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+.dd-card:hover { transform: translateY(-4px); box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+.dd-icon { font-size: 2.2rem; margin-bottom: 10px; }
+.dd-title { font-weight: 800; font-size: 0.95rem; margin-bottom: 6px; }
+.dd-desc { font-size: 0.8rem; color: var(--text-muted); }
+.dd-straight { border-color: var(--accent3); }
+.dd-turn { border-color: var(--accent4); }
+.dd-spin { border-color: var(--accent2); }
+
+/* ── FORMULA BOX ── */
+.formula-box {
+  background: var(--surface);
+  border: 2px solid var(--accent1);
+  border-radius: 16px;
+  padding: 28px 32px;
+  margin: 24px 0;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.formula-box::before {
+  content: 'FORMULA';
+  position: absolute; top: 10px; right: 14px;
+  font-size: 0.65rem; font-weight: 900; letter-spacing: 3px;
+  color: var(--accent1); opacity: 0.6;
+}
+.formula-box mjx-container { font-size: 1.6em !important; margin: 10px 0 !important; }
+.formula-box mjx-container svg { margin: auto; display: block; }
+td mjx-container { font-size: 1.1em !important; }
+.formula-vars {
+  margin-top: 20px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  text-align: left;
+}
+.fv {
+  display: flex; gap: 10px; align-items: baseline;
+  padding: 8px 12px;
+  background: var(--surface2);
+  border-radius: 8px;
+  font-size: 0.88rem;
+}
+.fv-sym { font-family: 'JetBrains Mono', monospace; font-weight: 700; color: var(--accent4); }
+.fv-desc { color: var(--text-muted); }
+
+/* ── RULE THUMB ── */
+.rule-thumb {
+  display: flex; gap: 12px; align-items: stretch;
+  margin: 16px 0;
+}
+.rt-half {
+  flex: 1; border-radius: 12px; padding: 16px;
+  display: flex; flex-direction: column; align-items: center;
+  text-align: center; gap: 8px;
+}
+.rt-left { background: rgba(67,233,123,0.1); border: 1px solid var(--accent3); }
+.rt-right { background: rgba(255,101,132,0.1); border: 1px solid var(--accent2); }
+.rt-icon { font-size: 2rem; }
+.rt-label { font-weight: 800; font-size: 0.9rem; }
+.rt-desc { font-size: 0.8rem; color: var(--text-muted); }
+
+/* ── TIP BOX ── */
+.tip {
+  display: flex; gap: 14px;
+  background: linear-gradient(135deg, rgba(247,151,30,0.1), rgba(247,151,30,0.05));
+  border: 1px solid rgba(247,151,30,0.4);
+  border-left: 4px solid var(--accent4);
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin: 20px 0;
+  font-size: 0.93rem;
+}
+.tip-icon { font-size: 1.4rem; flex-shrink: 0; }
+.tip strong { color: var(--accent4); }
+
+/* ── CODE BLOCK ── */
+pre {
+  background: #0d1117;
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--accent1);
+  border-radius: 10px;
+  padding: 20px 24px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.88rem;
+  color: #a8b2d8;
+  overflow-x: auto;
+  margin: 16px 0;
+  line-height: 1.8;
+}
+
+/* ── STABILITY VISUAL ── */
+.stability-visual {
+  display: flex; gap: 24px; align-items: flex-end;
+  justify-content: center;
+  margin: 24px 0;
+  flex-wrap: wrap;
+}
+.robot-block {
+  display: flex; flex-direction: column; align-items: center; gap: 8px;
+}
+.robot-label { font-size: 0.82rem; font-weight: 700; color: var(--text-muted); }
+.robot-body {
+  position: relative;
+  display: flex; flex-direction: column; align-items: center; justify-content: flex-end;
+}
+.robot-icon { font-size: 2.2rem; }
+.robot-base {
+  height: 12px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, var(--accent1), var(--accent5));
+  margin-top: 6px;
+  position: relative;
+}
+.robot-base::after {
+  content: '';
+  position: absolute;
+  bottom: -4px; left: 50%; transform: translateX(-50%);
+  width: 4px; height: 4px;
+  background: var(--accent2);
+  border-radius: 50%;
+}
+.bad-label { color: var(--accent2); font-weight: 800; }
+.good-label { color: var(--accent3); font-weight: 800; }
+
+/* ── MATERIAL CARDS ── */
+.material-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin: 18px 0;
+}
+.mat-card {
+  border-radius: 12px;
+  padding: 18px 14px;
+  text-align: center;
+  border: 1px solid var(--border);
+  background: var(--surface);
+}
+.mat-icon { font-size: 2rem; margin-bottom: 8px; }
+.mat-name { font-weight: 800; font-size: 0.9rem; margin-bottom: 4px; }
+.mat-tag {
+  display: inline-block;
+  font-size: 0.72rem; font-weight: 800;
+  padding: 2px 8px; border-radius: 6px;
+  margin-top: 4px;
+}
+
+/* ── SUMMARY TABLE ── */
+.summary-section {
+  background: linear-gradient(135deg, var(--surface), var(--surface2));
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 32px;
+  margin-top: 60px;
+}
+.summary-title {
+  font-size: 1.2rem; font-weight: 900;
+  color: var(--heading);
+  margin-bottom: 20px;
+  display: flex; align-items: center; gap: 10px;
+}
+.summary-table { width: 100%; border-collapse: collapse; }
+.summary-table tr { border-bottom: 1px solid var(--border); }
+.summary-table tr:last-child { border-bottom: none; }
+.summary-table td { padding: 13px 16px; font-size: 0.93rem; }
+.summary-table td:first-child {
+  font-weight: 800; color: var(--accent5);
+  width: 35%;
+}
+
+/* ── NEXT CHAPTER ── */
+.next-ch {
+  margin-top: 40px;
+  text-align: center;
+  padding: 28px;
+  background: linear-gradient(135deg, rgba(108,99,255,0.15), rgba(56,182,255,0.1));
+  border: 1px solid var(--accent1);
+  border-radius: 16px;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+.next-ch span { color: var(--accent1); font-weight: 900; }
+
+/* ── ANIMATIONS ── */
+@keyframes float {
+  0%,100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+@keyframes fadeDown {
+  from { opacity:0; transform: translateY(-18px); }
+  to   { opacity:1; transform: translateY(0); }
+}
+@keyframes fadeUp {
+  from { opacity:0; transform: translateY(22px); }
+  to   { opacity:1; transform: translateY(0); }
+}
+
+/* stagger sections */
+.section:nth-child(1) { animation-delay: 0.1s; }
+.section:nth-child(2) { animation-delay: 0.2s; }
+.section:nth-child(3) { animation-delay: 0.3s; }
+.section:nth-child(4) { animation-delay: 0.4s; }
+.section:nth-child(5) { animation-delay: 0.5s; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 600px) {
+  .ico-grid, .diff-drive, .material-grid { grid-template-columns: 1fr; }
+  .arm-visual { flex-direction: column; }
+  .formula-vars { grid-template-columns: 1fr; }
+  .rule-thumb { flex-direction: column; }
+  .stability-visual { gap: 16px; }
+}
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<header class="hero">
+  <span class="hero-badge">HCIC Competition Study Guide</span>
+  <h1>Chapter 1: <span>Mechanical &amp;<br>Robot Structure</span></h1>
+  <p class="hero-sub">🏆 Master these concepts to ace the competition</p>
+  <span class="hero-robot">🤖</span>
+</header>
+
+<!-- TOC -->
+<nav class="toc">
+  <div class="toc-inner">
+    <div class="toc-title">📋 In this chapter</div>
+    <div class="toc-grid">
+      <a href="#s11" class="toc-item"><span class="toc-emoji">🤖</span>1.1 Core Characteristics</a>
+      <a href="#s12" class="toc-item"><span class="toc-emoji">🦾</span>1.2 Joints &amp; DOF</a>
+      <a href="#s13" class="toc-item"><span class="toc-emoji">🔧</span>1.3 Mechanical Structure</a>
+      <a href="#s14" class="toc-item"><span class="toc-emoji">⚙️</span>1.4 Transmission</a>
+      <a href="#s15" class="toc-item"><span class="toc-emoji">🏗️</span>1.5 Design Principles</a>
+      <a href="#summary" class="toc-item"><span class="toc-emoji">📝</span>Chapter Summary</a>
+    </div>
+  </div>
+</nav>
+
+<main>
+
+<!-- ═══════════════════════════════════════ 1.1 ═══ -->
+<section class="section" id="s11">
+  <div class="section-header">
+    <span class="section-number">1.1</span>
+    <span class="section-emoji">🤖</span>
+    <h2 class="section-title">Core Characteristics of a Robot</h2>
+  </div>
+
+  <p>Every robot has three core capabilities — remember them with the acronym <strong style="color:var(--accent1);font-size:1.1em">ICO</strong>:</p>
+
+  <div class="ico-grid">
+    <div class="ico-card ico-i">
+      <span class="ico-letter">I</span>
+      <div class="ico-name">Input</div>
+      <div class="ico-desc">Perceive the environment using <strong>sensors</strong></div>
+    </div>
+    <div class="ico-card ico-c">
+      <span class="ico-letter">C</span>
+      <div class="ico-name">Compute</div>
+      <div class="ico-desc">Make decisions using a <strong>program</strong></div>
+    </div>
+    <div class="ico-card ico-o">
+      <span class="ico-letter">O</span>
+      <div class="ico-name">Output</div>
+      <div class="ico-desc">Take action using <strong>motors / servos</strong></div>
+    </div>
+  </div>
+
+  <div class="tip">
+    <span class="tip-icon">💡</span>
+    <div><strong>Exam Tip (2021Q9):</strong> Multi-target coordinated motion tasks test all three ICO layers working together. Make sure you can trace which layer (I, C, or O) handles each part of the task.</div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ 1.2 ═══ -->
+<section class="section" id="s12">
+  <div class="section-header">
+    <span class="section-number">1.2</span>
+    <span class="section-emoji">🦾</span>
+    <h2 class="section-title">Robot Joints &amp; Degrees of Freedom (DOF)</h2>
+  </div>
+
+  <p>A <strong>degree of freedom (DOF)</strong> is one independent direction in which a robot can move. Think of it like asking: "In how many ways can this part move on its own?"</p>
+
+  <div class="arm-visual">
+    <div class="arm-svg-wrap">
+      <svg width="130" height="220" viewBox="0 0 130 220" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <!-- body -->
+        <rect x="45" y="10" width="40" height="30" rx="8" fill="#1a1d2e" stroke="#6c63ff" stroke-width="2"/>
+        <text x="65" y="30" text-anchor="middle" fill="#6c63ff" font-size="14" font-family="Nunito" font-weight="800">🤖</text>
+        <!-- shoulder joint -->
+        <circle cx="65" cy="55" r="14" fill="rgba(108,99,255,0.3)" stroke="#6c63ff" stroke-width="2.5"/>
+        <text x="65" y="60" text-anchor="middle" fill="#6c63ff" font-size="10" font-family="Nunito" font-weight="900">S</text>
+        <!-- upper arm -->
+        <rect x="58" y="68" width="14" height="50" rx="6" fill="#2e3356"/>
+        <!-- elbow joint -->
+        <circle cx="65" cy="125" r="11" fill="rgba(56,182,255,0.3)" stroke="#38b6ff" stroke-width="2.5"/>
+        <text x="65" y="130" text-anchor="middle" fill="#38b6ff" font-size="10" font-family="Nunito" font-weight="900">E</text>
+        <!-- forearm -->
+        <rect x="59" y="136" width="12" height="44" rx="5" fill="#2e3356"/>
+        <!-- wrist -->
+        <circle cx="65" cy="186" r="10" fill="rgba(67,233,123,0.3)" stroke="#43e97b" stroke-width="2.5"/>
+        <text x="65" y="190" text-anchor="middle" fill="#43e97b" font-size="10" font-family="Nunito" font-weight="900">W</text>
+        <!-- DOF arcs -->
+        <path d="M 48 55 A 17 17 0 0 1 82 55" stroke="#6c63ff" stroke-width="1.5" fill="none" stroke-dasharray="3 2"/>
+        <path d="M 55 125 A 10 10 0 0 1 75 125" stroke="#38b6ff" stroke-width="1.5" fill="none" stroke-dasharray="3 2"/>
+      </svg>
+    </div>
+    <div class="arm-legend">
+      <div class="arm-row">
+        <div class="arm-joint joint-shoulder">S</div>
+        <div class="arm-info">
+          <div class="arm-label">Shoulder <span class="arm-dof dof-3">3 DOF</span></div>
+          <div class="arm-desc">Forward/back · Left/right · Rotate</div>
+        </div>
+      </div>
+      <div class="arm-row">
+        <div class="arm-joint joint-elbow">E</div>
+        <div class="arm-info">
+          <div class="arm-label">Elbow <span class="arm-dof dof-1">1 DOF</span></div>
+          <div class="arm-desc">Bend only</div>
+        </div>
+      </div>
+      <div class="arm-row">
+        <div class="arm-joint joint-wrist">W</div>
+        <div class="arm-info">
+          <div class="arm-label">Wrist <span class="arm-dof dof-2">2 DOF</span></div>
+          <div class="arm-desc">Up/down · Rotate</div>
+        </div>
+      </div>
+      <div class="arm-total">
+        Total = 3 + 1 + 2 = <strong style="color:var(--accent3);font-size:1.2em">6 DOF</strong> ✅
+      </div>
+    </div>
+  </div>
+
+  <h3>Translational vs Rotational</h3>
+  <ul style="list-style:none;display:flex;gap:14px;flex-wrap:wrap;margin:10px 0 20px">
+    <li style="background:rgba(108,99,255,0.12);border:1px solid var(--accent1);border-radius:10px;padding:12px 20px;flex:1;min-width:180px">
+      <div style="font-weight:800;color:var(--accent1);margin-bottom:4px">📐 Translational (3)</div>
+      <div style="font-size:0.85rem;color:var(--text-muted)">Slide along X · Y · Z axis</div>
+    </li>
+    <li style="background:rgba(56,182,255,0.12);border:1px solid var(--accent5);border-radius:10px;padding:12px 20px;flex:1;min-width:180px">
+      <div style="font-weight:800;color:var(--accent5);margin-bottom:4px">🔄 Rotational (3)</div>
+      <div style="font-size:0.85rem;color:var(--text-muted)">Rotate around X · Y · Z axis</div>
+    </li>
+  </ul>
+
+  <h3>Common Joint Types</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr>
+        <th>Joint Type</th><th>Motion</th><th>DOF</th><th>Real-World Example</th>
+      </tr></thead>
+      <tbody>
+        <tr><td>Revolute (R)</td><td>Rotates around an axis</td><td><span class="arm-dof dof-1">1</span></td><td>Door hinge, elbow</td></tr>
+        <tr><td>Prismatic (P)</td><td>Slides along an axis</td><td><span class="arm-dof dof-1">1</span></td><td>Drawer, hydraulic cylinder</td></tr>
+        <tr><td>Spherical (S)</td><td>Rotates in any direction</td><td><span class="arm-dof dof-3">3</span></td><td>Human shoulder</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ 1.3 ═══ -->
+<section class="section" id="s13">
+  <div class="section-header">
+    <span class="section-number">1.3</span>
+    <span class="section-emoji">🔧</span>
+    <h2 class="section-title">Mechanical Structure of a Robot</h2>
+  </div>
+
+  <h3>Chassis &amp; Stability <span style="font-size:0.75rem;color:var(--accent4);font-weight:700;margin-left:6px">Exam: 2023A1</span></h3>
+
+  <div class="stability-visual">
+    <div class="robot-block">
+      <span class="bad-label">❌ Unstable</span>
+      <div class="robot-body">
+        <div class="robot-icon" style="transform:rotate(20deg)">🤖</div>
+        <div class="robot-base" style="width:40px"></div>
+      </div>
+      <div class="robot-label">Narrow base<br>High COG</div>
+    </div>
+    <div style="font-size:2rem;color:var(--text-muted);align-self:center">→</div>
+    <div class="robot-block">
+      <span class="good-label">✅ Stable</span>
+      <div class="robot-body">
+        <div class="robot-icon">🤖</div>
+        <div class="robot-base" style="width:100px"></div>
+      </div>
+      <div class="robot-label">Wide base<br>Low COG</div>
+    </div>
+  </div>
+
+  <div class="tip">
+    <span class="tip-icon">📐</span>
+    <div><strong>Rule of thumb:</strong> Stability ∝ Base Width ÷ COG Height — wider and lower is always better!</div>
+  </div>
+
+  <h3>Differential Drive Principle <span style="font-size:0.75rem;color:var(--accent4);font-weight:700;margin-left:6px">Frequently tested</span></h3>
+
+  <div class="diff-drive">
+    <div class="dd-card dd-straight">
+      <div class="dd-icon">➡️</div>
+      <div class="dd-title" style="color:var(--accent3)">Straight</div>
+      <div class="dd-desc">Both wheels<br><strong>same speed, same direction</strong></div>
+    </div>
+    <div class="dd-card dd-turn">
+      <div class="dd-icon">↪️</div>
+      <div class="dd-title" style="color:var(--accent4)">Turn</div>
+      <div class="dd-desc">Wheels at<br><strong>different speeds</strong><br>(bigger difference = sharper)</div>
+    </div>
+    <div class="dd-card dd-spin">
+      <div class="dd-icon">🔄</div>
+      <div class="dd-title" style="color:var(--accent2)">Spin in Place</div>
+      <div class="dd-desc">Wheels in<br><strong>opposite directions</strong></div>
+    </div>
+  </div>
+
+  <h3>Wheel &amp; Drive Configurations <span style="font-size:0.75rem;color:var(--accent4);font-weight:700;margin-left:6px">Exam: 2023A7</span></h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Configuration</th><th>Wheels</th><th>Best For</th></tr></thead>
+      <tbody>
+        <tr><td>3-wheel</td><td>2 drive + 1 caster/omni</td><td>Most common, simple &amp; light</td></tr>
+        <tr><td>4-wheel</td><td>4 drive wheels</td><td>Heavier, more stable robots</td></tr>
+        <tr><td>Mecanum</td><td>4 special angled-roller wheels</td><td>Full omnidirectional movement</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <pre>Regular wheels:  Forward, backward, and turning only
+Mecanum wheels:  Can also move sideways! (special angled rollers)
+                 Perfect for tight spaces in competitions 🏆</pre>
+</section>
+
+<!-- ═══════════════════════════════════════ 1.4 ═══ -->
+<section class="section" id="s14">
+  <div class="section-header">
+    <span class="section-number">1.4</span>
+    <span class="section-emoji">⚙️</span>
+    <h2 class="section-title">Transmission Mechanisms</h2>
+  </div>
+
+  <h3>Common Drive Type Comparison</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Type</th><th>✅ Pros</th><th>❌ Cons</th><th>Common Uses</th></tr></thead>
+      <tbody>
+        <tr><td>⚙️ Gear drive</td><td>Precise, high torque</td><td>Noisy, needs lubrication</td><td>Gearboxes, robot arms</td></tr>
+        <tr><td>🔁 Belt drive</td><td>Smooth, works over distance</td><td>May slip</td><td>Printers, bicycles</td></tr>
+        <tr><td>🔗 Chain drive</td><td>No slip, high force</td><td>Heavy, noisy</td><td>Bikes, motorcycles</td></tr>
+        <tr><td>🔩 Lead screw</td><td>Precise linear motion</td><td>Slow speed</td><td>3D printers, CNC</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>Gear Ratio Formula <span style="font-size:0.75rem;color:var(--text-muted);font-weight:600">(Preview — full detail in Chapter 2)</span></h3>
+
+  <div class="formula-box">
+    $$i = \frac{n_1}{n_2} = \frac{z_2}{z_1}$$
+    <div class="formula-vars">
+      <div class="fv"><span class="fv-sym">i</span><span class="fv-desc">— gear ratio (transmission ratio)</span></div>
+      <div class="fv"><span class="fv-sym">n₁</span><span class="fv-desc">— drive gear speed (RPM)</span></div>
+      <div class="fv"><span class="fv-sym">n₂</span><span class="fv-desc">— driven gear speed (RPM)</span></div>
+      <div class="fv"><span class="fv-sym">z₁</span><span class="fv-desc">— teeth on drive gear</span></div>
+      <div class="fv"><span class="fv-sym">z₂</span><span class="fv-desc">— teeth on driven gear</span></div>
+    </div>
+  </div>
+
+  <div class="rule-thumb">
+    <div class="rt-half rt-left">
+      <div class="rt-icon">🐢</div>
+      <div class="rt-label" style="color:var(--accent3)">Small → Large</div>
+      <div class="rt-desc">Slow down<br>Gain torque (more force)</div>
+    </div>
+    <div class="rt-half rt-right">
+      <div class="rt-icon">🐇</div>
+      <div class="rt-label" style="color:var(--accent2)">Large → Small</div>
+      <div class="rt-desc">Speed up<br>Lose torque</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ 1.5 ═══ -->
+<section class="section" id="s15">
+  <div class="section-header">
+    <span class="section-number">1.5</span>
+    <span class="section-emoji">🏗️</span>
+    <h2 class="section-title">Structural Design Principles</h2>
+  </div>
+
+  <h3>Stability Rules</h3>
+  <div style="display:flex;flex-direction:column;gap:10px;margin:14px 0 24px">
+    <div style="display:flex;gap:14px;align-items:center;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 18px">
+      <span style="font-size:1.6rem;flex-shrink:0">⬇️</span>
+      <div><strong style="color:var(--heading)">1. Low center of gravity</strong> — place heavy components at the bottom of the robot</div>
+    </div>
+    <div style="display:flex;gap:14px;align-items:center;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 18px">
+      <span style="font-size:1.6rem;flex-shrink:0">↔️</span>
+      <div><strong style="color:var(--heading)">2. Wide support base</strong> — wider chassis = harder to tip over</div>
+    </div>
+    <div style="display:flex;gap:14px;align-items:center;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 18px">
+      <span style="font-size:1.6rem;flex-shrink:0">⚖️</span>
+      <div><strong style="color:var(--heading)">3. Symmetric design</strong> — balance weight equally on left and right sides</div>
+    </div>
+  </div>
+
+  <h3>Lightweight Materials</h3>
+  <div class="material-grid">
+    <div class="mat-card" style="border-color:rgba(56,182,255,0.4)">
+      <div class="mat-icon">🔩</div>
+      <div class="mat-name">Steel</div>
+      <div style="font-size:0.8rem;color:var(--text-muted)">Strong but heavy</div>
+      <span class="mat-tag" style="background:rgba(255,101,132,0.15);color:var(--accent2)">Heavy</span>
+    </div>
+    <div class="mat-card" style="border-color:var(--accent5)">
+      <div class="mat-icon">✈️</div>
+      <div class="mat-name">Aluminium Alloy</div>
+      <div style="font-size:0.8rem;color:var(--text-muted)">Similar strength, ~½ the weight</div>
+      <span class="mat-tag" style="background:rgba(56,182,255,0.15);color:var(--accent5)">Recommended</span>
+    </div>
+    <div class="mat-card" style="border-color:var(--accent3)">
+      <div class="mat-icon">🚀</div>
+      <div class="mat-name">Carbon Fibre</div>
+      <div style="font-size:0.8rem;color:var(--text-muted)">Lightest &amp; strongest option</div>
+      <span class="mat-tag" style="background:rgba(67,233,123,0.15);color:var(--accent3)">Best (expensive)</span>
+    </div>
+  </div>
+
+  <h3>Modular Design</h3>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0">
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px">
+      <div style="font-size:1.4rem;margin-bottom:8px">🧩</div>
+      <div style="font-weight:800;margin-bottom:4px">Independent Subsystems</div>
+      <div style="font-size:0.83rem;color:var(--text-muted)">Design each part independently for easy repair and upgrades</div>
+    </div>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px">
+      <div style="font-size:1.4rem;margin-bottom:8px">🔗</div>
+      <div style="font-weight:800;margin-bottom:4px">Standardised Interfaces</div>
+      <div style="font-size:0.83rem;color:var(--text-muted)">Use the same screws and connectors throughout — no special tools needed</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════ SUMMARY ═══ -->
+<div class="summary-section" id="summary">
+  <div class="summary-title">📝 Chapter Summary — Key Points to Remember</div>
+  <table class="summary-table">
+    <tr>
+      <td>Degrees of Freedom</td>
+      <td>Max <strong>6</strong> (3 translational + 3 rotational)</td>
+    </tr>
+    <tr>
+      <td>Differential drive</td>
+      <td>Same speed → straight · Different speeds → turn · Opposite → spin in place</td>
+    </tr>
+    <tr>
+      <td>Gear ratio</td>
+      <td>$$i = \frac{z_2}{z_1} = \frac{n_1}{n_2}$$</td>
+    </tr>
+    <tr>
+      <td>Stability</td>
+      <td>Low COG + wide base = harder to tip over</td>
+    </tr>
+    <tr>
+      <td>Mecanum wheels</td>
+      <td>Special angled rollers that allow full omnidirectional movement</td>
+    </tr>
+  </table>
+</div>
+
+<div class="next-ch">
+  ⏭️ Ready for more? &nbsp;<span>Chapter 2 — Gear Transmission Calculations</span>
+</div>
+
+</main>
+</body>
+</html>
