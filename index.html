@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HCIC Study Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --nav-w:     270px;
+  --bg:        #080b14;
+  --nav-bg:    #0d1121;
+  --nav-border:#1a2240;
+  --surf:      #111524;
+  --surf2:     #181d30;
+  --border:    #1e2640;
+  --c1: #f7971e;
+  --c2: #6c63ff;
+  --c3: #00d4aa;
+  --c4: #e040fb;
+  --c5: #ffd740;
+  --text:       #d8e4f8;
+  --text-muted: #5a6e96;
+  --heading:    #eef2ff;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+  background: var(--bg);
+  font-family: 'Nunito', sans-serif;
+  color: var(--text);
+}
+
+/* ── LEFT NAV ── */
+#nav {
+  width: var(--nav-w);
+  min-width: var(--nav-w);
+  height: 100vh;
+  background: var(--nav-bg);
+  border-right: 1px solid var(--nav-border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: width .3s, min-width .3s;
+  z-index: 10;
+}
+
+#nav.collapsed {
+  width: 0;
+  min-width: 0;
+  border-right: none;
+}
+
+/* logo / header */
+.nav-header {
+  padding: 22px 20px 18px;
+  border-bottom: 1px solid var(--nav-border);
+  flex-shrink: 0;
+}
+.nav-logo {
+  display: flex; align-items: center; gap: 10px;
+}
+.nav-logo-icon {
+  width: 36px; height: 36px; border-radius: 10px;
+  background: linear-gradient(135deg, var(--c1), var(--c4));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.2rem; flex-shrink: 0;
+}
+.nav-logo-text { font-weight: 900; font-size: .95rem; color: var(--heading); line-height: 1.2; }
+.nav-logo-sub  { font-size: .72rem; color: var(--text-muted); font-weight: 600; }
+
+/* progress bar */
+.nav-progress {
+  padding: 14px 20px 0;
+  flex-shrink: 0;
+}
+.np-label {
+  display: flex; justify-content: space-between;
+  font-size: .7rem; font-weight: 800;
+  color: var(--text-muted); margin-bottom: 6px;
+  letter-spacing: 1px; text-transform: uppercase;
+}
+.np-bar {
+  height: 4px; border-radius: 2px;
+  background: var(--surf2);
+  overflow: hidden;
+}
+.np-fill {
+  height: 100%; border-radius: 2px;
+  background: linear-gradient(90deg, var(--c1), var(--c2), var(--c3), var(--c4));
+  transition: width .4s ease;
+}
+
+/* nav scroll area */
+.nav-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px 12px 20px;
+}
+.nav-scroll::-webkit-scrollbar { width: 4px; }
+.nav-scroll::-webkit-scrollbar-thumb { background: var(--nav-border); border-radius: 2px; }
+
+/* section label */
+.nav-section-label {
+  font-size: .65rem; font-weight: 900;
+  letter-spacing: 2.5px; text-transform: uppercase;
+  color: var(--text-muted);
+  padding: 12px 10px 6px;
+}
+
+/* nav items */
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background .18s, transform .18s;
+  margin-bottom: 2px;
+  border: 1.5px solid transparent;
+  user-select: none;
+  text-decoration: none;
+  color: inherit;
+}
+.nav-item:hover {
+  background: var(--surf2);
+  transform: translateX(3px);
+}
+.nav-item.active {
+  background: var(--surf2);
+  border-color: var(--active-color, var(--c1));
+  transform: translateX(3px);
+}
+
+.nav-icon {
+  width: 34px; height: 34px; border-radius: 9px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem; flex-shrink: 0;
+  border: 1.5px solid transparent;
+}
+.nav-item.active .nav-icon {
+  border-color: var(--active-color, var(--c1));
+}
+
+.nav-text { flex: 1; }
+.nav-title {
+  font-weight: 800; font-size: .85rem;
+  color: var(--heading); line-height: 1.2;
+}
+.nav-subtitle {
+  font-size: .72rem; color: var(--text-muted);
+  margin-top: 1px;
+}
+.nav-badge {
+  font-size: .65rem; font-weight: 900;
+  padding: 2px 7px; border-radius: 8px;
+  flex-shrink: 0;
+  background: var(--surf);
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+}
+.nav-item.active .nav-badge {
+  background: rgba(255,255,255,.08);
+  color: var(--heading);
+}
+
+/* visited checkmark */
+.nav-check {
+  font-size: .85rem; flex-shrink: 0;
+  opacity: 0; transition: opacity .3s;
+  color: var(--c3);
+}
+.nav-item.visited .nav-check { opacity: 1; }
+
+/* nav footer */
+.nav-footer {
+  padding: 14px 20px;
+  border-top: 1px solid var(--nav-border);
+  font-size: .72rem; color: var(--text-muted);
+  flex-shrink: 0;
+  display: flex; align-items: center; gap: 8px;
+}
+.nav-footer strong { color: var(--c5); }
+
+/* ── MAIN AREA ── */
+#main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-width: 0;
+}
+
+/* topbar */
+#topbar {
+  height: 52px;
+  background: var(--nav-bg);
+  border-bottom: 1px solid var(--nav-border);
+  display: flex;
+  align-items: center;
+  padding: 0 18px;
+  gap: 14px;
+  flex-shrink: 0;
+  z-index: 9;
+}
+
+#menu-btn {
+  background: var(--surf2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  width: 34px; height: 34px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 1rem; flex-shrink: 0;
+  transition: background .2s;
+}
+#menu-btn:hover { background: var(--border); }
+
+#topbar-title {
+  font-weight: 800; font-size: .95rem;
+  color: var(--heading); flex: 1;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+.topbar-nav {
+  display: flex; gap: 6px;
+}
+.topbar-btn {
+  background: var(--surf2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text-muted);
+  padding: 5px 12px;
+  cursor: pointer; font-size: .8rem; font-weight: 700;
+  transition: all .2s;
+  font-family: 'Nunito', sans-serif;
+  display: flex; align-items: center; gap: 5px;
+}
+.topbar-btn:hover:not(:disabled) {
+  background: var(--border);
+  color: var(--text);
+}
+.topbar-btn:disabled {
+  opacity: .3; cursor: not-allowed;
+}
+
+/* iframe wrapper */
+#frame-wrap {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+#content-frame {
+  width: 100%; height: 100%;
+  border: none;
+  display: block;
+}
+
+/* welcome screen */
+#welcome {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  background: var(--bg);
+  z-index: 5;
+  padding: 40px 24px;
+  text-align: center;
+}
+#welcome.hidden { display: none; }
+
+.welcome-logo {
+  font-size: 4rem; margin-bottom: 20px;
+  animation: float 3s ease-in-out infinite;
+}
+@keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+
+.welcome-title {
+  font-size: clamp(1.6rem, 4vw, 2.4rem);
+  font-weight: 900; color: var(--heading);
+  margin-bottom: 10px;
+}
+.welcome-sub {
+  color: var(--text-muted); font-size: 1rem;
+  margin-bottom: 36px; max-width: 480px;
+}
+
+.welcome-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 12px; max-width: 700px; width: 100%;
+  margin-bottom: 32px;
+}
+.wc {
+  border-radius: 14px; padding: 18px 14px;
+  border: 1.5px solid; cursor: pointer;
+  transition: transform .25s, box-shadow .25s;
+  text-align: center;
+}
+.wc:hover { transform: translateY(-5px); box-shadow: 0 12px 32px rgba(0,0,0,.4); }
+.wc-icon { font-size: 1.8rem; margin-bottom: 8px; }
+.wc-title { font-weight: 800; font-size: .85rem; color: var(--heading); }
+.wc-sub   { font-size: .72rem; color: var(--text-muted); margin-top: 4px; }
+
+.welcome-tip {
+  font-size: .8rem; color: var(--text-muted);
+  background: var(--surf);
+  border: 1px solid var(--border);
+  border-radius: 10px; padding: 10px 18px;
+}
+
+/* loading spinner */
+#loader {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--bg); z-index: 4;
+  pointer-events: none;
+  opacity: 0; transition: opacity .2s;
+}
+#loader.show { opacity: 1; }
+.spinner {
+  width: 36px; height: 36px;
+  border: 3px solid var(--border);
+  border-top-color: var(--c1);
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── MOBILE ── */
+#nav-overlay {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,.6);
+  z-index: 9;
+}
+#nav-overlay.show { display: block; }
+
+@media (max-width: 640px) {
+  #nav {
+    position: fixed; top: 0; left: 0;
+    height: 100vh; z-index: 11;
+    transform: translateX(-100%);
+    transition: transform .3s, width 0s;
+    width: var(--nav-w) !important;
+    min-width: var(--nav-w) !important;
+  }
+  #nav.mobile-open {
+    transform: translateX(0);
+  }
+  #nav.collapsed {
+    transform: translateX(-100%);
+    width: var(--nav-w) !important;
+  }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV OVERLAY (mobile) -->
+<div id="nav-overlay" onclick="toggleNav()"></div>
+
+<!-- LEFT NAV -->
+<nav id="nav">
+  <div class="nav-header">
+    <div class="nav-logo">
+      <div class="nav-logo-icon">🏆</div>
+      <div>
+        <div class="nav-logo-text">HCIC Study Guide</div>
+        <div class="nav-logo-sub">Competition Prep · 4 Chapters</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-progress">
+    <div class="np-label">
+      <span>Progress</span>
+      <span id="progress-text">0 / 5</span>
+    </div>
+    <div class="np-bar"><div class="np-fill" id="progress-fill" style="width:0%"></div></div>
+  </div>
+
+  <div class="nav-scroll">
+
+    <div class="nav-section-label">Chapters</div>
+
+    <div class="nav-item" data-src="Chapter1_Mechanical_and_Robot_Structure.html"
+         data-title="Ch 1 — Mechanical &amp; Robot Structure"
+         data-color="var(--c1)" style="--active-color:var(--c1)">
+      <div class="nav-icon" style="background:rgba(247,151,30,.12)">🔧</div>
+      <div class="nav-text">
+        <div class="nav-title">Mechanical &amp; Robot Structure</div>
+        <div class="nav-subtitle">DOF · Chassis · Drive types</div>
+      </div>
+      <span class="nav-badge">Ch 1</span>
+      <span class="nav-check">✓</span>
+    </div>
+
+    <div class="nav-item" data-src="Chapter2_Gear_Transmission_Calculations.html"
+         data-title="Ch 2 — Gear Transmission Calculations"
+         data-color="var(--c2)" style="--active-color:var(--c2)">
+      <div class="nav-icon" style="background:rgba(108,99,255,.12)">⚙️</div>
+      <div class="nav-text">
+        <div class="nav-title">Gear Transmission</div>
+        <div class="nav-subtitle">Gear ratio · Torque · Multi-stage</div>
+      </div>
+      <span class="nav-badge">Ch 2</span>
+      <span class="nav-check">✓</span>
+    </div>
+
+    <div class="nav-item" data-src="Chapter3_Sensors_and_Robot_Control.html"
+         data-title="Ch 3 — Sensors &amp; Robot Control"
+         data-color="var(--c3)" style="--active-color:var(--c3)">
+      <div class="nav-icon" style="background:rgba(0,212,170,.12)">📡</div>
+      <div class="nav-text">
+        <div class="nav-title">Sensors &amp; Robot Control</div>
+        <div class="nav-subtitle">PID · PWM · Line following</div>
+      </div>
+      <span class="nav-badge">Ch 3</span>
+      <span class="nav-check">✓</span>
+    </div>
+
+    <div class="nav-item" data-src="Chapter4_Robot_Motion_Algorithms.html"
+         data-title="Ch 4 — Robot Motion Algorithms"
+         data-color="var(--c4)" style="--active-color:var(--c4)">
+      <div class="nav-icon" style="background:rgba(224,64,251,.12)">🗺️</div>
+      <div class="nav-text">
+        <div class="nav-title">Robot Motion Algorithms</div>
+        <div class="nav-subtitle">A* · Odometry · State machines</div>
+      </div>
+      <span class="nav-badge">Ch 4</span>
+      <span class="nav-check">✓</span>
+    </div>
+
+    <div class="nav-section-label" style="margin-top:8px">Reference</div>
+
+    <div class="nav-item" data-src="Formula_Quick_Reference_Card.html"
+         data-title="Formula Quick Reference Card"
+         data-color="var(--c5)" style="--active-color:var(--c5)">
+      <div class="nav-icon" style="background:rgba(255,215,64,.12)">📋</div>
+      <div class="nav-text">
+        <div class="nav-title">Formula Quick Reference</div>
+        <div class="nav-subtitle">All formulas · One page</div>
+      </div>
+      <span class="nav-badge">Ref</span>
+      <span class="nav-check">✓</span>
+    </div>
+
+  </div><!-- /nav-scroll -->
+
+  <div class="nav-footer">
+    <span>🤖</span>
+    <span>Good luck in <strong>HCIC</strong>!</span>
+  </div>
+</nav>
+
+<!-- MAIN AREA -->
+<div id="main">
+
+  <!-- Topbar -->
+  <div id="topbar">
+    <button id="menu-btn" onclick="toggleNav()" title="Toggle sidebar">☰</button>
+    <div id="topbar-title">HCIC Study Guide — Select a chapter</div>
+    <div class="topbar-nav">
+      <button class="topbar-btn" id="btn-prev" onclick="navigate(-1)" disabled>← Prev</button>
+      <button class="topbar-btn" id="btn-next" onclick="navigate(1)">Next →</button>
+    </div>
+  </div>
+
+  <!-- Frame area -->
+  <div id="frame-wrap">
+    <!-- Welcome screen -->
+    <div id="welcome">
+      <div class="welcome-logo">🤖</div>
+      <div class="welcome-title">HCIC Study Guide</div>
+      <div class="welcome-sub">Your complete competition prep resource. Pick a chapter from the left to get started!</div>
+
+      <div class="welcome-cards">
+        <div class="wc" style="border-color:rgba(247,151,30,.4);background:rgba(247,151,30,.06)"
+             onclick="loadPage(0)">
+          <div class="wc-icon">🔧</div>
+          <div class="wc-title">Chapter 1</div>
+          <div class="wc-sub">Mechanical &amp; Robot Structure</div>
+        </div>
+        <div class="wc" style="border-color:rgba(108,99,255,.4);background:rgba(108,99,255,.06)"
+             onclick="loadPage(1)">
+          <div class="wc-icon">⚙️</div>
+          <div class="wc-title">Chapter 2</div>
+          <div class="wc-sub">Gear Transmission</div>
+        </div>
+        <div class="wc" style="border-color:rgba(0,212,170,.4);background:rgba(0,212,170,.06)"
+             onclick="loadPage(2)">
+          <div class="wc-icon">📡</div>
+          <div class="wc-title">Chapter 3</div>
+          <div class="wc-sub">Sensors &amp; Control</div>
+        </div>
+        <div class="wc" style="border-color:rgba(224,64,251,.4);background:rgba(224,64,251,.06)"
+             onclick="loadPage(3)">
+          <div class="wc-icon">🗺️</div>
+          <div class="wc-title">Chapter 4</div>
+          <div class="wc-sub">Motion Algorithms</div>
+        </div>
+        <div class="wc" style="border-color:rgba(255,215,64,.4);background:rgba(255,215,64,.06)"
+             onclick="loadPage(4)">
+          <div class="wc-icon">📋</div>
+          <div class="wc-title">Reference Card</div>
+          <div class="wc-sub">All Formulas</div>
+        </div>
+      </div>
+
+      <div class="welcome-tip">💡 Tip: use <strong>← →</strong> buttons in the top bar to flip between chapters</div>
+    </div>
+
+    <!-- Loading spinner -->
+    <div id="loader"><div class="spinner"></div></div>
+
+    <!-- Content iframe -->
+    <iframe id="content-frame" title="Chapter content"></iframe>
+  </div>
+
+</div><!-- /main -->
+
+<script>
+const items   = Array.from(document.querySelectorAll('.nav-item'));
+const frame   = document.getElementById('content-frame');
+const welcome = document.getElementById('welcome');
+const loader  = document.getElementById('loader');
+const topTitle= document.getElementById('topbar-title');
+const btnPrev = document.getElementById('btn-prev');
+const btnNext = document.getElementById('btn-next');
+const nav     = document.getElementById('nav');
+const overlay = document.getElementById('nav-overlay');
+const pfill   = document.getElementById('progress-fill');
+const ptext   = document.getElementById('progress-text');
+
+let current  = -1;
+const visited = new Set();
+const isMobile = () => window.innerWidth <= 640;
+
+// ── Load a page by index ──
+function loadPage(idx) {
+  if (idx < 0 || idx >= items.length) return;
+
+  const item = items[idx];
+  const src  = item.dataset.src;
+  const title= item.dataset.title;
+
+  // update nav active state
+  items.forEach(i => i.classList.remove('active'));
+  item.classList.add('active');
+
+  // hide welcome, show loader
+  welcome.classList.add('hidden');
+  loader.classList.add('show');
+
+  // load iframe
+  frame.src = src;
+  frame.onload = () => {
+    loader.classList.remove('show');
+    visited.add(idx);
+    item.classList.add('visited');
+    updateProgress();
+  };
+
+  // update topbar
+  topTitle.textContent = title;
+  current = idx;
+
+  // update prev/next
+  btnPrev.disabled = (current <= 0);
+  btnNext.disabled = (current >= items.length - 1);
+
+  // close nav on mobile
+  if (isMobile()) closeNav();
+}
+
+// ── Nav item click ──
+items.forEach((item, idx) => {
+  item.addEventListener('click', () => loadPage(idx));
+});
+
+// ── Prev / Next ──
+function navigate(dir) {
+  const next = current + dir;
+  if (next >= 0 && next < items.length) loadPage(next);
+}
+
+// ── Progress bar ──
+function updateProgress() {
+  const pct = Math.round((visited.size / items.length) * 100);
+  pfill.style.width = pct + '%';
+  ptext.textContent = visited.size + ' / ' + items.length;
+}
+
+// ── Sidebar toggle ──
+function toggleNav() {
+  if (isMobile()) {
+    nav.classList.toggle('mobile-open');
+    overlay.classList.toggle('show');
+  } else {
+    nav.classList.toggle('collapsed');
+  }
+}
+function closeNav() {
+  nav.classList.remove('mobile-open');
+  overlay.classList.remove('show');
+}
+
+// ── Keyboard shortcuts ──
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') navigate(1);
+  if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   navigate(-1);
+  if (e.key === 'b' || e.key === 'B') toggleNav();
+});
+</script>
+
+</body>
+</html>

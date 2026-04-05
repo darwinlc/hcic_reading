@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Formula Quick Reference Card | HCIC Study Guide</title>
+
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$','$'],['\\(','\\)']],
+    displayMath: [['$$','$$'],['\\[','\\]']]
+  },
+  svg: { fontCache: 'global' },
+  options: { skipHtmlTags: ['script','noscript','style','textarea'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg:     #080b14;
+  --surf:   #0f1422;
+  --surf2:  #161c2e;
+  --border: #1e2844;
+  --c1: #f7971e;   /* orange  — Ch1 gears */
+  --c2: #6c63ff;   /* purple  — Ch2 gears */
+  --c3: #00d4aa;   /* teal    — Ch3 sensors */
+  --c4: #e040fb;   /* magenta — Ch4 motion */
+  --gold:#ffd740;
+  --text:       #d8e4f8;
+  --text-muted: #5a6e96;
+  --heading:    #eef2ff;
+}
+*{ box-sizing:border-box; margin:0; padding:0; }
+body{
+  background:var(--bg); color:var(--text);
+  font-family:'Nunito',sans-serif; font-size:15px;
+  line-height:1.7; overflow-x:hidden; min-height:100vh;
+}
+
+body::before{
+  content:''; position:fixed; inset:0;
+  background:
+    radial-gradient(ellipse 60% 40% at 0% 0%,   rgba(247,151,30,.07) 0%,transparent 50%),
+    radial-gradient(ellipse 50% 35% at 100% 0%,  rgba(108,99,255,.07) 0%,transparent 50%),
+    radial-gradient(ellipse 50% 35% at 0% 100%,  rgba(0,212,170,.06)  0%,transparent 50%),
+    radial-gradient(ellipse 60% 40% at 100% 100%,rgba(224,64,251,.06) 0%,transparent 50%);
+  pointer-events:none; z-index:0;
+}
+
+@keyframes fadeDown{ from{opacity:0;transform:translateY(-14px)} to{opacity:1;transform:translateY(0)} }
+@keyframes fadeUp  { from{opacity:0;transform:translateY(18px)}  to{opacity:1;transform:translateY(0)} }
+@keyframes shimmer {
+  0%  { background-position: -200% center; }
+  100%{ background-position:  200% center; }
+}
+
+/* ── HERO ── */
+.hero{
+  text-align:center; padding:52px 24px 40px;
+  position:relative; z-index:1;
+  animation:fadeDown .6s ease both;
+}
+.hero-badge{
+  display:inline-block;
+  background:linear-gradient(90deg,var(--c1),var(--c2),var(--c3),var(--c4),var(--c1));
+  background-size:200% auto;
+  animation:shimmer 3s linear infinite;
+  color:#fff; font-size:11px; font-weight:900;
+  letter-spacing:3px; text-transform:uppercase;
+  padding:6px 22px; border-radius:20px; margin-bottom:18px;
+}
+.hero h1{ font-size:clamp(1.8rem,4vw,2.8rem); font-weight:900; color:#fff; line-height:1.1; }
+.hero-chapters{
+  display:flex; justify-content:center; gap:10px; flex-wrap:wrap;
+  margin-top:16px;
+}
+.hc{ padding:5px 16px; border-radius:20px; font-size:.78rem; font-weight:800; border:1.5px solid; }
+.hc1{ border-color:var(--c1); background:rgba(247,151,30,.12); color:var(--c1); }
+.hc2{ border-color:var(--c2); background:rgba(108,99,255,.12); color:var(--c2); }
+.hc3{ border-color:var(--c3); background:rgba(0,212,170,.12);  color:var(--c3); }
+.hc4{ border-color:var(--c4); background:rgba(224,64,251,.12); color:var(--c4); }
+
+/* ── GRID LAYOUT ── */
+.ref-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:20px;
+  max-width:1000px;
+  margin:0 auto;
+  padding:0 24px 80px;
+  position:relative; z-index:1;
+}
+
+/* ── CHAPTER CARD ── */
+.ch-card{
+  border-radius:18px; border:1.5px solid;
+  overflow:hidden;
+  animation:fadeUp .7s ease both;
+}
+.ch-card:nth-child(1){ animation-delay:.1s; }
+.ch-card:nth-child(2){ animation-delay:.2s; }
+.ch-card:nth-child(3){ animation-delay:.3s; }
+.ch-card:nth-child(4){ animation-delay:.4s; }
+
+.ch-card.c1{ border-color:rgba(247,151,30,.4); }
+.ch-card.c2{ border-color:rgba(108,99,255,.4); }
+.ch-card.c3{ border-color:rgba(0,212,170,.4);  }
+.ch-card.c4{ border-color:rgba(224,64,251,.4); }
+
+.ch-header{
+  padding:18px 22px 14px;
+  display:flex; align-items:center; gap:12px;
+}
+.c1 .ch-header{ background:linear-gradient(135deg,rgba(247,151,30,.18),rgba(247,151,30,.06)); }
+.c2 .ch-header{ background:linear-gradient(135deg,rgba(108,99,255,.18),rgba(108,99,255,.06)); }
+.c3 .ch-header{ background:linear-gradient(135deg,rgba(0,212,170,.18),rgba(0,212,170,.06)); }
+.c4 .ch-header{ background:linear-gradient(135deg,rgba(224,64,251,.18),rgba(224,64,251,.06)); }
+
+.ch-emoji{ font-size:1.8rem; }
+.ch-info{}
+.ch-num{ font-size:.7rem; font-weight:900; letter-spacing:2px; text-transform:uppercase; opacity:.7; }
+.c1 .ch-num{ color:var(--c1); }
+.c2 .ch-num{ color:var(--c2); }
+.c3 .ch-num{ color:var(--c3); }
+.c4 .ch-num{ color:var(--c4); }
+.ch-title{ font-size:1rem; font-weight:900; color:var(--heading); }
+
+.ch-body{ padding:18px 22px; background:var(--surf); }
+
+/* ── FORMULA ROWS ── */
+.f-section{ margin-bottom:18px; }
+.f-section-title{
+  font-size:.68rem; font-weight:900; letter-spacing:2px;
+  text-transform:uppercase; margin-bottom:10px;
+  padding-bottom:6px; border-bottom:1px solid var(--border);
+}
+.c1 .f-section-title{ color:var(--c1); }
+.c2 .f-section-title{ color:var(--c2); }
+.c3 .f-section-title{ color:var(--c3); }
+.c4 .f-section-title{ color:var(--c4); }
+
+.f-row{
+  display:flex; align-items:center;
+  padding:9px 12px; border-radius:9px;
+  margin-bottom:5px;
+  background:var(--surf2); border:1px solid var(--border);
+  gap:12px; transition:border-color .2s, background .2s;
+}
+.f-row:hover{ border-color:rgba(255,255,255,.12); background:#1c2340; }
+.f-math{ flex:0 0 auto; min-width:140px; }
+.f-math mjx-container{ font-size:.9em !important; }
+.f-divider{ width:1px; background:var(--border); align-self:stretch; flex-shrink:0; }
+.f-meaning{ font-size:.78rem; color:var(--text-muted); flex:1; }
+
+/* ── RULE PILLS ── */
+.rule-pills{ display:flex; flex-wrap:wrap; gap:7px; margin-top:10px; }
+.rule-pill{
+  font-size:.73rem; font-weight:800;
+  padding:4px 12px; border-radius:20px;
+  display:flex; align-items:center; gap:5px;
+}
+.c1 .rule-pill{ background:rgba(247,151,30,.12); color:var(--c1); border:1px solid rgba(247,151,30,.3); }
+.c2 .rule-pill{ background:rgba(108,99,255,.12); color:var(--c2); border:1px solid rgba(108,99,255,.3); }
+.c3 .rule-pill{ background:rgba(0,212,170,.12);  color:var(--c3); border:1px solid rgba(0,212,170,.3); }
+.c4 .rule-pill{ background:rgba(224,64,251,.12); color:var(--c4); border:1px solid rgba(224,64,251,.3); }
+
+/* ── CONCEPT ROWS (non-formula) ── */
+.c-row{
+  display:flex; gap:10px; align-items:flex-start;
+  padding:9px 12px; border-radius:9px;
+  margin-bottom:5px;
+  background:var(--surf2); border:1px solid var(--border);
+}
+.c-key{ font-weight:800; font-size:.82rem; min-width:130px; flex-shrink:0; }
+.c1 .c-key{ color:var(--c1); }
+.c2 .c-key{ color:var(--c2); }
+.c3 .c-key{ color:var(--c3); }
+.c4 .c-key{ color:var(--c4); }
+.c-val{ font-size:.78rem; color:var(--text-muted); }
+
+/* ── TRUTH TABLE MINI ── */
+.tt-mini{ margin-top:10px; }
+.ttm-row{
+  display:flex; gap:8px; align-items:center;
+  padding:6px 0; border-bottom:1px solid var(--border);
+  font-size:.76rem;
+}
+.ttm-row:last-child{ border-bottom:none; }
+.ttm-bits{ display:flex; gap:3px; }
+.ttm-bit{
+  width:22px; height:22px; border-radius:4px;
+  display:flex; align-items:center; justify-content:center;
+  font-weight:900; font-size:.68rem;
+}
+.tb0{ background:#0a0a0a; border:1px solid #2a2a2a; color:#555; }
+.tb1{ background:#f0f0f0; border:1px solid #ccc; color:#111; }
+.ttm-arrow{ color:var(--text-muted); }
+.ttm-action{ font-weight:800; font-size:.73rem; }
+
+/* ── PRINT FOOTER ── */
+.print-note{
+  text-align:center; padding:20px 24px 40px;
+  font-size:.8rem; color:var(--text-muted);
+  position:relative; z-index:1;
+}
+.print-note strong{ color:var(--gold); }
+
+/* ── FULL-WIDTH BOTTOM CARD ── */
+.full-card{
+  grid-column:1/-1;
+  border-radius:18px; border:1.5px solid rgba(255,215,64,.3);
+  overflow:hidden;
+  animation:fadeUp .8s .5s ease both;
+}
+.full-card .ch-header{
+  background:linear-gradient(135deg,rgba(255,215,64,.15),rgba(255,215,64,.05));
+}
+.full-card .ch-body{ background:var(--surf); }
+.full-card .f-section-title{ color:var(--gold); }
+.full-card .c-key{ color:var(--gold); }
+.full-card .rule-pill{ background:rgba(255,215,64,.1); color:var(--gold); border-color:rgba(255,215,64,.3); }
+
+@media(max-width:660px){
+  .ref-grid{ grid-template-columns:1fr; }
+  .full-card{ grid-column:1; }
+}
+
+@media print{
+  body{ background:#fff; color:#111; font-size:12px; }
+  body::before{ display:none; }
+  .ch-card{ break-inside:avoid; border-color:#ccc !important; }
+  .ch-header{ background:#f5f5f5 !important; }
+  .ch-body{ background:#fff !important; }
+  .f-row, .c-row{ background:#fafafa !important; border-color:#eee !important; }
+  .f-meaning, .c-val{ color:#555 !important; }
+  .ch-title, .heading{ color:#111 !important; }
+}
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <span class="hero-badge">📋 HCIC Competition — Formula Quick Reference Card</span>
+  <h1>All Formulas · One Page</h1>
+  <div class="hero-chapters">
+    <span class="hc hc1">⚙️ Ch 1 — Structure</span>
+    <span class="hc hc2">⚙️ Ch 2 — Gear Transmission</span>
+    <span class="hc hc3">📡 Ch 3 — Sensors &amp; Control</span>
+    <span class="hc hc4">🗺️ Ch 4 — Motion Algorithms</span>
+  </div>
+</div>
+
+<!-- GRID -->
+<div class="ref-grid">
+
+  <!-- ── CHAPTER 1 ── -->
+  <div class="ch-card c1">
+    <div class="ch-header">
+      <span class="ch-emoji">🔧</span>
+      <div class="ch-info">
+        <div class="ch-num">Chapter 1</div>
+        <div class="ch-title">Mechanical &amp; Robot Structure</div>
+      </div>
+    </div>
+    <div class="ch-body">
+      <div class="f-section">
+        <div class="f-section-title">Key Formulas</div>
+        <div class="f-row">
+          <div class="f-math">$i = z_2/z_1 = n_1/n_2$</div>
+          <div class="f-divider"></div>
+          <div class="f-meaning">Basic gear ratio (preview)</div>
+        </div>
+        <div class="f-row">
+          <div class="f-math">Stability $\propto W / h$</div>
+          <div class="f-divider"></div>
+          <div class="f-meaning">Base width ÷ COG height</div>
+        </div>
+      </div>
+      <div class="f-section">
+        <div class="f-section-title">Key Concepts</div>
+        <div class="c-row">
+          <div class="c-key">Degrees of Freedom</div>
+          <div class="c-val">Max 6 (3 translational + 3 rotational)</div>
+        </div>
+        <div class="c-row">
+          <div class="c-key">Differential Drive</div>
+          <div class="c-val">Same speed → straight · Different → turn · Opposite → spin</div>
+        </div>
+        <div class="c-row">
+          <div class="c-key">Mecanum Wheels</div>
+          <div class="c-val">Full omnidirectional movement (sideways too)</div>
+        </div>
+        <div class="c-row">
+          <div class="c-key">Stability</div>
+          <div class="c-val">Low COG + wide base = harder to tip</div>
+        </div>
+      </div>
+      <div class="rule-pills">
+        <span class="rule-pill">ICO: Input → Compute → Output</span>
+        <span class="rule-pill">6 DOF max</span>
+        <span class="rule-pill">Low COG = stable</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── CHAPTER 2 ── -->
+  <div class="ch-card c2">
+    <div class="ch-header">
+      <span class="ch-emoji">⚙️</span>
+      <div class="ch-info">
+        <div class="ch-num">Chapter 2</div>
+        <div class="ch-title">Gear Transmission Calculations</div>
+      </div>
+    </div>
+    <div class="ch-body">
+      <div class="f-section">
+        <div class="f-section-title">Core Formulas</div>
+        <div class="f-row">
+          <div class="f-math">$d = m \times z$</div>
+          <div class="f-divider"></div>
+          <div class="f-meaning">Pitch circle diameter</div>
+        </div>
+        <div class="f-row">
+          <div class="f-math">$i = z_2/z_1 = n_1/n_2$</div>
+          <div class="f-divider"></div>
+          <div class="f-meaning">Single-stage gear ratio</div>
+        </div>
+        <div class="f-row">
+          <div class="f-math">$n_2 = n_1 / i$</div>
+          <div class="f-divider"></div>
+          <div class="f-meaning">Output speed</div>
+        </div>
+        <div class="f-row">
+          <div class="f-math">$T_2 = T_1 \times i$</div>
+          <div class="f-divider"></div>
+          <div class="f-meaning">Output torque (ideal)</div>
+        </div>
+        <div class="f-row">
+          <div class="f-math">$i_{\text{tot}} = i_1 \times i_2 \times \cdots$</div>
+          <div class="f-divider"></div>
+          <div class="f-meaning">Multi-stage ratio</div>
+        </div>
+        <div class="f-row">
+          <div class="f-math">$\omega = 2\pi n/60$</div>
+          <div class="f-divider"></div>
+          <div class="f-meaning">RPM → angular velocity (rad/s)</div>
+        </div>
+        <div class="f-row">
+          <div class="f-math">$P = T \times \omega$</div>
+          <div class="f-divider"></div>
+          <div class="f-meaning">Power conservation (constant)</div>
+        </div>
+      </div>
+      <div class="rule-pills">
+        <span class="rule-pill">🐢 Small→Large = slow down, gain torque</span>
+        <span class="rule-pill">🐇 Large→Small = speed up</span>
+        <span class="rule-pill">Same module to mesh</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── CHAPTER 3 ── -->
+  <div class="ch-card c3">
+    <div class="ch-header">
+      <span class="ch-emoji">📡</span>
+      <div class="ch-info">
+        <div class="ch-num">Chapter 3</div>
+        <div class="ch-title">Sensors &amp; Robot Control</div>
+      </div>
+    </div>
+    <div class="ch-body">
+      <div class="f-section">
+        <div class="f-section-title">Key Formulas</div>
+        <div class="f-row">
+          <div class="f-math">$d = v \times t\,/\,2$</div>
+          <div class="f-divider"></div>
+          <div class="f-meaning">Ultrasonic distance (v ≈ 340 m/s)</div>
+        </div>
+        <div class="f-row">
+          <div class="f-math">$DC = t_\text{high}/T$</div>
+          <div class="f-divider"></div>
+          <div class="f-meaning">PWM duty cycle → motor speed</div>
+        </div>
+        <div class="f-row">
+          <div class="f-math">$u = K_p e + K_i\!\int\!e\,dt + K_d\dot{e}$</div>
+          <div class="f-divider"></div>
+          <div class="f-meaning">PID control output</div>
+        </div>
+      </div>
+      <div class="f-section">
+        <div class="f-section-title">Line-Following Truth Table</div>
+        <div class="tt-mini">
+          <div class="ttm-row">
+            <div class="ttm-bits"><div class="ttm-bit tb0">L=0</div><div class="ttm-bit tb1">R=1</div></div>
+            <span class="ttm-arrow">→</span>
+            <span class="ttm-action" style="color:#38b6ff">Drifted left → Turn RIGHT</span>
+          </div>
+          <div class="ttm-row">
+            <div class="ttm-bits"><div class="ttm-bit tb1">L=1</div><div class="ttm-bit tb0">R=0</div></div>
+            <span class="ttm-arrow">→</span>
+            <span class="ttm-action" style="color:#6c63ff">Drifted right → Turn LEFT</span>
+          </div>
+          <div class="ttm-row">
+            <div class="ttm-bits"><div class="ttm-bit tb0">L=0</div><div class="ttm-bit tb0">R=0</div></div>
+            <span class="ttm-arrow">→</span>
+            <span class="ttm-action" style="color:var(--c3)">On line → Go STRAIGHT</span>
+          </div>
+          <div class="ttm-row">
+            <div class="ttm-bits"><div class="ttm-bit tb1">L=1</div><div class="ttm-bit tb1">R=1</div></div>
+            <span class="ttm-arrow">→</span>
+            <span class="ttm-action" style="color:#ff6b6b">Lost line → STOP &amp; search</span>
+          </div>
+        </div>
+      </div>
+      <div class="rule-pills">
+        <span class="rule-pill">PID: tune P→D→I order</span>
+        <span class="rule-pill">Closed loop &gt; open loop</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── CHAPTER 4 ── -->
+  <div class="ch-card c4">
+    <div class="ch-header">
+      <span class="ch-emoji">🗺️</span>
+      <div class="ch-info">
+        <div class="ch-num">Chapter 4</div>
+        <div class="ch-title">Robot Motion Algorithms</div>
+      </div>
+    </div>
+    <div class="ch-body">
+      <div class="f-section">
+        <div class="f-section-title">Key Formulas</div>
+        <div class="f-row">
+          <div class="f-math">$v = (v_R + v_L)/2$</div>
+          <div class="f-divider"></div>
+          <div class="f-meaning">Robot linear speed</div>
+        </div>
+        <div class="f-row">
+          <div class="f-math">$\omega = (v_R - v_L)/L$</div>
+          <div class="f-divider"></div>
+          <div class="f-meaning">Robot angular velocity</div>
+        </div>
+        <div class="f-row">
+          <div class="f-math">$d = \text{count} \times \pi D/N$</div>
+          <div class="f-divider"></div>
+          <div class="f-meaning">Encoder distance</div>
+        </div>
+        <div class="f-row">
+          <div class="f-math">$f(n) = g(n) + h(n)$</div>
+          <div class="f-divider"></div>
+          <div class="f-meaning">A* path planning cost</div>
+        </div>
+        <div class="f-row">
+          <div class="f-math">$\Delta x = v\cos\theta \cdot \Delta t$</div>
+          <div class="f-divider"></div>
+          <div class="f-meaning">Odometry x-update</div>
+        </div>
+        <div class="f-row">
+          <div class="f-math">$\Delta y = v\sin\theta \cdot \Delta t$</div>
+          <div class="f-divider"></div>
+          <div class="f-meaning">Odometry y-update</div>
+        </div>
+      </div>
+      <div class="f-section">
+        <div class="f-section-title">Algorithms at a Glance</div>
+        <div class="c-row">
+          <div class="c-key">A*</div>
+          <div class="c-val">Shortest path with heuristic — pick lowest f each step</div>
+        </div>
+        <div class="c-row">
+          <div class="c-key">BFS</div>
+          <div class="c-val">Layer-by-layer — guarantees shortest path</div>
+        </div>
+        <div class="c-row">
+          <div class="c-key">DFS</div>
+          <div class="c-val">Deep-first — memory efficient, not guaranteed shortest</div>
+        </div>
+      </div>
+      <div class="rule-pills">
+        <span class="rule-pill">f = g + h (A*)</span>
+        <span class="rule-pill">Drift grows over time</span>
+        <span class="rule-pill">RL = reward/penalty</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── COMPETITION CRUNCH (full width) ── -->
+  <div class="ch-card full-card">
+    <div class="ch-header">
+      <span class="ch-emoji">🏆</span>
+      <div class="ch-info">
+        <div class="ch-num" style="color:var(--gold)">All Chapters</div>
+        <div class="ch-title">Competition Crunch — Problem-Solving Framework</div>
+      </div>
+    </div>
+    <div class="ch-body">
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;">
+        <div style="background:var(--surf2);border:1px solid var(--border);border-radius:12px;padding:14px 16px;display:flex;gap:12px;align-items:flex-start;">
+          <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--c1),var(--gold));color:#111;font-weight:900;font-size:.85rem;display:flex;align-items:center;justify-content:center;flex-shrink:0">1</div>
+          <div><div style="font-weight:900;font-size:.88rem;color:var(--heading)">Read</div><div style="font-size:.76rem;color:var(--text-muted);margin-top:3px">Identify inputs (sensors) and outputs (target answer)</div></div>
+        </div>
+        <div style="background:var(--surf2);border:1px solid var(--border);border-radius:12px;padding:14px 16px;display:flex;gap:12px;align-items:flex-start;">
+          <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--c2),var(--c3));color:#fff;font-weight:900;font-size:.85rem;display:flex;align-items:center;justify-content:center;flex-shrink:0">2</div>
+          <div><div style="font-weight:900;font-size:.88rem;color:var(--heading)">Analyse</div><div style="font-size:.76rem;color:var(--text-muted);margin-top:3px">Draw Sensor → Controller → Actuator diagram</div></div>
+        </div>
+        <div style="background:var(--surf2);border:1px solid var(--border);border-radius:12px;padding:14px 16px;display:flex;gap:12px;align-items:flex-start;">
+          <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--c3),var(--c4));color:#fff;font-weight:900;font-size:.85rem;display:flex;align-items:center;justify-content:center;flex-shrink:0">3</div>
+          <div><div style="font-weight:900;font-size:.88rem;color:var(--heading)">Calculate</div><div style="font-size:.76rem;color:var(--text-muted);margin-top:3px">Apply the right formula from this card</div></div>
+        </div>
+        <div style="background:var(--surf2);border:1px solid var(--border);border-radius:12px;padding:14px 16px;display:flex;gap:12px;align-items:flex-start;">
+          <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--c4),var(--c1));color:#fff;font-weight:900;font-size:.85rem;display:flex;align-items:center;justify-content:center;flex-shrink:0">4</div>
+          <div><div style="font-weight:900;font-size:.88rem;color:var(--heading)">Verify</div><div style="font-size:.76rem;color:var(--text-muted);margin-top:3px">Check magnitude and units make sense</div></div>
+        </div>
+      </div>
+
+      <!-- Master formula strip -->
+      <div style="margin-top:18px;padding:16px 18px;border-radius:12px;background:linear-gradient(90deg,rgba(247,151,30,.08),rgba(108,99,255,.08),rgba(0,212,170,.08),rgba(224,64,251,.08));border:1px solid rgba(255,255,255,.08);">
+        <div style="font-size:.68rem;font-weight:900;letter-spacing:2px;text-transform:uppercase;color:var(--gold);margin-bottom:10px">Master Formula Strip</div>
+        <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center;font-size:.82rem;">
+          <span style="color:var(--c1)">$d=mz$</span>
+          <span style="color:var(--text-muted)">·</span>
+          <span style="color:var(--c2)">$i=z_2/z_1$</span>
+          <span style="color:var(--text-muted)">·</span>
+          <span style="color:var(--c2)">$T_2=T_1 i$</span>
+          <span style="color:var(--text-muted)">·</span>
+          <span style="color:var(--c2)">$\omega=2\pi n/60$</span>
+          <span style="color:var(--text-muted)">·</span>
+          <span style="color:var(--c3)">$d=vt/2$</span>
+          <span style="color:var(--text-muted)">·</span>
+          <span style="color:var(--c3)">$DC=t_h/T$</span>
+          <span style="color:var(--text-muted)">·</span>
+          <span style="color:var(--c4)">$v=(v_R+v_L)/2$</span>
+          <span style="color:var(--text-muted)">·</span>
+          <span style="color:var(--c4)">$f=g+h$</span>
+          <span style="color:var(--text-muted)">·</span>
+          <span style="color:var(--c4)">$d=\text{count}\cdot\pi D/N$</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /ref-grid -->
+
+<div class="print-note">
+  <strong>🏆 Good luck in the HCIC competition!</strong> &nbsp;·&nbsp; Keep this page open in your browser for quick formula lookup.
+</div>
+
+</body>
+</html>

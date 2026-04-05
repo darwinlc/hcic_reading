@@ -1,0 +1,1058 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chapter 3 — Sensors & Robot Control | HCIC Study Guide</title>
+
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$','$'],['\\(','\\)']],
+    displayMath: [['$$','$$'],['\\[','\\]']]
+  },
+  svg: { fontCache: 'global' },
+  options: { skipHtmlTags: ['script','noscript','style','textarea'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg:       #0b0f1a;
+  --surface:  #131826;
+  --surface2: #1a2035;
+  --border:   #232d4a;
+  --a1: #00d4aa;   /* teal  — sensors */
+  --a2: #ff6b6b;   /* red   — warning */
+  --a3: #ffd166;   /* yellow — caution */
+  --a4: #6c63ff;   /* purple — PID/control */
+  --a5: #38b6ff;   /* blue  — info */
+  --a6: #ff9f43;   /* orange — PWM */
+  --text:       #dce8f5;
+  --text-muted: #6e80a0;
+  --heading:    #eef2ff;
+}
+
+*{ box-sizing:border-box; margin:0; padding:0; }
+
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Nunito',sans-serif;
+  font-size:17px;
+  line-height:1.8;
+  overflow-x:hidden;
+}
+
+body::before{
+  content:'';
+  position:fixed; inset:0;
+  background:
+    radial-gradient(ellipse 70% 50% at 10% 20%, rgba(0,212,170,0.07) 0%, transparent 55%),
+    radial-gradient(ellipse 60% 40% at 90% 80%, rgba(108,99,255,0.06) 0%, transparent 55%);
+  pointer-events:none; z-index:0;
+}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeDown{ from{opacity:0;transform:translateY(-18px)} to{opacity:1;transform:translateY(0)} }
+@keyframes fadeUp  { from{opacity:0;transform:translateY(22px)}  to{opacity:1;transform:translateY(0)} }
+@keyframes pulse   { 0%,100%{opacity:1} 50%{opacity:.4} }
+@keyframes ping    { 0%{transform:scale(1);opacity:.9} 100%{transform:scale(2.6);opacity:0} }
+@keyframes wave    { 0%{transform:scaleX(0);opacity:.8} 100%{transform:scaleX(1);opacity:0} }
+@keyframes blink   { 0%,100%{opacity:1} 50%{opacity:0} }
+@keyframes slideR  { from{transform:translateX(-30px);opacity:0} to{transform:translateX(0);opacity:1} }
+
+/* ── HERO ── */
+.hero{
+  position:relative;
+  padding:62px 40px 50px;
+  text-align:center;
+  overflow:hidden;
+}
+.hero-badge{
+  display:inline-block;
+  background:linear-gradient(135deg,var(--a1),var(--a5));
+  color:#001a14; font-size:11px; font-weight:900;
+  letter-spacing:3px; text-transform:uppercase;
+  padding:6px 20px; border-radius:20px; margin-bottom:20px;
+  animation:fadeDown .6s ease both;
+}
+.hero h1{
+  font-size:clamp(1.9rem,5vw,3.2rem);
+  font-weight:900; color:#fff; line-height:1.1;
+  animation:fadeDown .7s .1s ease both;
+}
+.hero h1 span{
+  background:linear-gradient(90deg,var(--a1),var(--a5));
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+}
+.hero-sub{
+  margin-top:12px; color:var(--text-muted);
+  font-size:1rem; font-weight:600; letter-spacing:1px;
+  animation:fadeDown .8s .2s ease both;
+}
+
+/* sensor wave animation */
+.sensor-hero{
+  margin:30px auto 0;
+  width:120px; height:80px;
+  position:relative;
+  animation:fadeDown .9s .3s ease both;
+}
+.sensor-icon{ font-size:2.8rem; position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); }
+.sensor-ring{
+  position:absolute; left:50%; top:50%;
+  width:60px; height:60px;
+  border:2px solid var(--a1);
+  border-radius:50%;
+  transform:translate(-50%,-50%);
+  animation:ping 1.8s ease-out infinite;
+}
+.sensor-ring:nth-child(2){ animation-delay:.6s; }
+.sensor-ring:nth-child(3){ animation-delay:1.2s; }
+
+/* ── TOC ── */
+.toc{ max-width:880px; margin:0 auto 56px; padding:0 24px; animation:fadeUp .8s .4s ease both; }
+.toc-inner{ background:var(--surface); border:1px solid var(--border); border-radius:16px; padding:26px 30px; }
+.toc-label{ font-size:.72rem; font-weight:900; letter-spacing:3px; text-transform:uppercase; color:var(--a1); margin-bottom:14px; }
+.toc-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:10px; }
+.toc-item{
+  display:flex; align-items:center; gap:10px;
+  padding:10px 14px; border-radius:10px;
+  border:1px solid var(--border); background:var(--surface2);
+  text-decoration:none; color:var(--text);
+  font-weight:700; font-size:.88rem; transition:all .2s;
+}
+.toc-item:hover{ border-color:var(--a1); background:rgba(0,212,170,.1); transform:translateX(4px); }
+
+/* ── MAIN ── */
+main{ max-width:880px; margin:0 auto; padding:0 24px 100px; position:relative; z-index:1; }
+
+.section{ margin-bottom:64px; animation:fadeUp .7s ease both; }
+.section:nth-child(1){animation-delay:.05s}
+.section:nth-child(2){animation-delay:.12s}
+.section:nth-child(3){animation-delay:.18s}
+.section:nth-child(4){animation-delay:.24s}
+.section:nth-child(5){animation-delay:.30s}
+.section:nth-child(6){animation-delay:.36s}
+.section:nth-child(7){animation-delay:.42s}
+
+.section-header{ display:flex; align-items:center; gap:14px; margin-bottom:26px; }
+.section-num{
+  background:linear-gradient(135deg,var(--a1),var(--a5));
+  color:#001a14; font-size:.78rem; font-weight:900;
+  padding:4px 12px; border-radius:8px; letter-spacing:1px; white-space:nowrap;
+}
+.section-title{ font-size:1.52rem; font-weight:900; color:var(--heading); }
+.section-emoji{ font-size:1.75rem; }
+
+h3{ font-size:1.05rem; font-weight:800; color:var(--a5); margin:28px 0 12px; display:flex; align-items:center; gap:8px; }
+h3::before{ content:'▸'; color:var(--a1); }
+p{ margin-bottom:14px; }
+
+/* ── TABLES ── */
+.table-wrap{ overflow-x:auto; margin:18px 0; border-radius:14px; border:1px solid var(--border); }
+table{ width:100%; border-collapse:collapse; }
+thead tr{ background:linear-gradient(90deg,rgba(0,212,170,.2),rgba(108,99,255,.12)); }
+thead th{ padding:13px 18px; text-align:left; font-size:.78rem; font-weight:900; letter-spacing:1.5px; text-transform:uppercase; color:var(--a1); }
+tbody tr{ border-top:1px solid var(--border); transition:background .2s; }
+tbody tr:hover{ background:rgba(0,212,170,.05); }
+td{ padding:12px 18px; font-size:.93rem; }
+td:first-child{ font-weight:700; color:var(--a5); }
+
+/* ── SIGNAL FLOW ── */
+.signal-flow{
+  display:flex; align-items:center; flex-wrap:wrap; gap:6px;
+  margin:22px 0; padding:22px 18px;
+  background:var(--surface); border:1px solid var(--border); border-radius:14px;
+}
+.sf-box{
+  flex:1; min-width:110px;
+  border-radius:10px; padding:12px 14px; text-align:center;
+  border:1.5px solid;
+}
+.sf-real { border-color:var(--a3); background:rgba(255,209,102,.1); }
+.sf-sensor{ border-color:var(--a1); background:rgba(0,212,170,.1); }
+.sf-signal{ border-color:var(--a5); background:rgba(56,182,255,.1); }
+.sf-ctrl  { border-color:var(--a4); background:rgba(108,99,255,.1); }
+.sf-action{ border-color:var(--a6); background:rgba(255,159,67,.1); }
+.sf-icon{ font-size:1.5rem; margin-bottom:4px; }
+.sf-label{ font-weight:800; font-size:.82rem; }
+.sf-sub  { font-size:.72rem; color:var(--text-muted); margin-top:2px; }
+.sf-arrow{ color:var(--text-muted); font-size:1.4rem; font-weight:900; flex-shrink:0; }
+
+/* ── DIGITAL vs ANALOGUE ── */
+.signal-types{ display:grid; grid-template-columns:1fr 1fr; gap:14px; margin:18px 0; }
+.st-card{ border-radius:14px; padding:20px; border:1.5px solid; }
+.st-digital { border-color:var(--a1); background:rgba(0,212,170,.08); }
+.st-analogue{ border-color:var(--a4); background:rgba(108,99,255,.08); }
+.st-title{ font-weight:900; font-size:1rem; margin-bottom:10px; }
+.st-digital .st-title { color:var(--a1); }
+.st-analogue .st-title{ color:var(--a4); }
+.signal-bar{
+  display:flex; align-items:flex-end; gap:3px; height:44px; margin:10px 0;
+}
+.bar{ border-radius:3px 3px 0 0; width:14px; }
+.d-bar-hi{ height:44px; background:var(--a1); }
+.d-bar-lo{ height:6px;  background:rgba(0,212,170,.3); }
+.a-bar{ background:var(--a4); transition:height .3s; }
+.st-tag{ font-size:.78rem; color:var(--text-muted); margin-top:6px; }
+.st-example{ display:inline-block; margin-top:8px; background:var(--surface2); border-radius:6px; padding:4px 10px; font-size:.8rem; font-weight:700; }
+
+/* ── ULTRASONIC VISUAL ── */
+.ultrasonic-visual{
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:16px; padding:28px 24px; margin:20px 0;
+  position:relative; overflow:hidden;
+}
+.uv-scene{
+  display:flex; align-items:center; justify-content:space-between;
+  height:80px; position:relative; margin-bottom:20px;
+}
+.uv-robot{ font-size:2.5rem; position:relative; z-index:2; }
+.uv-wall{
+  width:18px; height:80px;
+  background:linear-gradient(180deg,var(--a2),rgba(255,107,107,.4));
+  border-radius:4px; flex-shrink:0;
+}
+.uv-wave-wrap{ flex:1; position:relative; height:40px; overflow:hidden; margin:0 12px; }
+.uv-wave{
+  position:absolute; top:50%; left:0;
+  width:100%; height:3px;
+  background:linear-gradient(90deg, var(--a1), transparent);
+  border-radius:2px;
+  transform-origin:left center;
+  animation:wave 1.2s ease-out infinite;
+}
+.uv-wave.back{
+  background:linear-gradient(90deg, transparent, var(--a3));
+  transform-origin:right center;
+  animation:wave 1.2s ease-out infinite reverse;
+  animation-delay:.6s;
+}
+.uv-label{ font-size:.8rem; font-weight:700; color:var(--text-muted); text-align:center; }
+
+/* ── SENSOR CARDS ── */
+.sensor-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:12px; margin:18px 0; }
+.sensor-card{
+  border-radius:14px; padding:18px 14px; text-align:center;
+  border:1.5px solid var(--border); background:var(--surface);
+  transition:transform .25s, border-color .25s;
+  cursor:default;
+}
+.sensor-card:hover{ transform:translateY(-5px); border-color:var(--a1); }
+.sc-icon{ font-size:2rem; margin-bottom:8px; }
+.sc-name{ font-weight:800; font-size:.88rem; margin-bottom:4px; }
+.sc-detects{ font-size:.75rem; color:var(--text-muted); margin-bottom:6px; }
+.sc-use{
+  display:inline-block; font-size:.7rem; font-weight:800;
+  padding:2px 8px; border-radius:6px;
+  background:rgba(0,212,170,.12); color:var(--a1);
+}
+
+/* ── OPEN vs CLOSED LOOP ── */
+.loop-compare{ display:grid; grid-template-columns:1fr 1fr; gap:16px; margin:18px 0; }
+.loop-card{ border-radius:14px; padding:22px 18px; border:1.5px solid; }
+.loop-open  { border-color:var(--a2); background:rgba(255,107,107,.07); }
+.loop-closed{ border-color:var(--a1); background:rgba(0,212,170,.07); }
+.loop-title{ font-weight:900; font-size:1rem; margin-bottom:14px; display:flex; align-items:center; gap:8px; }
+.loop-open .loop-title  { color:var(--a2); }
+.loop-closed .loop-title{ color:var(--a1); }
+.loop-flow{ display:flex; flex-direction:column; gap:6px; }
+.lf-step{
+  display:flex; align-items:center; gap:8px;
+  padding:8px 12px; border-radius:8px;
+  background:var(--surface2); font-size:.83rem; font-weight:700;
+}
+.lf-arrow{ color:var(--text-muted); font-size:.9rem; }
+.loop-verdict{
+  margin-top:14px; font-size:.8rem; font-weight:800;
+  padding:8px 12px; border-radius:8px; text-align:center;
+}
+.loop-open .loop-verdict  { background:rgba(255,107,107,.12); color:var(--a2); }
+.loop-closed .loop-verdict{ background:rgba(0,212,170,.12);   color:var(--a1); }
+
+/* ── PID CARDS ── */
+.pid-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin:20px 0; }
+.pid-card{
+  border-radius:14px; padding:20px 16px; text-align:center;
+  border:2px solid; transition:transform .25s;
+}
+.pid-card:hover{ transform:translateY(-5px); }
+.pid-p{ border-color:var(--a5); background:rgba(56,182,255,.09); }
+.pid-i{ border-color:var(--a4); background:rgba(108,99,255,.09); }
+.pid-d{ border-color:var(--a6); background:rgba(255,159,67,.09); }
+.pid-letter{ font-size:2.6rem; font-weight:900; line-height:1; margin-bottom:8px; }
+.pid-p .pid-letter{ color:var(--a5); }
+.pid-i .pid-letter{ color:var(--a4); }
+.pid-d .pid-letter{ color:var(--a6); }
+.pid-name{ font-weight:900; font-size:.9rem; margin-bottom:8px; }
+.pid-role{ font-size:.8rem; color:var(--text-muted); margin-bottom:8px; line-height:1.4; }
+.pid-analogy{ font-size:.78rem; font-style:italic; color:var(--text-muted); border-top:1px solid var(--border); padding-top:8px; margin-top:4px; }
+
+/* ── FORMULA BOX ── */
+.formula-box{
+  background:var(--surface); border:2px solid var(--a1);
+  border-radius:18px; padding:28px 30px; margin:20px 0;
+  text-align:center; position:relative; overflow:hidden;
+}
+.formula-box::before{
+  content:'FORMULA'; position:absolute; top:10px; right:14px;
+  font-size:.62rem; font-weight:900; letter-spacing:3px; color:var(--a1); opacity:.5;
+}
+.formula-box::after{
+  content:''; position:absolute; inset:0;
+  background:radial-gradient(ellipse 60% 60% at 50% 50%, rgba(0,212,170,.05), transparent);
+  pointer-events:none;
+}
+.formula-box mjx-container{ font-size:1.55em !important; margin:8px 0 !important; }
+.formula-box mjx-container svg{ margin:auto; display:block; }
+.formula-vars{ display:grid; grid-template-columns:repeat(2,1fr); gap:8px; margin-top:18px; text-align:left; }
+.fv{ display:flex; gap:10px; align-items:baseline; padding:8px 12px; background:var(--surface2); border-radius:8px; font-size:.85rem; }
+.fv-sym{ font-family:'JetBrains Mono',monospace; font-weight:700; color:var(--a1); min-width:30px; }
+.fv-desc{ color:var(--text-muted); }
+
+/* ── PWM INTERACTIVE ── */
+.pwm-demo{
+  background:var(--surface); border:1px solid var(--border);
+  border-radius:16px; padding:28px 24px; margin:20px 0;
+}
+.pwm-title{ font-weight:900; color:var(--heading); margin-bottom:20px; font-size:1rem; }
+.pwm-slider-wrap{ margin-bottom:20px; }
+.pwm-slider-wrap label{ display:block; font-weight:800; font-size:.88rem; color:var(--a6); margin-bottom:8px; }
+input[type=range]{
+  width:100%; -webkit-appearance:none; appearance:none;
+  height:8px; border-radius:4px;
+  background:var(--surface2); outline:none;
+  accent-color:var(--a6);
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none; appearance:none;
+  width:22px; height:22px; border-radius:50%;
+  background:var(--a6); cursor:pointer;
+  border:3px solid var(--bg);
+  box-shadow:0 0 8px rgba(255,159,67,.5);
+}
+.pwm-signal{
+  height:60px; border-radius:10px; overflow:hidden;
+  background:#090d14; border:1px solid var(--border);
+  display:flex; align-items:flex-end;
+  margin-bottom:12px; padding:6px;
+  gap:2px;
+}
+.pwm-bar-on { background:var(--a6); border-radius:2px 2px 0 0; flex-shrink:0; }
+.pwm-bar-off{ background:rgba(255,159,67,.15); border-radius:2px 2px 0 0; flex-shrink:0; }
+.pwm-stats{
+  display:flex; gap:12px; flex-wrap:wrap;
+  font-size:.85rem; font-weight:800;
+}
+.pwm-stat{
+  flex:1; min-width:120px;
+  background:var(--surface2); border-radius:8px;
+  padding:10px 14px; text-align:center;
+}
+.pwm-stat-val{ font-size:1.4rem; font-weight:900; color:var(--a6); display:block; }
+.pwm-stat-lbl{ font-size:.72rem; color:var(--text-muted); margin-top:2px; }
+
+/* ── ARCHITECTURE BOX ── */
+.arch{
+  display:flex; align-items:stretch; gap:0; margin:22px 0;
+  border-radius:14px; overflow:hidden; border:1px solid var(--border);
+}
+.arch-col{
+  flex:1; padding:20px 16px;
+  border-right:1px solid var(--border);
+}
+.arch-col:last-child{ border-right:none; }
+.arch-col:nth-child(1){ background:rgba(0,212,170,.07); }
+.arch-col:nth-child(2){ background:rgba(108,99,255,.07); }
+.arch-col:nth-child(3){ background:rgba(255,159,67,.07); }
+.arch-head{
+  font-weight:900; font-size:.85rem; margin-bottom:14px;
+  display:flex; align-items:center; gap:8px;
+}
+.arch-col:nth-child(1) .arch-head{ color:var(--a1); }
+.arch-col:nth-child(2) .arch-head{ color:var(--a4); }
+.arch-col:nth-child(3) .arch-head{ color:var(--a6); }
+.arch-item{
+  font-size:.8rem; padding:5px 0;
+  color:var(--text-muted); display:flex; align-items:center; gap:6px;
+}
+.arch-item::before{ content:'•'; font-size:.6rem; flex-shrink:0; }
+.arch-col:nth-child(1) .arch-item::before{ color:var(--a1); }
+.arch-col:nth-child(2) .arch-item::before{ color:var(--a4); }
+.arch-col:nth-child(3) .arch-item::before{ color:var(--a6); }
+
+/* ── LINE FOLLOW TRUTH TABLE ── */
+.truth-table{ margin:18px 0; }
+.tt-row{
+  display:flex; gap:10px; padding:12px 0;
+  border-bottom:1px solid var(--border);
+  align-items:center; flex-wrap:wrap;
+}
+.tt-row:last-child{ border-bottom:none; }
+.tt-sensor{
+  display:flex; gap:6px; flex-shrink:0;
+}
+.tt-bit{
+  width:32px; height:32px; border-radius:6px;
+  display:flex; align-items:center; justify-content:center;
+  font-weight:900; font-size:.9rem; border:2px solid;
+}
+.tt-bit-0{ background:#0a0a0a; border-color:#333; color:#555; }
+.tt-bit-1{ background:#fff; border-color:#ccc; color:#222; }
+.tt-arrow{ color:var(--text-muted); font-weight:800; flex-shrink:0; }
+.tt-state{ font-weight:800; font-size:.88rem; }
+.tt-action{
+  margin-left:auto; padding:4px 14px; border-radius:20px;
+  font-size:.78rem; font-weight:900;
+}
+.action-straight{ background:rgba(0,212,170,.15); color:var(--a1); }
+.action-right   { background:rgba(56,182,255,.15);  color:var(--a5); }
+.action-left    { background:rgba(108,99,255,.15);  color:var(--a4); }
+.action-stop    { background:rgba(255,107,107,.15); color:var(--a2); }
+
+/* ── OBSTACLE AVOIDANCE ── */
+.avoid-zones{
+  display:flex; gap:12px; margin:18px 0; flex-wrap:wrap;
+}
+.az{
+  flex:1; min-width:130px;
+  border-radius:12px; padding:16px 14px; text-align:center;
+  border:1.5px solid;
+}
+.az-safe { border-color:var(--a1); background:rgba(0,212,170,.1); }
+.az-warn { border-color:var(--a3); background:rgba(255,209,102,.1); }
+.az-stop { border-color:var(--a2); background:rgba(255,107,107,.1); }
+.az-icon { font-size:1.8rem; margin-bottom:6px; }
+.az-dist { font-weight:900; font-size:1rem; margin-bottom:4px; }
+.az-action{ font-size:.8rem; font-weight:700; color:var(--text-muted); }
+
+/* ── TIP / NOTE ── */
+.tip{
+  display:flex; gap:14px;
+  background:linear-gradient(135deg,rgba(0,212,170,.1),rgba(0,212,170,.04));
+  border:1px solid rgba(0,212,170,.35); border-left:4px solid var(--a1);
+  border-radius:12px; padding:16px 20px; margin:18px 0; font-size:.92rem;
+}
+.tip-icon{ font-size:1.4rem; flex-shrink:0; }
+.tip strong{ color:var(--a1); }
+
+.exam-tag{
+  display:inline-block; font-size:.7rem; font-weight:900;
+  letter-spacing:1.5px; text-transform:uppercase;
+  padding:3px 10px; border-radius:6px;
+  background:rgba(255,107,107,.15); color:var(--a2);
+  margin-left:8px; vertical-align:middle;
+}
+
+/* ── CODE ── */
+pre{
+  background:#070b12; border:1px solid var(--border);
+  border-left:4px solid var(--a1); border-radius:10px;
+  padding:18px 22px; font-family:'JetBrains Mono',monospace;
+  font-size:.84rem; color:#9ab0cc;
+  overflow-x:auto; margin:16px 0; line-height:1.9;
+}
+.kw{ color:var(--a4); font-weight:700; }
+.cm{ color:#4a5a72; font-style:italic; }
+.val{ color:var(--a1); }
+.hl{ color:var(--a6); font-weight:700; }
+
+/* ── SUMMARY ── */
+.summary-section{
+  background:linear-gradient(135deg,var(--surface),var(--surface2));
+  border:1px solid var(--border); border-radius:20px; padding:32px; margin-top:60px;
+}
+.summary-title{ font-size:1.2rem; font-weight:900; color:var(--heading); margin-bottom:20px; display:flex; align-items:center; gap:10px; }
+.summary-table{ width:100%; border-collapse:collapse; }
+.summary-table tr{ border-bottom:1px solid var(--border); }
+.summary-table tr:last-child{ border-bottom:none; }
+.summary-table td{ padding:13px 16px; font-size:.92rem; vertical-align:middle; }
+.summary-table td:first-child{ font-weight:800; color:var(--a5); width:35%; }
+.summary-table mjx-container{ font-size:1.05em !important; }
+
+.next-ch{
+  margin-top:36px; text-align:center; padding:26px; border-radius:16px;
+  background:linear-gradient(135deg,rgba(0,212,170,.12),rgba(108,99,255,.08));
+  border:1px solid var(--a1); font-weight:700; color:var(--text-muted);
+}
+.next-ch span{ color:var(--a1); font-weight:900; }
+
+@media(max-width:580px){
+  .signal-types,.loop-compare,.pid-grid{ grid-template-columns:1fr; }
+  .arch{ flex-direction:column; }
+  .arch-col{ border-right:none; border-bottom:1px solid var(--border); }
+  .arch-col:last-child{ border-bottom:none; }
+  .formula-vars{ grid-template-columns:1fr; }
+  .tt-action{ margin-left:0; }
+}
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<header class="hero">
+  <span class="hero-badge">HCIC Competition Study Guide</span>
+  <h1>Chapter 3: <span>Sensors &amp;<br>Robot Control</span></h1>
+  <p class="hero-sub">👁️ How robots sense, decide, and act</p>
+  <div class="sensor-hero">
+    <div class="sensor-ring"></div>
+    <div class="sensor-ring"></div>
+    <div class="sensor-ring"></div>
+    <span class="sensor-icon">📡</span>
+  </div>
+</header>
+
+<!-- TOC -->
+<nav class="toc">
+  <div class="toc-inner">
+    <div class="toc-label">📋 In this chapter</div>
+    <div class="toc-grid">
+      <a href="#s31" class="toc-item">👁️ 3.1 Sensor Basics</a>
+      <a href="#s32" class="toc-item">📡 3.2 Sensor Types</a>
+      <a href="#s33" class="toc-item">🎛️ 3.3 Open vs Closed Loop</a>
+      <a href="#s34" class="toc-item">📊 3.4 PID Control</a>
+      <a href="#s35" class="toc-item">🤖 3.5 System Architecture</a>
+      <a href="#s36" class="toc-item">🎯 3.6 PWM Motor Control</a>
+      <a href="#s37" class="toc-item">🛤️ 3.7 Line Follow &amp; Avoid</a>
+    </div>
+  </div>
+</nav>
+
+<main>
+
+<!-- ═══ 3.1 SENSOR BASICS ═══ -->
+<section class="section" id="s31">
+  <div class="section-header">
+    <span class="section-num">3.1</span>
+    <span class="section-emoji">👁️</span>
+    <h2 class="section-title">Sensor Basics</h2>
+  </div>
+
+  <p>A sensor is a robot's <strong>"sense organ"</strong> — it converts real-world information (light, distance, temperature) into electrical signals that the controller can understand and act on.</p>
+
+  <!-- Signal flow -->
+  <div class="signal-flow">
+    <div class="sf-box sf-real">
+      <div class="sf-icon">🌍</div>
+      <div class="sf-label">Real World</div>
+      <div class="sf-sub">light, distance,<br>temperature…</div>
+    </div>
+    <div class="sf-arrow">→</div>
+    <div class="sf-box sf-sensor">
+      <div class="sf-icon">📡</div>
+      <div class="sf-label">Sensor</div>
+      <div class="sf-sub">converts to<br>electric signal</div>
+    </div>
+    <div class="sf-arrow">→</div>
+    <div class="sf-box sf-signal">
+      <div class="sf-icon">⚡</div>
+      <div class="sf-label">Signal</div>
+      <div class="sf-sub">digital or<br>analogue</div>
+    </div>
+    <div class="sf-arrow">→</div>
+    <div class="sf-box sf-ctrl">
+      <div class="sf-icon">🧠</div>
+      <div class="sf-label">Controller</div>
+      <div class="sf-sub">processes &amp;<br>decides</div>
+    </div>
+    <div class="sf-arrow">→</div>
+    <div class="sf-box sf-action">
+      <div class="sf-icon">⚙️</div>
+      <div class="sf-label">Action</div>
+      <div class="sf-sub">motor, servo,<br>LED…</div>
+    </div>
+  </div>
+
+  <h3>Digital vs Analogue Signals</h3>
+  <div class="signal-types">
+    <div class="st-card st-digital">
+      <div class="st-title">🔢 Digital Signal</div>
+      <div class="signal-bar">
+        <div class="bar d-bar-hi"></div><div class="bar d-bar-hi"></div>
+        <div class="bar d-bar-lo"></div><div class="bar d-bar-lo"></div>
+        <div class="bar d-bar-hi"></div><div class="bar d-bar-hi"></div>
+        <div class="bar d-bar-lo"></div><div class="bar d-bar-hi"></div>
+      </div>
+      <div class="st-tag">Output: only <strong style="color:var(--a1)">0</strong> or <strong style="color:var(--a1)">1</strong></div>
+      <div class="st-tag">Binary — either ON or OFF</div>
+      <div class="st-example">e.g. Button, limit switch</div>
+    </div>
+    <div class="st-card st-analogue">
+      <div class="st-title">📈 Analogue Signal</div>
+      <div class="signal-bar">
+        <div class="bar a-bar" style="height:12px;background:var(--a4)"></div>
+        <div class="bar a-bar" style="height:22px;background:var(--a4)"></div>
+        <div class="bar a-bar" style="height:35px;background:var(--a4)"></div>
+        <div class="bar a-bar" style="height:44px;background:var(--a4)"></div>
+        <div class="bar a-bar" style="height:38px;background:var(--a4)"></div>
+        <div class="bar a-bar" style="height:25px;background:var(--a4)"></div>
+        <div class="bar a-bar" style="height:16px;background:var(--a4)"></div>
+        <div class="bar a-bar" style="height:8px;background:var(--a4)"></div>
+      </div>
+      <div class="st-tag">Output: <strong style="color:var(--a4)">continuous value</strong></div>
+      <div class="st-tag">Gives a precise measurement</div>
+      <div class="st-example">e.g. Distance sensor, light sensor</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 3.2 SENSOR TYPES ═══ -->
+<section class="section" id="s32">
+  <div class="section-header">
+    <span class="section-num">3.2</span>
+    <span class="section-emoji">📡</span>
+    <h2 class="section-title">Common Sensor Types</h2>
+  </div>
+
+  <h3>Light &amp; Colour Sensors <span class="exam-tag">Exam: 2021 Q2 / Q4 / Q10</span></h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Sensor</th><th>Function</th><th>Common Use</th></tr></thead>
+      <tbody>
+        <tr><td>🔴 Photoelectric</td><td>Detects presence / absence of object</td><td>Line following, counting</td></tr>
+        <tr><td>🎨 Colour sensor</td><td>Identifies colour (RGB values)</td><td>Colour sorting, line following</td></tr>
+        <tr><td>⬛ Greyscale sensor</td><td>Detects black / white / grey levels</td><td>Line-following robots</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="tip">
+    <span class="tip-icon">💡</span>
+    <div>
+      <strong>Line-following logic:</strong><br>
+      Sensor detects <strong>black line</strong> → Robot has drifted, needs to steer back<br>
+      Sensor detects <strong>white surface</strong> → Robot is on the correct path
+    </div>
+  </div>
+
+  <h3>Ultrasonic Distance Sensor <span class="exam-tag">Exam: 2023A8</span></h3>
+
+  <!-- Ultrasonic visual -->
+  <div class="ultrasonic-visual">
+    <div class="uv-scene">
+      <span class="uv-robot">🤖</span>
+      <div class="uv-wave-wrap">
+        <div class="uv-wave"></div>
+        <div class="uv-wave back"></div>
+      </div>
+      <div class="uv-wall"></div>
+    </div>
+    <div class="uv-label">Emit sound wave → bounces off wall → receive echo → calculate distance</div>
+  </div>
+
+  <div class="formula-box">
+    $$d = \frac{v \times t}{2}$$
+    <div class="formula-vars">
+      <div class="fv"><span class="fv-sym">d</span><span class="fv-desc">distance to obstacle (metres)</span></div>
+      <div class="fv"><span class="fv-sym">v</span><span class="fv-desc">speed of sound ≈ 340 m/s</span></div>
+      <div class="fv"><span class="fv-sym">t</span><span class="fv-desc">total travel time (seconds)</span></div>
+      <div class="fv"><span class="fv-sym">÷ 2</span><span class="fv-desc">wave travels out AND back</span></div>
+    </div>
+  </div>
+
+  <h3>Other Common Sensors</h3>
+  <div class="sensor-grid">
+    <div class="sensor-card">
+      <div class="sc-icon">🌡️</div>
+      <div class="sc-name">Infrared (IR)</div>
+      <div class="sc-detects">IR light / heat</div>
+      <span class="sc-use">Obstacle avoid</span>
+    </div>
+    <div class="sensor-card">
+      <div class="sc-icon">🤜</div>
+      <div class="sc-name">Touch / Bump</div>
+      <div class="sc-detects">Physical contact</div>
+      <span class="sc-use">Wall detect</span>
+    </div>
+    <div class="sensor-card">
+      <div class="sc-icon">🌀</div>
+      <div class="sc-name">Gyroscope</div>
+      <div class="sc-detects">Angular velocity</div>
+      <span class="sc-use">Turns / Balance</span>
+    </div>
+    <div class="sensor-card">
+      <div class="sc-icon">🔢</div>
+      <div class="sc-name">Encoder</div>
+      <div class="sc-detects">Wheel rotations</div>
+      <span class="sc-use">Distance / Pos</span>
+    </div>
+    <div class="sensor-card">
+      <div class="sc-icon">📐</div>
+      <div class="sc-name">Accelerometer</div>
+      <div class="sc-detects">Acceleration / tilt</div>
+      <span class="sc-use">Fall detect</span>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 3.3 OPEN vs CLOSED LOOP ═══ -->
+<section class="section" id="s33">
+  <div class="section-header">
+    <span class="section-num">3.3</span>
+    <span class="section-emoji">🎛️</span>
+    <h2 class="section-title">Open Loop vs Closed Loop Control</h2>
+  </div>
+
+  <div class="loop-compare">
+    <div class="loop-card loop-open">
+      <div class="loop-title">❌ Open-Loop</div>
+      <div class="loop-flow">
+        <div class="lf-step">📤 Command sent</div>
+        <div class="lf-arrow" style="padding-left:14px">↓</div>
+        <div class="lf-step">⚙️ Actuator acts</div>
+        <div class="lf-arrow" style="padding-left:14px">↓</div>
+        <div class="lf-step">🤷 Result ignored</div>
+      </div>
+      <div class="loop-verdict">No feedback — hopes for the best!</div>
+      <p style="font-size:.8rem;color:var(--text-muted);margin-top:10px">e.g. "Run motor for 1 second" — doesn't check if target was reached</p>
+    </div>
+    <div class="loop-card loop-closed">
+      <div class="loop-title">✅ Closed-Loop</div>
+      <div class="loop-flow">
+        <div class="lf-step">📤 Command sent</div>
+        <div class="lf-arrow" style="padding-left:14px">↓</div>
+        <div class="lf-step">⚙️ Actuator acts</div>
+        <div class="lf-arrow" style="padding-left:14px">↓</div>
+        <div class="lf-step">📡 Sensor checks result</div>
+        <div class="lf-arrow" style="padding-left:14px">↓</div>
+        <div class="lf-step">🔁 Error corrected → repeat</div>
+      </div>
+      <div class="loop-verdict">Continuously self-corrects!</div>
+      <p style="font-size:.8rem;color:var(--text-muted);margin-top:10px">e.g. Encoder measures position, motor keeps adjusting until target is reached</p>
+    </div>
+  </div>
+
+  <div class="tip">
+    <span class="tip-icon">🏆</span>
+    <div><strong>Competition tip:</strong> Closed-loop control is far more accurate and is used extensively in robot competitions. When in doubt, use feedback!</div>
+  </div>
+</section>
+
+<!-- ═══ 3.4 PID CONTROL ═══ -->
+<section class="section" id="s34">
+  <div class="section-header">
+    <span class="section-num">3.4</span>
+    <span class="section-emoji">📊</span>
+    <h2 class="section-title">PID Control</h2>
+  </div>
+
+  <p>PID is the most widely used closed-loop control algorithm in robotics. Each letter is a different way of correcting error:</p>
+
+  <div class="pid-grid">
+    <div class="pid-card pid-p">
+      <div class="pid-letter">P</div>
+      <div class="pid-name">Proportional</div>
+      <div class="pid-role">Bigger error → stronger correction. Reacts immediately to how far off you are.</div>
+      <div class="pid-analogy">"How far off am I? Push back by that much."</div>
+    </div>
+    <div class="pid-card pid-i">
+      <div class="pid-letter">I</div>
+      <div class="pid-name">Integral</div>
+      <div class="pid-role">Fixes persistent small errors that P alone can't fully correct over time.</div>
+      <div class="pid-analogy">"I've been slightly off for a while — build up correction gradually."</div>
+    </div>
+    <div class="pid-card pid-d">
+      <div class="pid-letter">D</div>
+      <div class="pid-name">Derivative</div>
+      <div class="pid-role">Predicts the trend and eases off before overshooting the target.</div>
+      <div class="pid-analogy">"I'm correcting too fast — slow down before I overshoot!"</div>
+    </div>
+  </div>
+
+  <h3>PID Formula</h3>
+  <div class="formula-box">
+    $$u(t) = K_p \cdot e(t) \;+\; K_i \cdot \int e(t)\,dt \;+\; K_d \cdot \frac{de(t)}{dt}$$
+    <div class="formula-vars">
+      <div class="fv"><span class="fv-sym">u(t)</span><span class="fv-desc">control output (e.g. motor speed)</span></div>
+      <div class="fv"><span class="fv-sym">e(t)</span><span class="fv-desc">current error = target − actual</span></div>
+      <div class="fv"><span class="fv-sym">Kp</span><span class="fv-desc">proportional gain</span></div>
+      <div class="fv"><span class="fv-sym">Ki</span><span class="fv-desc">integral gain</span></div>
+      <div class="fv"><span class="fv-sym">Kd</span><span class="fv-desc">derivative gain</span></div>
+    </div>
+  </div>
+
+  <h3>Simplified Version</h3>
+  <pre><span class="hl">Output</span>  =  <span class="val">Kp</span> × current error
+        +  <span class="val">Ki</span> × accumulated error (history)
+        +  <span class="val">Kd</span> × rate of change of error (trend)</pre>
+
+  <h3>Tuning Steps for Competition</h3>
+  <pre><span class="kw">Step 1:</span>  Start with <span class="hl">P only</span> (Ki = Kd = 0) — tune until it basically works
+<span class="kw">Step 2:</span>  Add <span class="hl">D</span> to reduce oscillation and overshooting
+<span class="kw">Step 3:</span>  If there's still a steady error, add a small <span class="hl">I</span> term</pre>
+</section>
+
+<!-- ═══ 3.5 ARCHITECTURE ═══ -->
+<section class="section" id="s35">
+  <div class="section-header">
+    <span class="section-num">3.5</span>
+    <span class="section-emoji">🤖</span>
+    <h2 class="section-title">Robot Control System Architecture</h2>
+  </div>
+
+  <p>Every robot control system has three layers working together: <span class="exam-tag">Exam: 2021Q4 / 2023A9</span></p>
+
+  <div class="arch">
+    <div class="arch-col">
+      <div class="arch-head">📡 Sensor Layer</div>
+      <div class="arch-item">Camera</div>
+      <div class="arch-item">Ultrasonic</div>
+      <div class="arch-item">Encoder</div>
+      <div class="arch-item">Gyroscope</div>
+      <div class="arch-item">Colour / IR</div>
+    </div>
+    <div class="arch-col">
+      <div class="arch-head">🧠 Controller Layer</div>
+      <div class="arch-item">Microcontroller</div>
+      <div class="arch-item">Raspberry Pi</div>
+      <div class="arch-item">Arduino</div>
+      <div class="arch-item">Runs the code</div>
+      <div class="arch-item">Makes decisions</div>
+    </div>
+    <div class="arch-col">
+      <div class="arch-head">⚙️ Actuator Layer</div>
+      <div class="arch-item">DC Motor</div>
+      <div class="arch-item">Servo motor</div>
+      <div class="arch-item">LED indicator</div>
+      <div class="arch-item">Buzzer / speaker</div>
+      <div class="arch-item">Display screen</div>
+    </div>
+  </div>
+
+  <h3>Move-to-Target &amp; Stop <span class="exam-tag">Exam: 2021Q4 / 2023A9</span></h3>
+  <div style="display:flex;flex-direction:column;gap:10px;margin:14px 0">
+    <div style="display:flex;gap:14px;align-items:center;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 18px">
+      <span style="font-size:1.5rem;flex-shrink:0">1️⃣</span>
+      <div><strong style="color:var(--heading)">Position feedback</strong> — Encoder continuously reports the distance travelled</div>
+    </div>
+    <div style="display:flex;gap:14px;align-items:center;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 18px">
+      <span style="font-size:1.5rem;flex-shrink:0">2️⃣</span>
+      <div><strong style="color:var(--heading)">Speed ramping</strong> — Slow down as the robot approaches the target (prevents overshooting)</div>
+    </div>
+    <div style="display:flex;gap:14px;align-items:center;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 18px">
+      <span style="font-size:1.5rem;flex-shrink:0">3️⃣</span>
+      <div><strong style="color:var(--heading)">Stop condition</strong> — Stop when the error falls below a defined threshold</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 3.6 PWM ═══ -->
+<section class="section" id="s36">
+  <div class="section-header">
+    <span class="section-num">3.6</span>
+    <span class="section-emoji">🎯</span>
+    <h2 class="section-title">PWM Motor Control</h2>
+  </div>
+
+  <p><strong>PWM = Pulse Width Modulation</strong> — controls motor speed by varying how long the signal is "on" vs "off" in each cycle. <span class="exam-tag">Exam: 2021Q5</span></p>
+
+  <div class="formula-box">
+    $$\text{Duty Cycle} = \frac{t_{\text{high}}}{T} \times 100\%$$
+    <div class="formula-vars">
+      <div class="fv"><span class="fv-sym">t<sub>high</sub></span><span class="fv-desc">time signal is HIGH (on) in one period</span></div>
+      <div class="fv"><span class="fv-sym">T</span><span class="fv-desc">total period length</span></div>
+    </div>
+  </div>
+
+  <!-- Interactive PWM Demo -->
+  <div class="pwm-demo">
+    <div class="pwm-title">⚡ Interactive PWM Demo — drag the slider!</div>
+    <div class="pwm-slider-wrap">
+      <label>Duty Cycle: <span id="dc-val">50</span>%</label>
+      <input type="range" id="pwm-slider" min="0" max="100" value="50" step="5">
+    </div>
+    <div class="pwm-signal" id="pwm-signal"></div>
+    <div class="pwm-stats">
+      <div class="pwm-stat">
+        <span class="pwm-stat-val" id="speed-val">50%</span>
+        <div class="pwm-stat-lbl">Motor Speed</div>
+      </div>
+      <div class="pwm-stat">
+        <span class="pwm-stat-val" id="dc-val2">50%</span>
+        <div class="pwm-stat-lbl">Duty Cycle</div>
+      </div>
+      <div class="pwm-stat">
+        <span class="pwm-stat-val" id="state-val">Half</span>
+        <div class="pwm-stat-lbl">State</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>Motor Direction Control</h3>
+  <pre><span class="cm"># Pseudocode — motor H-bridge control</span>
+
+<span class="cm"># Forward</span>
+<span class="val">IN1</span> = <span class="hl">HIGH</span>
+<span class="val">IN2</span> = LOW
+<span class="val">PWM</span> = <span class="kw">80%</span>   <span class="cm"># 80% speed</span>
+
+<span class="cm"># Reverse</span>
+<span class="val">IN1</span> = LOW
+<span class="val">IN2</span> = <span class="hl">HIGH</span>
+<span class="val">PWM</span> = <span class="kw">80%</span>
+
+<span class="cm"># Stop</span>
+<span class="val">IN1</span> = LOW
+<span class="val">IN2</span> = LOW</pre>
+</section>
+
+<!-- ═══ 3.7 LINE FOLLOW & AVOID ═══ -->
+<section class="section" id="s37">
+  <div class="section-header">
+    <span class="section-num">3.7</span>
+    <span class="section-emoji">🛤️</span>
+    <h2 class="section-title">Line Following &amp; Obstacle Avoidance</h2>
+  </div>
+
+  <h3>Line-Following Truth Table (Greyscale Sensor)</h3>
+  <p style="font-size:.88rem;color:var(--text-muted);margin-bottom:14px">Left sensor = L &nbsp;·&nbsp; Right sensor = R &nbsp;·&nbsp; Black line = <strong style="color:#fff">0</strong> &nbsp;·&nbsp; White surface = <strong style="color:#fff">1</strong></p>
+
+  <div class="truth-table">
+    <div class="tt-row">
+      <div class="tt-sensor">
+        <div class="tt-bit tt-bit-0">L=0</div>
+        <div class="tt-bit tt-bit-1">R=1</div>
+      </div>
+      <div class="tt-arrow">→</div>
+      <div class="tt-state">Robot drifted <strong style="color:var(--a5)">LEFT</strong></div>
+      <div class="tt-action action-right">Turn RIGHT ↪</div>
+    </div>
+    <div class="tt-row">
+      <div class="tt-sensor">
+        <div class="tt-bit tt-bit-1">L=1</div>
+        <div class="tt-bit tt-bit-0">R=0</div>
+      </div>
+      <div class="tt-arrow">→</div>
+      <div class="tt-state">Robot drifted <strong style="color:var(--a4)">RIGHT</strong></div>
+      <div class="tt-action action-left">Turn LEFT ↩</div>
+    </div>
+    <div class="tt-row">
+      <div class="tt-sensor">
+        <div class="tt-bit tt-bit-0">L=0</div>
+        <div class="tt-bit tt-bit-0">R=0</div>
+      </div>
+      <div class="tt-arrow">→</div>
+      <div class="tt-state"><strong style="color:var(--a1)">On the line</strong></div>
+      <div class="tt-action action-straight">Go Straight →</div>
+    </div>
+    <div class="tt-row">
+      <div class="tt-sensor">
+        <div class="tt-bit tt-bit-1">L=1</div>
+        <div class="tt-bit tt-bit-1">R=1</div>
+      </div>
+      <div class="tt-arrow">→</div>
+      <div class="tt-state"><strong style="color:var(--a2)">Lost the line!</strong></div>
+      <div class="tt-action action-stop">Stop &amp; Search 🔍</div>
+    </div>
+  </div>
+
+  <h3>Obstacle Avoidance Zones (Ultrasonic)</h3>
+  <div class="avoid-zones">
+    <div class="az az-safe">
+      <div class="az-icon">✅</div>
+      <div class="az-dist" style="color:var(--a1)">&gt; 30 cm</div>
+      <div class="az-action">Drive straight at full speed</div>
+    </div>
+    <div class="az az-warn">
+      <div class="az-icon">⚠️</div>
+      <div class="az-dist" style="color:var(--a3)">15 – 30 cm</div>
+      <div class="az-action">Slow down, prepare to turn</div>
+    </div>
+    <div class="az az-stop">
+      <div class="az-icon">🛑</div>
+      <div class="az-dist" style="color:var(--a2)">&lt; 15 cm</div>
+      <div class="az-action">Stop → turn to go around</div>
+    </div>
+  </div>
+
+  <pre><span class="kw">if</span>   distance <span class="hl">&gt; 30</span> cm:   Drive straight
+<span class="kw">elif</span> distance <span class="hl">&gt; 15</span> cm:   Slow down
+<span class="kw">else</span>:                     Stop → turn left or right to go around</pre>
+</section>
+
+<!-- ═══ SUMMARY ═══ -->
+<div class="summary-section" id="summary">
+  <div class="summary-title">📝 Chapter Summary — Key Points to Remember</div>
+  <table class="summary-table">
+    <tr>
+      <td>Ultrasonic distance</td>
+      <td>$$d = \frac{v \times t}{2}$$ &nbsp; (sound speed ≈ 340 m/s)</td>
+    </tr>
+    <tr>
+      <td>Closed-loop control</td>
+      <td>Sensor feedback → continuously correct error → more accurate</td>
+    </tr>
+    <tr>
+      <td>PID</td>
+      <td>P = proportional · I = integral · D = derivative</td>
+    </tr>
+    <tr>
+      <td>PWM duty cycle</td>
+      <td>$$\text{Duty Cycle} = \frac{t_{\text{high}}}{T} \times 100\%$$</td>
+    </tr>
+    <tr>
+      <td>Line-following</td>
+      <td>Sensor detects drift → differential correction (turn toward the line)</td>
+    </tr>
+  </table>
+</div>
+
+<div class="next-ch">
+  ⏭️ Ready for more? &nbsp;<span>Chapter 4 — Robot Motion Algorithms</span>
+</div>
+
+</main>
+
+<script>
+// ── Interactive PWM demo ──
+const slider   = document.getElementById('pwm-slider');
+const signal   = document.getElementById('pwm-signal');
+const dcVal    = document.getElementById('dc-val');
+const dcVal2   = document.getElementById('dc-val2');
+const speedVal = document.getElementById('speed-val');
+const stateVal = document.getElementById('state-val');
+
+function updatePWM(){
+  const dc   = parseInt(slider.value);
+  const bars  = 20;
+  const onBars = Math.round(bars * dc / 100);
+  const offBars= bars - onBars;
+  const barH   = 48;
+
+  dcVal.textContent  = dc;
+  dcVal2.textContent = dc + '%';
+  speedVal.textContent = dc + '%';
+
+  let state = 'Stopped';
+  if(dc === 100) state = 'Full Speed';
+  else if(dc >= 75) state = 'Fast';
+  else if(dc >= 50) state = 'Half';
+  else if(dc >= 25) state = 'Slow';
+  else if(dc > 0)   state = 'Very Slow';
+  stateVal.textContent = state;
+
+  signal.innerHTML = '';
+  for(let i = 0; i < onBars; i++){
+    const b = document.createElement('div');
+    b.className = 'pwm-bar-on';
+    b.style.cssText = `width:${Math.floor(100/bars)-1}%;height:${barH}px;border-radius:3px 3px 0 0;flex-shrink:0`;
+    signal.appendChild(b);
+  }
+  for(let i = 0; i < offBars; i++){
+    const b = document.createElement('div');
+    b.className = 'pwm-bar-off';
+    b.style.cssText = `width:${Math.floor(100/bars)-1}%;height:${barH}px;border-radius:3px 3px 0 0;flex-shrink:0`;
+    signal.appendChild(b);
+  }
+}
+
+slider.addEventListener('input', updatePWM);
+updatePWM();
+</script>
+
+</body>
+</html>

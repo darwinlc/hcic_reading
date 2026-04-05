@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chapter 4 — Robot Motion Algorithms | HCIC Study Guide</title>
+
+<script>
+MathJax = {
+  tex: {
+    inlineMath: [['$','$'],['\\(','\\)']],
+    displayMath: [['$$','$$'],['\\[','\\]']]
+  },
+  svg: { fontCache: 'global' },
+  options: { skipHtmlTags: ['script','noscript','style','textarea'] }
+};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+<style>
+:root {
+  --bg:      #0a0d18;
+  --surf:    #111524;
+  --surf2:   #181d30;
+  --border:  #222a45;
+  --a1: #e040fb;   /* purple — main accent */
+  --a2: #00e5ff;   /* cyan   — info */
+  --a3: #76ff03;   /* lime   — success */
+  --a4: #ff6d00;   /* orange — warning */
+  --a5: #ff4081;   /* pink   — danger */
+  --a6: #ffd740;   /* amber  — highlight */
+  --text:       #dce8f5;
+  --text-muted: #6070a0;
+  --heading:    #eef2ff;
+}
+*{ box-sizing:border-box; margin:0; padding:0; }
+body{
+  background:var(--bg); color:var(--text);
+  font-family:'Nunito',sans-serif; font-size:17px;
+  line-height:1.8; overflow-x:hidden;
+}
+body::before{
+  content:''; position:fixed; inset:0;
+  background:
+    radial-gradient(ellipse 65% 45% at 15% 15%, rgba(224,64,251,.07) 0%,transparent 55%),
+    radial-gradient(ellipse 55% 40% at 88% 82%, rgba(0,229,255,.06) 0%,transparent 55%);
+  pointer-events:none; z-index:0;
+}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeDown{ from{opacity:0;transform:translateY(-18px)} to{opacity:1;transform:translateY(0)} }
+@keyframes fadeUp  { from{opacity:0;transform:translateY(22px)}  to{opacity:1;transform:translateY(0)} }
+@keyframes robotMove{
+  0%  { transform:translateX(0)   rotate(0deg); }
+  25% { transform:translateX(80px) rotate(0deg); }
+  35% { transform:translateX(80px) rotate(-90deg); }
+  60% { transform:translateX(80px) translateY(-60px) rotate(-90deg); }
+  70% { transform:translateX(80px) translateY(-60px) rotate(-180deg); }
+  95% { transform:translateX(0)   translateY(-60px) rotate(-180deg); }
+  100%{ transform:translateX(0)   translateY(-60px) rotate(-180deg); }
+}
+@keyframes pathDraw{ from{stroke-dashoffset:400} to{stroke-dashoffset:0} }
+@keyframes nodeExpand{ from{transform:scale(0)} to{transform:scale(1)} }
+@keyframes float{ 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+@keyframes spin{ from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+
+/* ── HERO ── */
+.hero{ position:relative; padding:62px 40px 50px; text-align:center; overflow:hidden; }
+.hero-badge{
+  display:inline-block;
+  background:linear-gradient(135deg,var(--a1),var(--a2));
+  color:#0a0018; font-size:11px; font-weight:900;
+  letter-spacing:3px; text-transform:uppercase;
+  padding:6px 20px; border-radius:20px; margin-bottom:20px;
+  animation:fadeDown .6s ease both;
+}
+.hero h1{ font-size:clamp(1.9rem,5vw,3.2rem); font-weight:900; color:#fff; line-height:1.1; animation:fadeDown .7s .1s ease both; }
+.hero h1 span{ background:linear-gradient(90deg,var(--a1),var(--a2)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+.hero-sub{ margin-top:12px; color:var(--text-muted); font-size:1rem; font-weight:600; letter-spacing:1px; animation:fadeDown .8s .2s ease both; }
+
+/* animated robot path */
+.hero-path{ margin:30px auto 0; width:180px; height:100px; position:relative; animation:fadeDown .9s .3s ease both; }
+.hp-robot{ position:absolute; font-size:2rem; animation:robotMove 5s ease-in-out infinite; left:10px; top:50px; }
+.hp-svg{ position:absolute; inset:0; }
+
+/* ── TOC ── */
+.toc{ max-width:880px; margin:0 auto 56px; padding:0 24px; animation:fadeUp .8s .4s ease both; }
+.toc-inner{ background:var(--surf); border:1px solid var(--border); border-radius:16px; padding:26px 30px; }
+.toc-label{ font-size:.72rem; font-weight:900; letter-spacing:3px; text-transform:uppercase; color:var(--a1); margin-bottom:14px; }
+.toc-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:10px; }
+.toc-item{ display:flex; align-items:center; gap:10px; padding:10px 14px; border-radius:10px; border:1px solid var(--border); background:var(--surf2); text-decoration:none; color:var(--text); font-weight:700; font-size:.88rem; transition:all .2s; }
+.toc-item:hover{ border-color:var(--a1); background:rgba(224,64,251,.1); transform:translateX(4px); }
+
+/* ── MAIN ── */
+main{ max-width:880px; margin:0 auto; padding:0 24px 100px; position:relative; z-index:1; }
+.section{ margin-bottom:64px; animation:fadeUp .7s ease both; }
+.section:nth-child(1){animation-delay:.05s} .section:nth-child(2){animation-delay:.1s}
+.section:nth-child(3){animation-delay:.15s} .section:nth-child(4){animation-delay:.2s}
+.section:nth-child(5){animation-delay:.25s} .section:nth-child(6){animation-delay:.3s}
+
+.section-header{ display:flex; align-items:center; gap:14px; margin-bottom:26px; }
+.section-num{ background:linear-gradient(135deg,var(--a1),var(--a2)); color:#0a0018; font-size:.78rem; font-weight:900; padding:4px 12px; border-radius:8px; letter-spacing:1px; white-space:nowrap; }
+.section-title{ font-size:1.52rem; font-weight:900; color:var(--heading); }
+.section-emoji{ font-size:1.75rem; }
+
+h3{ font-size:1.05rem; font-weight:800; color:var(--a2); margin:28px 0 12px; display:flex; align-items:center; gap:8px; }
+h3::before{ content:'▸'; color:var(--a1); }
+p{ margin-bottom:14px; }
+
+/* ── TABLES ── */
+.table-wrap{ overflow-x:auto; margin:18px 0; border-radius:14px; border:1px solid var(--border); }
+table{ width:100%; border-collapse:collapse; }
+thead tr{ background:linear-gradient(90deg,rgba(224,64,251,.2),rgba(0,229,255,.12)); }
+thead th{ padding:13px 18px; text-align:left; font-size:.78rem; font-weight:900; letter-spacing:1.5px; text-transform:uppercase; color:var(--a1); }
+tbody tr{ border-top:1px solid var(--border); transition:background .2s; }
+tbody tr:hover{ background:rgba(224,64,251,.06); }
+td{ padding:12px 18px; font-size:.93rem; }
+td:first-child{ font-weight:700; color:var(--a2); }
+
+/* ── FORMULA BOX ── */
+.formula-box{
+  background:var(--surf); border:2px solid var(--a1);
+  border-radius:18px; padding:28px 30px; margin:20px 0;
+  text-align:center; position:relative; overflow:hidden;
+}
+.formula-box::before{ content:'FORMULA'; position:absolute; top:10px; right:14px; font-size:.62rem; font-weight:900; letter-spacing:3px; color:var(--a1); opacity:.5; }
+.formula-box::after{ content:''; position:absolute; inset:0; background:radial-gradient(ellipse 60% 60% at 50% 50%,rgba(224,64,251,.05),transparent); pointer-events:none; }
+.formula-box mjx-container{ font-size:1.55em !important; margin:8px 0 !important; }
+.formula-box mjx-container svg{ margin:auto; display:block; }
+.formula-vars{ display:grid; grid-template-columns:repeat(2,1fr); gap:8px; margin-top:18px; text-align:left; }
+.fv{ display:flex; gap:10px; align-items:baseline; padding:8px 12px; background:var(--surf2); border-radius:8px; font-size:.85rem; }
+.fv-sym{ font-family:'JetBrains Mono',monospace; font-weight:700; color:var(--a6); min-width:40px; }
+.fv-desc{ color:var(--text-muted); }
+
+/* ── COORDINATE VISUAL ── */
+.coord-visual{
+  background:var(--surf); border:1px solid var(--border);
+  border-radius:16px; padding:24px; margin:20px 0;
+  display:flex; gap:24px; align-items:flex-start; flex-wrap:wrap;
+}
+.coord-svg-wrap{ flex:0 0 auto; }
+.coord-legend{ flex:1; min-width:200px; }
+.cl-row{ display:flex; align-items:center; gap:12px; padding:10px 0; border-bottom:1px solid var(--border); }
+.cl-row:last-child{ border-bottom:none; }
+.cl-sym{ font-family:'JetBrains Mono',monospace; font-weight:900; font-size:1.1rem; min-width:32px; }
+.cl-desc{ font-size:.88rem; }
+
+/* ── ODOMETRY VISUAL ── */
+.odo-visual{
+  display:flex; gap:16px; margin:20px 0; flex-wrap:wrap;
+}
+.odo-step{
+  flex:1; min-width:130px;
+  border-radius:12px; padding:16px 14px; text-align:center;
+  border:1.5px solid var(--border); background:var(--surf);
+  position:relative;
+}
+.odo-step::after{
+  content:'→'; position:absolute; right:-16px; top:50%;
+  transform:translateY(-50%); color:var(--text-muted); font-size:1.2rem;
+  font-weight:900;
+}
+.odo-step:last-child::after{ display:none; }
+.odo-icon{ font-size:1.8rem; margin-bottom:8px; }
+.odo-label{ font-weight:800; font-size:.85rem; }
+.odo-sub{ font-size:.75rem; color:var(--text-muted); margin-top:4px; }
+
+/* ── EXAMPLE BOX ── */
+.example{
+  background:var(--surf2); border:1px solid var(--border);
+  border-left:4px solid var(--a3); border-radius:14px;
+  padding:22px 26px; margin:20px 0;
+}
+.example-badge{
+  display:inline-block; background:rgba(118,255,3,.15); color:var(--a3);
+  font-size:.72rem; font-weight:900; letter-spacing:2px;
+  text-transform:uppercase; padding:3px 10px; border-radius:6px; margin-bottom:12px;
+}
+.example-problem{
+  background:rgba(0,229,255,.06); border:1px solid rgba(0,229,255,.2);
+  border-radius:10px; padding:14px 18px; margin-bottom:16px; font-size:.93rem;
+}
+.example mjx-container{ font-size:1.15em !important; margin:8px 0 !important; }
+.example-answer{
+  display:flex; align-items:center; gap:12px;
+  background:rgba(118,255,3,.1); border:1px solid rgba(118,255,3,.3);
+  border-radius:10px; padding:12px 18px; margin-top:14px;
+  font-weight:800; font-size:.95rem;
+}
+
+/* ── A* GRID DEMO ── */
+.astar-grid{
+  display:grid; grid-template-columns:repeat(7,1fr);
+  gap:3px; margin:20px 0; max-width:320px;
+}
+.ag-cell{
+  aspect-ratio:1; border-radius:5px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:.7rem; font-weight:900;
+  border:1px solid rgba(255,255,255,.05);
+  transition:background .3s, transform .3s;
+  cursor:default;
+}
+.ag-cell:hover{ transform:scale(1.1); }
+.ag-empty  { background:var(--surf2); color:var(--text-muted); }
+.ag-wall   { background:#1a1a2e; border-color:transparent; }
+.ag-start  { background:rgba(118,255,3,.3); border-color:var(--a3); color:var(--a3); }
+.ag-goal   { background:rgba(224,64,251,.3); border-color:var(--a1); color:var(--a1); }
+.ag-open   { background:rgba(0,229,255,.2); border-color:var(--a2); color:var(--a2); }
+.ag-closed { background:rgba(255,109,0,.15); border-color:var(--a4); color:var(--a4); }
+.ag-path   { background:rgba(255,215,64,.25); border-color:var(--a6); color:var(--a6); }
+
+.astar-legend{
+  display:flex; flex-wrap:wrap; gap:10px; margin:12px 0;
+}
+.al-item{
+  display:flex; align-items:center; gap:6px;
+  font-size:.78rem; font-weight:700;
+}
+.al-dot{ width:14px; height:14px; border-radius:3px; border:1.5px solid; flex-shrink:0; }
+
+/* ── BFS / DFS ── */
+.bfs-dfs{ display:grid; grid-template-columns:1fr 1fr; gap:16px; margin:18px 0; }
+.bd-card{ border-radius:14px; padding:20px 18px; border:1.5px solid; }
+.bd-bfs{ border-color:var(--a2); background:rgba(0,229,255,.07); }
+.bd-dfs{ border-color:var(--a4); background:rgba(255,109,0,.07); }
+.bd-title{ font-weight:900; font-size:.95rem; margin-bottom:10px; display:flex; align-items:center; gap:8px; }
+.bd-bfs .bd-title{ color:var(--a2); }
+.bd-dfs .bd-title{ color:var(--a4); }
+.bd-desc{ font-size:.83rem; color:var(--text-muted); line-height:1.5; }
+.bd-tag{ display:inline-block; margin-top:10px; font-size:.75rem; font-weight:800; padding:3px 10px; border-radius:6px; }
+.bd-bfs .bd-tag{ background:rgba(0,229,255,.15); color:var(--a2); }
+.bd-dfs .bd-tag{ background:rgba(255,109,0,.15); color:var(--a4); }
+
+/* ── STATE MACHINE ── */
+.sm-visual{
+  background:var(--surf); border:1px solid var(--border);
+  border-radius:16px; padding:28px 24px; margin:20px 0;
+}
+.sm-states{ display:flex; gap:14px; flex-wrap:wrap; justify-content:center; margin-bottom:20px; }
+.sm-state{
+  border-radius:12px; padding:14px 18px; text-align:center;
+  border:2px solid; min-width:130px; cursor:pointer;
+  transition:transform .25s, box-shadow .25s;
+}
+.sm-state:hover{ transform:translateY(-4px); }
+.sm-state.active{ box-shadow:0 0 20px rgba(224,64,251,.4); }
+.sm-s1{ border-color:var(--a3); background:rgba(118,255,3,.1); }
+.sm-s2{ border-color:var(--a4); background:rgba(255,109,0,.1); }
+.sm-s3{ border-color:var(--a5); background:rgba(255,64,129,.1); }
+.sm-s4{ border-color:var(--a2); background:rgba(0,229,255,.1); }
+.sm-sX{ border-color:var(--text-muted); background:rgba(255,255,255,.04); }
+.sm-icon{ font-size:1.6rem; margin-bottom:6px; }
+.sm-name{ font-weight:900; font-size:.85rem; }
+.sm-cond{ font-size:.72rem; color:var(--text-muted); margin-top:4px; }
+
+.sm-transitions{ margin-top:10px; }
+.sm-tr{
+  display:flex; align-items:center; gap:10px;
+  padding:9px 14px; border-radius:8px;
+  background:var(--surf2); margin-bottom:6px;
+  font-size:.83rem;
+}
+.sm-tr-from{ font-weight:800; color:var(--a3); min-width:70px; }
+.sm-tr-cond{ color:var(--text-muted); font-style:italic; flex:1; }
+.sm-tr-to{ font-weight:800; color:var(--a4); min-width:70px; text-align:right; }
+
+/* ── ML CARDS ── */
+.ml-grid{ display:grid; grid-template-columns:repeat(3,1fr); gap:14px; margin:18px 0; }
+.ml-card{ border-radius:14px; padding:20px 16px; text-align:center; border:2px solid; transition:transform .25s; }
+.ml-card:hover{ transform:translateY(-5px); }
+.ml-sl{ border-color:var(--a2); background:rgba(0,229,255,.08); }
+.ml-ul{ border-color:var(--a6); background:rgba(255,215,64,.08); }
+.ml-rl{ border-color:var(--a5); background:rgba(255,64,129,.08); }
+.ml-icon{ font-size:2.2rem; margin-bottom:10px; }
+.ml-type{ font-weight:900; font-size:.88rem; margin-bottom:6px; }
+.ml-sl .ml-type{ color:var(--a2); }
+.ml-ul .ml-type{ color:var(--a6); }
+.ml-rl .ml-type{ color:var(--a5); }
+.ml-desc{ font-size:.78rem; color:var(--text-muted); line-height:1.4; margin-bottom:8px; }
+.ml-app{ font-size:.75rem; font-weight:800; padding:3px 10px; border-radius:6px; }
+.ml-sl .ml-app{ background:rgba(0,229,255,.15); color:var(--a2); }
+.ml-ul .ml-app{ background:rgba(255,215,64,.15); color:var(--a6); }
+.ml-rl .ml-app{ background:rgba(255,64,129,.15); color:var(--a5); }
+
+/* ── TIPS / NOTES ── */
+.tip{
+  display:flex; gap:14px;
+  background:linear-gradient(135deg,rgba(224,64,251,.1),rgba(224,64,251,.04));
+  border:1px solid rgba(224,64,251,.35); border-left:4px solid var(--a1);
+  border-radius:12px; padding:16px 20px; margin:18px 0; font-size:.92rem;
+}
+.tip-icon{ font-size:1.4rem; flex-shrink:0; }
+.tip strong{ color:var(--a1); }
+
+.warn{
+  display:flex; gap:14px;
+  background:rgba(255,109,0,.08); border:1px solid rgba(255,109,0,.35);
+  border-left:4px solid var(--a4); border-radius:12px; padding:16px 20px;
+  margin:18px 0; font-size:.92rem;
+}
+.warn strong{ color:var(--a4); }
+
+.exam-tag{ display:inline-block; font-size:.7rem; font-weight:900; letter-spacing:1.5px; text-transform:uppercase; padding:3px 10px; border-radius:6px; background:rgba(255,64,129,.15); color:var(--a5); margin-left:8px; vertical-align:middle; }
+
+/* ── CODE ── */
+pre{
+  background:#070a14; border:1px solid var(--border);
+  border-left:4px solid var(--a1); border-radius:10px;
+  padding:18px 22px; font-family:'JetBrains Mono',monospace;
+  font-size:.84rem; color:#9ab0cc;
+  overflow-x:auto; margin:16px 0; line-height:1.9;
+}
+.kw{ color:var(--a1); font-weight:700; }
+.cm{ color:#3a4a6a; font-style:italic; }
+.val{ color:var(--a3); }
+.hl{ color:var(--a6); font-weight:700; }
+.str{ color:var(--a2); }
+
+/* ── CRUNCH BOX ── */
+.crunch{
+  background:linear-gradient(135deg,rgba(224,64,251,.12),rgba(0,229,255,.08));
+  border:2px solid var(--a1); border-radius:18px;
+  padding:30px 28px; margin:40px 0;
+}
+.crunch-title{ font-size:1.1rem; font-weight:900; color:var(--a1); margin-bottom:18px; display:flex; align-items:center; gap:10px; }
+.crunch-steps{ display:flex; flex-direction:column; gap:12px; }
+.crunch-step{
+  display:flex; gap:16px; align-items:flex-start;
+  background:var(--surf); border-radius:12px; padding:14px 18px;
+  border:1px solid var(--border);
+}
+.cs-num{ width:32px; height:32px; border-radius:50%; background:linear-gradient(135deg,var(--a1),var(--a2)); color:#0a0018; font-weight:900; font-size:.9rem; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.cs-body strong{ color:var(--heading); }
+.cs-body p{ color:var(--text-muted); font-size:.85rem; margin:4px 0 0; }
+
+/* ── SUMMARY ── */
+.summary-section{
+  background:linear-gradient(135deg,var(--surf),var(--surf2));
+  border:1px solid var(--border); border-radius:20px; padding:32px; margin-top:60px;
+}
+.summary-title{ font-size:1.2rem; font-weight:900; color:var(--heading); margin-bottom:20px; display:flex; align-items:center; gap:10px; }
+.summary-table{ width:100%; border-collapse:collapse; }
+.summary-table tr{ border-bottom:1px solid var(--border); }
+.summary-table tr:last-child{ border-bottom:none; }
+.summary-table td{ padding:13px 16px; font-size:.92rem; vertical-align:middle; }
+.summary-table td:first-child{ font-weight:800; color:var(--a2); width:35%; }
+.summary-table mjx-container{ font-size:1.05em !important; }
+
+.next-ch{ margin-top:36px; text-align:center; padding:26px; border-radius:16px; background:linear-gradient(135deg,rgba(224,64,251,.12),rgba(0,229,255,.08)); border:1px solid var(--a1); font-weight:700; color:var(--text-muted); }
+.next-ch span{ color:var(--a1); font-weight:900; }
+
+@media(max-width:580px){
+  .coord-visual,.bfs-dfs,.ml-grid{ flex-direction:column; }
+  .bfs-dfs,.ml-grid{ grid-template-columns:1fr; }
+  .formula-vars{ grid-template-columns:1fr; }
+  .sm-states{ flex-direction:column; }
+  .odo-step::after{ display:none; }
+}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <span class="hero-badge">HCIC Competition Study Guide</span>
+  <h1>Chapter 4: <span>Robot Motion<br>Algorithms</span></h1>
+  <p class="hero-sub">🗺️ How robots navigate, plan, and think</p>
+  <!-- Animated robot tracing a square path -->
+  <div class="hero-path">
+    <svg class="hp-svg" viewBox="0 0 180 100">
+      <path d="M 20 80 L 140 80 L 140 20 L 20 20" fill="none" stroke="rgba(224,64,251,0.3)" stroke-width="2" stroke-dasharray="6 4"/>
+      <path d="M 20 80 L 140 80 L 140 20 L 20 20" fill="none" stroke="var(--a1)" stroke-width="2.5" stroke-dasharray="400" stroke-dashoffset="400">
+        <animate attributeName="stroke-dashoffset" from="400" to="0" dur="5s" repeatCount="indefinite" calcMode="linear"/>
+      </path>
+      <!-- corner dots -->
+      <circle cx="20" cy="80" r="4" fill="var(--a3)"/>
+      <circle cx="140" cy="80" r="4" fill="var(--a2)" opacity=".7"/>
+      <circle cx="140" cy="20" r="4" fill="var(--a2)" opacity=".7"/>
+      <circle cx="20" cy="20" r="4" fill="var(--a2)" opacity=".7"/>
+    </svg>
+    <div class="hp-robot">🤖</div>
+  </div>
+</header>
+
+<nav class="toc">
+  <div class="toc-inner">
+    <div class="toc-label">📋 In this chapter</div>
+    <div class="toc-grid">
+      <a href="#s41" class="toc-item">🗺️ 4.1 Motion Basics</a>
+      <a href="#s42" class="toc-item">📍 4.2 Odometry</a>
+      <a href="#s43" class="toc-item">🧠 4.3 Path Planning</a>
+      <a href="#s44" class="toc-item">🔄 4.4 Motion Control</a>
+      <a href="#s45" class="toc-item">🤖 4.5 AI &amp; ML</a>
+      <a href="#s46" class="toc-item">🔁 4.6 State Machines</a>
+    </div>
+  </div>
+</nav>
+
+<main>
+
+<!-- ═══ 4.1 MOTION BASICS ═══ -->
+<section class="section" id="s41">
+  <div class="section-header">
+    <span class="section-num">4.1</span>
+    <span class="section-emoji">🗺️</span>
+    <h2 class="section-title">Robot Motion Basics</h2>
+  </div>
+
+  <h3>Coordinate System &amp; Robot State</h3>
+  <div class="coord-visual">
+    <div class="coord-svg-wrap">
+      <svg width="190" height="190" viewBox="0 0 190 190">
+        <!-- grid -->
+        <g stroke="rgba(255,255,255,0.05)" stroke-width="1">
+          <line x1="30" y1="10" x2="30" y2="170"/>
+          <line x1="70" y1="10" x2="70" y2="170"/>
+          <line x1="110" y1="10" x2="110" y2="170"/>
+          <line x1="150" y1="10" x2="150" y2="170"/>
+          <line x1="10" y1="50" x2="180" y2="50"/>
+          <line x1="10" y1="90" x2="180" y2="90"/>
+          <line x1="10" y1="130" x2="180" y2="130"/>
+        </g>
+        <!-- axes -->
+        <line x1="20" y1="160" x2="175" y2="160" stroke="var(--a2)" stroke-width="2"/>
+        <line x1="20" y1="160" x2="20" y2="15"  stroke="var(--a2)" stroke-width="2"/>
+        <!-- arrowheads -->
+        <polygon points="175,156 175,164 183,160" fill="var(--a2)"/>
+        <polygon points="16,15 24,15 20,7" fill="var(--a2)"/>
+        <!-- labels -->
+        <text x="178" y="163" fill="var(--a2)" font-size="12" font-family="Nunito" font-weight="900">X</text>
+        <text x="14" y="10"  fill="var(--a2)" font-size="12" font-family="Nunito" font-weight="900">Y</text>
+        <text x="22" y="174" fill="var(--text-muted)" font-size="10" font-family="Nunito">(0,0)</text>
+        <!-- robot position -->
+        <circle cx="110" cy="90" r="5" fill="var(--a1)" opacity=".9">
+          <animate attributeName="r" values="5;7;5" dur="2s" repeatCount="indefinite"/>
+        </circle>
+        <!-- heading arrow -->
+        <line x1="110" y1="90" x2="142" y2="62" stroke="var(--a6)" stroke-width="2.5" stroke-linecap="round"/>
+        <polygon points="142,62 135,66 138,59" fill="var(--a6)"/>
+        <!-- angle arc -->
+        <path d="M 125 90 A 15 15 0 0 0 118 75" fill="none" stroke="var(--a6)" stroke-width="1.5" stroke-dasharray="3 2"/>
+        <text x="128" y="83" fill="var(--a6)" font-size="11" font-family="Nunito" font-weight="900">θ</text>
+        <!-- labels -->
+        <text x="114" y="87" fill="var(--a1)" font-size="10" font-family="Nunito" font-weight="900">(x,y)</text>
+        <!-- dashed position lines -->
+        <line x1="110" y1="90" x2="110" y2="160" stroke="var(--a1)" stroke-width="1" stroke-dasharray="4 3" opacity=".4"/>
+        <line x1="110" y1="90" x2="20" y2="90" stroke="var(--a1)" stroke-width="1" stroke-dasharray="4 3" opacity=".4"/>
+      </svg>
+    </div>
+    <div class="coord-legend">
+      <p style="margin-bottom:14px;font-size:.9rem">A robot's <strong>complete state</strong> needs three values:</p>
+      <div class="cl-row">
+        <span class="cl-sym" style="color:var(--a2)">x</span>
+        <div class="cl-desc">Horizontal position on the map</div>
+      </div>
+      <div class="cl-row">
+        <span class="cl-sym" style="color:var(--a2)">y</span>
+        <div class="cl-desc">Vertical position on the map</div>
+      </div>
+      <div class="cl-row">
+        <span class="cl-sym" style="color:var(--a6)">θ</span>
+        <div class="cl-desc">Heading angle — which direction the robot faces</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>Differential Drive Kinematics</h3>
+  <div class="formula-box">
+    $$v = \frac{v_R + v_L}{2} \qquad \omega = \frac{v_R - v_L}{L}$$
+    <div class="formula-vars">
+      <div class="fv"><span class="fv-sym">v</span><span class="fv-desc">robot's forward speed (centre)</span></div>
+      <div class="fv"><span class="fv-sym">ω</span><span class="fv-desc">rotational (angular) speed</span></div>
+      <div class="fv"><span class="fv-sym">v_R</span><span class="fv-desc">right wheel speed</span></div>
+      <div class="fv"><span class="fv-sym">v_L</span><span class="fv-desc">left wheel speed</span></div>
+      <div class="fv"><span class="fv-sym">L</span><span class="fv-desc">wheelbase (distance between wheels)</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 4.2 ODOMETRY ═══ -->
+<section class="section" id="s42">
+  <div class="section-header">
+    <span class="section-num">4.2</span>
+    <span class="section-emoji">📍</span>
+    <h2 class="section-title">Odometry — Tracking Position with Encoders</h2>
+  </div>
+
+  <p>Odometry uses <strong>encoders</strong> (sensors that count wheel rotations) to estimate where the robot is — like a robot's internal GPS, but calculated from movement instead of satellites.</p>
+
+  <div class="odo-visual">
+    <div class="odo-step">
+      <div class="odo-icon">🔢</div>
+      <div class="odo-label">Encoder counts pulses</div>
+      <div class="odo-sub">Each click = tiny movement</div>
+    </div>
+    <div class="odo-step">
+      <div class="odo-icon">📐</div>
+      <div class="odo-label">Calculate Δx, Δy, Δθ</div>
+      <div class="odo-sub">Using kinematics formulas</div>
+    </div>
+    <div class="odo-step">
+      <div class="odo-icon">📍</div>
+      <div class="odo-label">Update position</div>
+      <div class="odo-sub">x, y, θ accumulate over time</div>
+    </div>
+  </div>
+
+  <h3>Odometry Update Equations</h3>
+  <div class="formula-box">
+    $$\Delta x = v\cos\theta \cdot \Delta t \qquad \Delta y = v\sin\theta \cdot \Delta t \qquad \Delta\theta = \omega \cdot \Delta t$$
+  </div>
+
+  <pre><span class="cm"># Each time step, update the robot's position estimate:</span>
+new_x = old_x + Δx
+new_y = old_y + Δy
+new_θ = old_θ + Δθ</pre>
+
+  <div class="warn">
+    <span style="font-size:1.4rem;flex-shrink:0">⚠️</span>
+    <div><strong>Drift warning!</strong> Odometry errors accumulate over time — the longer the robot runs, the bigger the positional error. Real robots combine odometry with cameras or landmarks to stay accurate.</div>
+  </div>
+
+  <h3>Encoder Distance Calculation <span class="exam-tag">Exam: 2021Q7</span></h3>
+  <div class="formula-box">
+    $$d = \frac{\text{encoder count} \times \pi \times D}{N}$$
+    <div class="formula-vars">
+      <div class="fv"><span class="fv-sym">d</span><span class="fv-desc">distance travelled</span></div>
+      <div class="fv"><span class="fv-sym">D</span><span class="fv-desc">wheel diameter</span></div>
+      <div class="fv"><span class="fv-sym">N</span><span class="fv-desc">encoder resolution (pulses per full revolution)</span></div>
+      <div class="fv"><span class="fv-sym">count</span><span class="fv-desc">total pulses recorded</span></div>
+    </div>
+  </div>
+
+  <div class="example">
+    <span class="example-badge">✏️ Worked Example</span>
+    <div class="example-problem">
+      Wheel diameter $D = 6$ cm, encoder resolution $N = 360$ pulses/rev, encoder counted <strong>720 pulses</strong>. How far did the robot travel?
+    </div>
+    $$d = \frac{720 \times \pi \times 6}{360} = 2\pi \times 6 \approx 37.7 \text{ cm}$$
+    <div class="example-answer"><span style="font-size:1.4rem">✅</span> The robot travelled approximately <strong style="color:var(--a3);margin:0 6px">37.7 cm</strong></div>
+  </div>
+</section>
+
+<!-- ═══ 4.3 PATH PLANNING ═══ -->
+<section class="section" id="s43">
+  <div class="section-header">
+    <span class="section-num">4.3</span>
+    <span class="section-emoji">🧠</span>
+    <h2 class="section-title">Path Planning Algorithms</h2>
+  </div>
+
+  <h3>A* Algorithm</h3>
+  <p>A* finds the shortest path from start to goal on a grid. It's smarter than simple search because it uses a <strong>heuristic</strong> (educated guess) to avoid exploring unnecessary paths.</p>
+
+  <div class="formula-box">
+    $$f(n) = g(n) + h(n)$$
+    <div class="formula-vars">
+      <div class="fv"><span class="fv-sym">f(n)</span><span class="fv-desc">total estimated cost — always pick the <em>lowest</em> f next</span></div>
+      <div class="fv"><span class="fv-sym">g(n)</span><span class="fv-desc">actual cost from start to node n (known exactly)</span></div>
+      <div class="fv"><span class="fv-sym">h(n)</span><span class="fv-desc">estimated cost from n to goal (heuristic guess)</span></div>
+    </div>
+  </div>
+
+  <!-- A* grid visual -->
+  <div style="display:flex;gap:24px;flex-wrap:wrap;align-items:flex-start;margin:20px 0;">
+    <div>
+      <div style="font-size:.78rem;font-weight:800;color:var(--text-muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px">A* in action on a grid:</div>
+      <div class="astar-grid">
+        <!-- Row 0 -->
+        <div class="ag-cell ag-start">S</div><div class="ag-cell ag-open">1</div><div class="ag-cell ag-open">2</div><div class="ag-cell ag-wall"></div><div class="ag-cell ag-empty"></div><div class="ag-cell ag-empty"></div><div class="ag-cell ag-empty"></div>
+        <!-- Row 1 -->
+        <div class="ag-cell ag-closed">✓</div><div class="ag-cell ag-path">★</div><div class="ag-cell ag-path">★</div><div class="ag-cell ag-wall"></div><div class="ag-cell ag-open">5</div><div class="ag-cell ag-empty"></div><div class="ag-cell ag-empty"></div>
+        <!-- Row 2 -->
+        <div class="ag-cell ag-closed">✓</div><div class="ag-cell ag-closed">✓</div><div class="ag-cell ag-path">★</div><div class="ag-cell ag-path">★</div><div class="ag-cell ag-path">★</div><div class="ag-cell ag-open">6</div><div class="ag-cell ag-empty"></div>
+        <!-- Row 3 -->
+        <div class="ag-cell ag-wall"></div><div class="ag-cell ag-wall"></div><div class="ag-cell ag-closed">✓</div><div class="ag-cell ag-closed">✓</div><div class="ag-cell ag-closed">✓</div><div class="ag-cell ag-path">★</div><div class="ag-cell ag-goal">G</div>
+      </div>
+      <div class="astar-legend">
+        <div class="al-item"><div class="al-dot" style="background:rgba(118,255,3,.3);border-color:var(--a3)"></div><span style="color:var(--a3)">Start</span></div>
+        <div class="al-item"><div class="al-dot" style="background:rgba(224,64,251,.3);border-color:var(--a1)"></div><span style="color:var(--a1)">Goal</span></div>
+        <div class="al-item"><div class="al-dot" style="background:rgba(255,215,64,.25);border-color:var(--a6)"></div><span style="color:var(--a6)">Best path ★</span></div>
+        <div class="al-item"><div class="al-dot" style="background:rgba(0,229,255,.2);border-color:var(--a2)"></div><span style="color:var(--a2)">Open (to explore)</span></div>
+        <div class="al-item"><div class="al-dot" style="background:rgba(255,109,0,.15);border-color:var(--a4)"></div><span style="color:var(--a4)">Closed (explored)</span></div>
+        <div class="al-item"><div class="al-dot" style="background:#1a1a2e;border-color:#333"></div><span style="color:var(--text-muted)">Wall</span></div>
+      </div>
+    </div>
+    <div style="flex:1;min-width:200px;">
+      <div style="font-size:.78rem;font-weight:800;color:var(--text-muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:10px">Step-by-step:</div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="background:var(--surf2);border-radius:8px;padding:10px 14px;font-size:.83rem;border-left:3px solid var(--a3)"><strong style="color:var(--a3)">1.</strong> Add <strong>Start</strong> to Open List</div>
+        <div style="background:var(--surf2);border-radius:8px;padding:10px 14px;font-size:.83rem;border-left:3px solid var(--a2)"><strong style="color:var(--a2)">2.</strong> Pick node with <strong>lowest f</strong> from Open List</div>
+        <div style="background:var(--surf2);border-radius:8px;padding:10px 14px;font-size:.83rem;border-left:3px solid var(--a1)"><strong style="color:var(--a1)">3.</strong> If it's the <strong>Goal</strong> → done! Trace back path</div>
+        <div style="background:var(--surf2);border-radius:8px;padding:10px 14px;font-size:.83rem;border-left:3px solid var(--a4)"><strong style="color:var(--a4)">4.</strong> Move to <strong>Closed List</strong>, explore neighbours</div>
+        <div style="background:var(--surf2);border-radius:8px;padding:10px 14px;font-size:.83rem;border-left:3px solid var(--a6)"><strong style="color:var(--a6)">5.</strong> Update neighbours' g, h, f → back to step 2</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>Heuristic Functions</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Name</th><th>Formula</th><th>Best Used When</th></tr></thead>
+      <tbody>
+        <tr><td>Manhattan distance</td><td>$h = |x_1-x_2| + |y_1-y_2|$</td><td>Grid — only up / down / left / right moves</td></tr>
+        <tr><td>Euclidean distance</td><td>$h = \sqrt{(x_1-x_2)^2+(y_1-y_2)^2}$</td><td>Can move in any direction freely</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h3>BFS vs DFS — Foundational Algorithms</h3>
+  <div class="bfs-dfs">
+    <div class="bd-card bd-bfs">
+      <div class="bd-title">🌊 BFS — Breadth-First Search</div>
+      <div class="bd-desc">Explores outward <strong>layer by layer</strong>, like ripples on water. Checks all 1-step nodes, then all 2-step nodes, and so on.</div>
+      <span class="bd-tag">✅ Guarantees shortest path</span>
+    </div>
+    <div class="bd-card bd-dfs">
+      <div class="bd-title">🕳️ DFS — Depth-First Search</div>
+      <div class="bd-desc">Goes <strong>as deep as possible</strong> on one path first, then backtracks when it hits a dead end. Like exploring a maze without looking back.</div>
+      <span class="bd-tag">💾 Memory efficient</span>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 4.4 MOTION CONTROL ═══ -->
+<section class="section" id="s44">
+  <div class="section-header">
+    <span class="section-num">4.4</span>
+    <span class="section-emoji">🔄</span>
+    <h2 class="section-title">Robot Motion Control Strategies</h2>
+  </div>
+
+  <h3>Go-to-Goal Algorithm</h3>
+  <pre><span class="kw">while</span> not at_goal:
+    <span class="cm"># Step 1: figure out which way to face</span>
+    angle_error = target_angle - current_angle
+    
+    <span class="cm"># Step 2: how far away is the target?</span>
+    distance = sqrt((tx - x)² + (ty - y)²)
+    
+    <span class="cm"># Step 3: face the target first, then drive</span>
+    <span class="kw">if</span> angle_error > threshold:
+        <span class="val">rotate</span> to face target
+    <span class="kw">else</span>:
+        <span class="val">drive forward</span></pre>
+
+  <h3>Fixed-Route Driving <span class="exam-tag">Exam: 2021Q7</span></h3>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:18px 0;">
+    <div style="background:var(--surf);border:1px solid var(--border);border-radius:14px;padding:20px;">
+      <div style="font-weight:900;color:var(--a3);margin-bottom:12px;font-size:.9rem">🟩 Square Path</div>
+      <div style="font-size:.85rem;color:var(--text-muted);line-height:2">
+        Drive d metres →<br>Turn left 90° →<br>Drive d metres →<br>Turn left 90° →<br><strong style="color:var(--text)">Repeat 4 times</strong>
+      </div>
+    </div>
+    <div style="background:var(--surf);border:1px solid var(--border);border-radius:14px;padding:20px;">
+      <div style="font-weight:900;color:var(--a2);margin-bottom:12px;font-size:.9rem">🔧 Key Sensors</div>
+      <div style="display:flex;flex-direction:column;gap:10px;margin-top:6px;">
+        <div style="display:flex;gap:10px;align-items:center;font-size:.85rem"><span style="font-size:1.3rem">🔢</span><div><strong>Encoder</strong><br><span style="color:var(--text-muted)">Measures distance precisely</span></div></div>
+        <div style="display:flex;gap:10px;align-items:center;font-size:.85rem"><span style="font-size:1.3rem">🌀</span><div><strong>Gyroscope</strong><br><span style="color:var(--text-muted)">Measures turning angle precisely</span></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 4.5 AI & ML ═══ -->
+<section class="section" id="s45">
+  <div class="section-header">
+    <span class="section-num">4.5</span>
+    <span class="section-emoji">🤖</span>
+    <h2 class="section-title">AI &amp; Machine Learning in Robotics</h2>
+  </div>
+
+  <p>Modern robots don't just follow fixed rules — they <strong>learn</strong> from data. Here are the three main types: <span class="exam-tag">Exam: 2021Q6 / Q8</span></p>
+
+  <div class="ml-grid">
+    <div class="ml-card ml-sl">
+      <div class="ml-icon">🏷️</div>
+      <div class="ml-type">Supervised Learning</div>
+      <div class="ml-desc">Trained on <strong>labelled data</strong> — thousands of examples where the correct answer is already known</div>
+      <span class="ml-app">Image classification · Object recognition</span>
+    </div>
+    <div class="ml-card ml-ul">
+      <div class="ml-icon">🔍</div>
+      <div class="ml-type">Unsupervised Learning</div>
+      <div class="ml-desc">Finds <strong>patterns without labels</strong> — the robot discovers structure on its own</div>
+      <span class="ml-app">Map building · Behaviour clustering</span>
+    </div>
+    <div class="ml-card ml-rl">
+      <div class="ml-icon">🎮</div>
+      <div class="ml-type">Reinforcement Learning</div>
+      <div class="ml-desc">Learns from <strong>rewards &amp; penalties</strong> — like training a dog with treats and corrections</div>
+      <span class="ml-app">Game AI · Walking robots</span>
+    </div>
+  </div>
+
+  <h3>Deep Learning Pipeline</h3>
+  <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:18px 0;padding:22px;background:var(--surf);border:1px solid var(--border);border-radius:14px;">
+    <div style="text-align:center;padding:14px 16px;border-radius:12px;background:rgba(0,229,255,.1);border:1.5px solid var(--a2);flex:1;min-width:110px;">
+      <div style="font-size:1.6rem">📷</div>
+      <div style="font-weight:800;font-size:.82rem;color:var(--a2)">Camera Image</div>
+      <div style="font-size:.72rem;color:var(--text-muted);margin-top:4px">Pixel data</div>
+    </div>
+    <div style="font-size:1.4rem;color:var(--text-muted)">→</div>
+    <div style="text-align:center;padding:14px 16px;border-radius:12px;background:rgba(224,64,251,.1);border:1.5px solid var(--a1);flex:1;min-width:110px;">
+      <div style="font-size:1.6rem">🧠</div>
+      <div style="font-weight:800;font-size:.82rem;color:var(--a1)">CNN</div>
+      <div style="font-size:.72rem;color:var(--text-muted);margin-top:4px">Convolutional Neural Net</div>
+    </div>
+    <div style="font-size:1.4rem;color:var(--text-muted)">→</div>
+    <div style="text-align:center;padding:14px 16px;border-radius:12px;background:rgba(118,255,3,.1);border:1.5px solid var(--a3);flex:1;min-width:110px;">
+      <div style="font-size:1.6rem">🎯</div>
+      <div style="font-weight:800;font-size:.82rem;color:var(--a3)">Result</div>
+      <div style="font-size:.72rem;color:var(--text-muted);margin-top:4px">"This is a cup"</div>
+    </div>
+  </div>
+
+  <h3>Why Dataset Size Matters <span class="exam-tag">Exam: 2021Q8</span></h3>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:14px 0;">
+    <div style="background:rgba(118,255,3,.08);border:1px solid var(--a3);border-radius:12px;padding:16px 18px;">
+      <div style="font-weight:900;color:var(--a3);margin-bottom:8px">📊 More Data</div>
+      <div style="font-size:.85rem;color:var(--text-muted)">Better accuracy — but needs more computing power and training time</div>
+    </div>
+    <div style="background:rgba(255,64,129,.08);border:1px solid var(--a5);border-radius:12px;padding:16px 18px;">
+      <div style="font-weight:900;color:var(--a5);margin-bottom:8px">⚠️ Less Data</div>
+      <div style="font-size:.85rem;color:var(--text-muted)">Risk of <strong>overfitting</strong> — memorises training examples, fails on new inputs</div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 4.6 STATE MACHINES ═══ -->
+<section class="section" id="s46">
+  <div class="section-header">
+    <span class="section-num">4.6</span>
+    <span class="section-emoji">🔁</span>
+    <h2 class="section-title">Finite State Machines</h2>
+  </div>
+
+  <p>A state machine breaks robot behaviour into distinct <strong>states</strong>, switching between them based on sensor input. It's simple, reliable, and easy to program — perfect for competitions!</p>
+
+  <div class="sm-visual">
+    <div style="font-size:.78rem;font-weight:800;color:var(--text-muted);letter-spacing:1px;text-transform:uppercase;margin-bottom:14px">Example: Obstacle-avoidance robot</div>
+    <div class="sm-states">
+      <div class="sm-state sm-s1">
+        <div class="sm-icon">➡️</div>
+        <div class="sm-name" style="color:var(--a3)">State 1</div>
+        <div class="sm-cond">Drive Straight</div>
+        <div class="sm-cond" style="margin-top:4px;font-style:italic">No obstacle</div>
+      </div>
+      <div class="sm-state sm-s2">
+        <div class="sm-icon">↩️</div>
+        <div class="sm-name" style="color:var(--a4)">State 2</div>
+        <div class="sm-cond">Turn Left</div>
+        <div class="sm-cond" style="margin-top:4px;font-style:italic">Obstacle ahead</div>
+      </div>
+      <div class="sm-state sm-s3">
+        <div class="sm-icon">↪️</div>
+        <div class="sm-name" style="color:var(--a5)">State 3</div>
+        <div class="sm-cond">Turn Right</div>
+        <div class="sm-cond" style="margin-top:4px;font-style:italic">Left also blocked</div>
+      </div>
+    </div>
+
+    <div class="sm-transitions">
+      <div class="sm-tr">
+        <span class="sm-tr-from">State 1</span>
+        <span class="sm-tr-cond">── obstacle ahead ──▶</span>
+        <span class="sm-tr-to">State 2</span>
+      </div>
+      <div class="sm-tr">
+        <span class="sm-tr-from">State 2</span>
+        <span class="sm-tr-cond">── left side clear ──▶</span>
+        <span class="sm-tr-to" style="color:var(--a3)">State 1</span>
+      </div>
+      <div class="sm-tr">
+        <span class="sm-tr-from">State 2</span>
+        <span class="sm-tr-cond">── left also blocked ──▶</span>
+        <span class="sm-tr-to" style="color:var(--a5)">State 3</span>
+      </div>
+      <div class="sm-tr">
+        <span class="sm-tr-from">State 3</span>
+        <span class="sm-tr-cond">── right side clear ──▶</span>
+        <span class="sm-tr-to" style="color:var(--a3)">State 1</span>
+      </div>
+    </div>
+  </div>
+
+  <h3>Competition-Ready State Machine</h3>
+  <pre><span class="str">STATE_FOLLOW_LINE</span>   → Normal line following
+<span class="str">STATE_AVOID_LEFT</span>    → Obstacle detected → go around left
+<span class="str">STATE_AVOID_RIGHT</span>   → Left also blocked → go around right
+<span class="str">STATE_SEARCH_LINE</span>   → After avoidance → re-acquire the line
+<span class="str">STATE_STOP</span>          → Task complete / emergency stop</pre>
+</section>
+
+<!-- ═══ COMPETITION CRUNCH ═══ -->
+<div class="crunch">
+  <div class="crunch-title">🏆 Competition Crunch — Problem-Solving Framework</div>
+  <div class="crunch-steps">
+    <div class="crunch-step">
+      <div class="cs-num">1</div>
+      <div class="cs-body"><strong>Read carefully</strong><p>Identify inputs (sensors / initial conditions) and outputs (target state / answer format)</p></div>
+    </div>
+    <div class="crunch-step">
+      <div class="cs-num">2</div>
+      <div class="cs-body"><strong>Analyse</strong><p>Draw the system diagram: Sensor → Controller → Actuator</p></div>
+    </div>
+    <div class="crunch-step">
+      <div class="cs-num">3</div>
+      <div class="cs-body"><strong>Calculate</strong><p>Apply the right formula (gear ratio / distance / PWM / kinematics)</p></div>
+    </div>
+    <div class="crunch-step">
+      <div class="cs-num">4</div>
+      <div class="cs-body"><strong>Verify</strong><p>Does the magnitude make sense? Are the units correct?</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ SUMMARY ═══ -->
+<div class="summary-section" id="summary">
+  <div class="summary-title">📝 Chapter Summary — Key Points to Remember</div>
+  <table class="summary-table">
+    <tr><td>Differential drive</td><td>$v = (v_R + v_L)/2$ &nbsp;·&nbsp; $\omega = (v_R - v_L)/L$</td></tr>
+    <tr><td>Odometry</td><td>Encoder accumulates position; drift grows over time</td></tr>
+    <tr><td>A* algorithm</td><td>$f = g + h$ — actual cost + estimated remaining cost</td></tr>
+    <tr><td>BFS vs DFS</td><td>BFS guarantees shortest path · DFS saves memory</td></tr>
+    <tr><td>Reinforcement learning</td><td>Reward / penalty system — robot learns its own strategy</td></tr>
+    <tr><td>State machine</td><td>Break complex behaviour into simple states + condition-based transitions</td></tr>
+  </table>
+</div>
+
+<div class="next-ch">
+  🎉 <span>All four chapters complete!</span> &nbsp; Check out the Formula Quick Reference Card →
+</div>
+
+</main>
+</body>
+</html>
