@@ -351,6 +351,25 @@ pre{
 .next-ch{ margin-top:36px; text-align:center; padding:26px; border-radius:16px; background:linear-gradient(135deg,rgba(224,64,251,.12),rgba(0,229,255,.08)); border:1px solid var(--a1); font-weight:700; color:var(--text-muted); }
 .next-ch span{ color:var(--a1); font-weight:900; }
 
+/* ── MCQ ── */
+.mcq-list{ display:flex; flex-direction:column; gap:20px; margin:20px 0; }
+.mcq-card{ background:var(--surf); border:1px solid var(--border); border-radius:16px; padding:22px 26px; }
+.mcq-num{ display:inline-block; background:linear-gradient(135deg,var(--a1),var(--a2)); color:#0a0018; font-size:.72rem; font-weight:900; letter-spacing:1.5px; text-transform:uppercase; padding:3px 10px; border-radius:6px; margin-bottom:12px; }
+.mcq-q{ font-weight:700; font-size:.97rem; color:var(--heading); margin-bottom:16px; line-height:1.6; }
+.mcq-options{ display:flex; flex-direction:column; gap:8px; margin-bottom:14px; }
+.mcq-opt{ display:flex; align-items:center; gap:10px; padding:10px 14px; border-radius:10px; border:1px solid var(--border); background:var(--surf2); font-size:.9rem; cursor:pointer; transition:border-color .2s,background .2s; user-select:none; }
+.mcq-opt:hover{ border-color:var(--a1); background:rgba(224,64,251,.08); }
+.mcq-opt.correct{ border-color:var(--a3); background:rgba(118,255,3,.12); color:var(--a3); font-weight:800; }
+.mcq-opt.wrong  { border-color:var(--a5); background:rgba(255,64,129,.08); color:var(--a5); opacity:.7; }
+.mcq-opt .opt-letter{ width:26px; height:26px; border-radius:50%; display:flex; align-items:center; justify-content:center; background:var(--surf); border:1.5px solid var(--border); font-size:.78rem; font-weight:900; flex-shrink:0; color:var(--text-muted); }
+.mcq-opt.correct .opt-letter{ background:var(--a3); border-color:var(--a3); color:#002200; }
+.mcq-opt.wrong   .opt-letter{ background:var(--a5); border-color:var(--a5); color:#220011; }
+.mcq-reveal{ display:none; margin-top:12px; padding:14px 18px; background:rgba(118,255,3,.07); border:1px solid rgba(118,255,3,.25); border-radius:10px; font-size:.88rem; line-height:1.7; }
+.mcq-reveal.show{ display:block; }
+.mcq-reveal strong{ color:var(--a3); }
+.mcq-show-btn{ background:var(--surf2); border:1px solid var(--border); border-radius:8px; color:var(--text-muted); padding:7px 16px; cursor:pointer; font-size:.82rem; font-weight:700; font-family:'Nunito',sans-serif; transition:all .2s; }
+.mcq-show-btn:hover{ border-color:var(--a1); color:var(--a1); }
+
 @media(max-width:580px){
   .coord-visual,.bfs-dfs,.ml-grid{ flex-direction:column; }
   .bfs-dfs,.ml-grid{ grid-template-columns:1fr; }
@@ -393,6 +412,7 @@ pre{
       <a href="#s44" class="toc-item">🔄 4.4 Motion Control</a>
       <a href="#s45" class="toc-item">🤖 4.5 AI &amp; ML</a>
       <a href="#s46" class="toc-item">🔁 4.6 State Machines</a>
+      <a href="#mcq" class="toc-item">🧠 Practice Questions</a>
     </div>
   </div>
 </nav>
@@ -465,16 +485,64 @@ pre{
     </div>
   </div>
 
-  <h3>Differential Drive Kinematics</h3>
+  <h3>Differential Drive — How Two Wheels Steer</h3>
+
+  <p>Most competition robots use <strong>differential drive</strong>: two independently powered wheels, one on each side. There's no steering wheel — the robot turns by spinning its wheels at <em>different</em> speeds.</p>
+
+  <!-- Wheel speed intuition grid -->
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px;margin:18px 0">
+    <div style="border-radius:14px;padding:16px 14px;text-align:center;border:1.5px solid var(--a3);background:rgba(118,255,3,.08)">
+      <div style="font-size:1.6rem;margin-bottom:8px">➡️</div>
+      <div style="font-weight:900;color:var(--a3);font-size:.9rem;margin-bottom:6px">Go Straight</div>
+      <div style="font-size:.82rem;color:var(--text-muted)">Left speed = Right speed<br><strong style="color:var(--text)">v_L = v_R</strong></div>
+    </div>
+    <div style="border-radius:14px;padding:16px 14px;text-align:center;border:1.5px solid var(--a2);background:rgba(0,229,255,.08)">
+      <div style="font-size:1.6rem;margin-bottom:8px">↩️</div>
+      <div style="font-weight:900;color:var(--a2);font-size:.9rem;margin-bottom:6px">Turn Left</div>
+      <div style="font-size:.82rem;color:var(--text-muted)">Left slower than right<br><strong style="color:var(--text)">v_L &lt; v_R</strong></div>
+    </div>
+    <div style="border-radius:14px;padding:16px 14px;text-align:center;border:1.5px solid var(--a4);background:rgba(255,109,0,.08)">
+      <div style="font-size:1.6rem;margin-bottom:8px">↪️</div>
+      <div style="font-weight:900;color:var(--a4);font-size:.9rem;margin-bottom:6px">Turn Right</div>
+      <div style="font-size:.82rem;color:var(--text-muted)">Right slower than left<br><strong style="color:var(--text)">v_R &lt; v_L</strong></div>
+    </div>
+    <div style="border-radius:14px;padding:16px 14px;text-align:center;border:1.5px solid var(--a1);background:rgba(224,64,251,.08)">
+      <div style="font-size:1.6rem;margin-bottom:8px">🔄</div>
+      <div style="font-weight:900;color:var(--a1);font-size:.9rem;margin-bottom:6px">Spin on spot</div>
+      <div style="font-size:.82rem;color:var(--text-muted)">Left forward, right backward<br><strong style="color:var(--text)">v_L = −v_R</strong></div>
+    </div>
+  </div>
+
+  <div class="tip">
+    <span class="tip-icon">🧠</span>
+    <div><strong>Memory rule:</strong> The robot always turns <em>toward</em> the slower wheel. If the left wheel is slower, the robot curves left. Think of dragging your left foot — your whole body turns left.</div>
+  </div>
+
+  <h3>The Kinematics Formulas</h3>
+  <p style="font-size:.9rem;color:var(--text-muted)">These calculate the robot's overall forward speed and turning rate from the two wheel speeds:</p>
   <div class="formula-box">
     $$v = \frac{v_R + v_L}{2} \qquad \omega = \frac{v_R - v_L}{L}$$
-    <div class="formula-vars">
-      <div class="fv"><span class="fv-sym">v</span><span class="fv-desc">robot's forward speed (centre)</span></div>
-      <div class="fv"><span class="fv-sym">ω</span><span class="fv-desc">rotational (angular) speed</span></div>
+    <div style="margin-top:12px;font-size:.85rem;color:var(--text-muted);text-align:left">
+      <em>v</em> = average of both wheels (how fast the centre moves forward) &nbsp;·&nbsp;
+      <em>ω</em> = difference divided by wheel gap (how fast it turns)
+    </div>
+    <div class="formula-vars" style="margin-top:14px">
+      <div class="fv"><span class="fv-sym">v</span><span class="fv-desc">robot's forward speed (centre point)</span></div>
+      <div class="fv"><span class="fv-sym">ω</span><span class="fv-desc">turning speed (ω = 0 means going straight)</span></div>
       <div class="fv"><span class="fv-sym">v_R</span><span class="fv-desc">right wheel speed</span></div>
       <div class="fv"><span class="fv-sym">v_L</span><span class="fv-desc">left wheel speed</span></div>
-      <div class="fv"><span class="fv-sym">L</span><span class="fv-desc">wheelbase (distance between wheels)</span></div>
+      <div class="fv"><span class="fv-sym">L</span><span class="fv-desc">wheelbase — distance between the two wheels</span></div>
     </div>
+  </div>
+
+  <div class="example">
+    <span class="example-badge">✏️ Worked Example</span>
+    <div class="example-problem">
+      A robot has wheelbase $L = 20$ cm. Left wheel speed $v_L = 10$ cm/s, right wheel speed $v_R = 30$ cm/s. Find the forward speed and turning rate.
+    </div>
+    $$v = \frac{30 + 10}{2} = \frac{40}{2} = \mathbf{20 \text{ cm/s forward}}$$
+    $$\omega = \frac{30 - 10}{20} = \frac{20}{20} = \mathbf{1 \text{ rad/s turning}}$$
+    <div class="example-answer"><span style="font-size:1.4rem">✅</span> Robot moves forward at 20 cm/s while curving to the <strong style="color:var(--a3);margin:0 6px">left</strong> (left wheel is slower). ✓</div>
   </div>
 </section>
 
@@ -506,15 +574,32 @@ pre{
     </div>
   </div>
 
-  <h3>Odometry Update Equations</h3>
-  <div class="formula-box">
-    $$\Delta x = v\cos\theta \cdot \Delta t \qquad \Delta y = v\sin\theta \cdot \Delta t \qquad \Delta\theta = \omega \cdot \Delta t$$
-  </div>
+  <h3>How Odometry Works — Step by Step</h3>
 
-  <pre><span class="cm"># Each time step, update the robot's position estimate:</span>
-new_x = old_x + Δx
-new_y = old_y + Δy
-new_θ = old_θ + Δθ</pre>
+  <p>Every few milliseconds, the robot asks its encoders: <em>"How much did each wheel turn?"</em> From that, it works out how far it moved and whether it turned. It then adds the tiny movement to its running total of (x, y, θ).</p>
+
+  <!-- Dead reckoning visual -->
+  <div style="background:var(--surf);border:1px solid var(--border);border-radius:14px;padding:22px 20px;margin:18px 0">
+    <div style="font-weight:800;color:var(--heading);margin-bottom:14px;font-size:.95rem">🗺️ Dead Reckoning — accumulating small steps into a position estimate</div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div style="display:flex;gap:14px;align-items:flex-start;background:var(--surf2);border-radius:10px;padding:12px 16px">
+        <span style="font-size:1.3rem;flex-shrink:0">1️⃣</span>
+        <div style="font-size:.88rem"><strong style="color:var(--heading)">Encoder counts ticks</strong> — e.g. left wheel moved 50 ticks, right wheel moved 70 ticks</div>
+      </div>
+      <div style="display:flex;gap:14px;align-items:flex-start;background:var(--surf2);border-radius:10px;padding:12px 16px">
+        <span style="font-size:1.3rem;flex-shrink:0">2️⃣</span>
+        <div style="font-size:.88rem"><strong style="color:var(--heading)">Convert ticks to distance</strong> — using the encoder distance formula (below) for each wheel</div>
+      </div>
+      <div style="display:flex;gap:14px;align-items:flex-start;background:var(--surf2);border-radius:10px;padding:12px 16px">
+        <span style="font-size:1.3rem;flex-shrink:0">3️⃣</span>
+        <div style="font-size:.88rem"><strong style="color:var(--heading)">Calculate centre movement</strong> — average distance = how far forward; difference = how much it turned (Δθ)</div>
+      </div>
+      <div style="display:flex;gap:14px;align-items:flex-start;background:var(--surf2);border-radius:10px;padding:12px 16px">
+        <span style="font-size:1.3rem;flex-shrink:0">4️⃣</span>
+        <div style="font-size:.88rem"><strong style="color:var(--heading)">Add to running total</strong> — new_x = old_x + Δx &nbsp;·&nbsp; new_y = old_y + Δy &nbsp;·&nbsp; new_θ = old_θ + Δθ</div>
+      </div>
+    </div>
+  </div>
 
   <div class="warn">
     <span style="font-size:1.4rem;flex-shrink:0">⚠️</span>
@@ -551,15 +636,55 @@ new_θ = old_θ + Δθ</pre>
   </div>
 
   <h3>A* Algorithm</h3>
-  <p>A* finds the shortest path from start to goal on a grid. It's smarter than simple search because it uses a <strong>heuristic</strong> (educated guess) to avoid exploring unnecessary paths.</p>
+
+  <div class="tip" style="margin-bottom:18px">
+    <span class="tip-icon">🧩</span>
+    <div>
+      <strong>Think of A* as a smart maze-solver.</strong><br>
+      Imagine you're in a maze and you can see the exit from above. Instead of randomly trying every path, you always walk toward whichever junction <em>feels closest to the exit</em>. A* works the same way — at every step it picks the node with the best mix of "I've already walked this far" + "I'm roughly this far from the goal."
+    </div>
+  </div>
+
+  <p>A* finds the <strong>shortest path</strong> from start to goal on a grid. It is smarter than random search because it uses a <strong>heuristic</strong> — a quick rough estimate of the remaining distance — to skip dead ends and focus on promising paths.</p>
 
   <div class="formula-box">
     $$f(n) = g(n) + h(n)$$
     <div class="formula-vars">
-      <div class="fv"><span class="fv-sym">f(n)</span><span class="fv-desc">total estimated cost — always pick the <em>lowest</em> f next</span></div>
-      <div class="fv"><span class="fv-sym">g(n)</span><span class="fv-desc">actual cost from start to node n (known exactly)</span></div>
-      <div class="fv"><span class="fv-sym">h(n)</span><span class="fv-desc">estimated cost from n to goal (heuristic guess)</span></div>
+      <div class="fv"><span class="fv-sym">f(n)</span><span class="fv-desc">total score for node n — always explore the <em>lowest f</em> next</span></div>
+      <div class="fv"><span class="fv-sym">g(n)</span><span class="fv-desc">steps already taken from Start to n (exact, known)</span></div>
+      <div class="fv"><span class="fv-sym">h(n)</span><span class="fv-desc">rough guess of steps remaining from n to Goal</span></div>
     </div>
+    <div style="margin-top:14px;font-size:.85rem;color:var(--text-muted)">
+      <strong style="color:var(--text)">Plain English:</strong> f = "how long the whole trip would be IF this were the right path"<br>
+      g = steps behind you &nbsp;·&nbsp; h = estimated steps ahead
+    </div>
+  </div>
+
+  <!-- Mini worked example -->
+  <div class="example">
+    <span class="example-badge">✏️ Mini Worked Example</span>
+    <div class="example-problem">
+      A 1×5 straight corridor. Start = cell 0, Goal = cell 4, one wall at cell 2.<br>
+      Using <strong>Manhattan distance</strong> as h (h = |cell − 4|). No diagonal moves allowed.
+    </div>
+    <div style="display:flex;gap:4px;margin:14px 0;justify-content:center">
+      <div style="width:50px;height:50px;border-radius:8px;background:rgba(118,255,3,.3);border:2px solid var(--a3);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:.85rem;color:var(--a3);flex-direction:column"><span>S</span><span style="font-size:.65rem">cell 0</span></div>
+      <div style="width:50px;height:50px;border-radius:8px;background:rgba(255,215,64,.2);border:2px solid var(--a6);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:.8rem;color:var(--a6);flex-direction:column;text-align:center"><span>★</span><span style="font-size:.62rem">cell 1</span></div>
+      <div style="width:50px;height:50px;border-radius:8px;background:#1a1a2e;border:2px solid #333;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:.8rem;color:#444;flex-direction:column"><span>█</span><span style="font-size:.62rem">wall</span></div>
+      <div style="width:50px;height:50px;border-radius:8px;background:rgba(255,215,64,.2);border:2px solid var(--a6);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:.8rem;color:var(--a6);flex-direction:column;text-align:center"><span>★</span><span style="font-size:.62rem">cell 3</span></div>
+      <div style="width:50px;height:50px;border-radius:8px;background:rgba(224,64,251,.3);border:2px solid var(--a1);display:flex;align-items:center;justify-content:center;font-weight:900;font-size:.85rem;color:var(--a1);flex-direction:column"><span>G</span><span style="font-size:.65rem">cell 4</span></div>
+    </div>
+    <div style="font-size:.85rem;line-height:2">
+      <strong>Calculate f for each reachable cell from Start (g=0):</strong><br>
+      Cell 1: g=1, h=|1−4|=3 → <strong style="color:var(--a6)">f = 1+3 = 4</strong><br>
+      Cell 2 is a wall — skip.<br>
+      <br>
+      <strong>From cell 1 (g=1), next reachable = cell 3 (must go around wall — g=3 via detour):</strong><br>
+      Assume shortest detour gives g=3, h=|3−4|=1 → <strong style="color:var(--a6)">f = 3+1 = 4</strong><br>
+      <br>
+      <strong>From cell 3, reach Goal:</strong> g=4, h=0 → <strong style="color:var(--a6)">f = 4</strong>
+    </div>
+    <div class="example-answer"><span style="font-size:1.4rem">✅</span> Best path: 0 → 1 → (around wall) → 3 → 4, total cost = <strong style="color:var(--a3);margin:0 6px">4 steps</strong></div>
   </div>
 
   <!-- A* grid visual -->
@@ -694,36 +819,54 @@ new_θ = old_θ + Δθ</pre>
     </div>
   </div>
 
-  <h3>Deep Learning Pipeline</h3>
+  <h3>Deep Learning Pipeline — How Robots "See"</h3>
+  <p>One of the most powerful tools in modern robotics is teaching a robot to recognise objects from camera images. This is done using a <strong>CNN (Convolutional Neural Network)</strong>.</p>
+
+  <div class="tip" style="margin-bottom:16px">
+    <span class="tip-icon">🧠</span>
+    <div>
+      <strong>What is a CNN?</strong><br>
+      A CNN is a type of AI program that learns to spot <em>patterns</em> in images — edges, shapes, colours, textures. You show it thousands of labelled photos ("this is a cup", "this is a ball") and it slowly adjusts itself until it can recognise those objects in new photos it's never seen before. It works a bit like how your own brain learns to tell a cat from a dog after seeing many examples.
+    </div>
+  </div>
+
   <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:18px 0;padding:22px;background:var(--surf);border:1px solid var(--border);border-radius:14px;">
     <div style="text-align:center;padding:14px 16px;border-radius:12px;background:rgba(0,229,255,.1);border:1.5px solid var(--a2);flex:1;min-width:110px;">
       <div style="font-size:1.6rem">📷</div>
       <div style="font-weight:800;font-size:.82rem;color:var(--a2)">Camera Image</div>
-      <div style="font-size:.72rem;color:var(--text-muted);margin-top:4px">Pixel data</div>
+      <div style="font-size:.72rem;color:var(--text-muted);margin-top:4px">Millions of coloured pixels</div>
     </div>
     <div style="font-size:1.4rem;color:var(--text-muted)">→</div>
-    <div style="text-align:center;padding:14px 16px;border-radius:12px;background:rgba(224,64,251,.1);border:1.5px solid var(--a1);flex:1;min-width:110px;">
+    <div style="text-align:center;padding:14px 16px;border-radius:12px;background:rgba(224,64,251,.1);border:1.5px solid var(--a1);flex:1;min-width:120px;">
       <div style="font-size:1.6rem">🧠</div>
       <div style="font-weight:800;font-size:.82rem;color:var(--a1)">CNN</div>
-      <div style="font-size:.72rem;color:var(--text-muted);margin-top:4px">Convolutional Neural Net</div>
+      <div style="font-size:.72rem;color:var(--text-muted);margin-top:4px">Detects edges → shapes → objects layer by layer</div>
     </div>
     <div style="font-size:1.4rem;color:var(--text-muted)">→</div>
     <div style="text-align:center;padding:14px 16px;border-radius:12px;background:rgba(118,255,3,.1);border:1.5px solid var(--a3);flex:1;min-width:110px;">
       <div style="font-size:1.6rem">🎯</div>
       <div style="font-weight:800;font-size:.82rem;color:var(--a3)">Result</div>
-      <div style="font-size:.72rem;color:var(--text-muted);margin-top:4px">"This is a cup"</div>
+      <div style="font-size:.72rem;color:var(--text-muted);margin-top:4px">"This is a red block" (92% confident)</div>
     </div>
   </div>
 
   <h3>Why Dataset Size Matters <span class="exam-tag">Exam: 2021Q8</span></h3>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:14px 0;">
     <div style="background:rgba(118,255,3,.08);border:1px solid var(--a3);border-radius:12px;padding:16px 18px;">
-      <div style="font-weight:900;color:var(--a3);margin-bottom:8px">📊 More Data</div>
-      <div style="font-size:.85rem;color:var(--text-muted)">Better accuracy — but needs more computing power and training time</div>
+      <div style="font-weight:900;color:var(--a3);margin-bottom:8px">📊 More Training Data</div>
+      <div style="font-size:.85rem;color:var(--text-muted)">Better accuracy on new, unseen images — but needs more computing power and time to train</div>
     </div>
     <div style="background:rgba(255,64,129,.08);border:1px solid var(--a5);border-radius:12px;padding:16px 18px;">
-      <div style="font-weight:900;color:var(--a5);margin-bottom:8px">⚠️ Less Data</div>
-      <div style="font-size:.85rem;color:var(--text-muted)">Risk of <strong>overfitting</strong> — memorises training examples, fails on new inputs</div>
+      <div style="font-weight:900;color:var(--a5);margin-bottom:8px">⚠️ Too Little Data</div>
+      <div style="font-size:.85rem;color:var(--text-muted)">Risk of <strong>overfitting</strong> — the AI memorises the training photos but fails completely on slightly different ones</div>
+    </div>
+  </div>
+
+  <div class="tip" style="border-left-color:var(--a5);background:rgba(255,64,129,.07);border-color:rgba(255,64,129,.3)">
+    <span class="tip-icon">📖</span>
+    <div>
+      <strong>What is overfitting?</strong><br>
+      Imagine a student who memorises every answer in last year's exam paper word for word. They score 100% on that paper — but when the exam has slightly different questions, they fail. An AI that overfits has done the same thing: it knows the training examples perfectly but can't generalise to new situations.
     </div>
   </div>
 </section>
@@ -793,6 +936,119 @@ new_θ = old_θ + Δθ</pre>
 <span class="str">STATE_STOP</span>          → Task complete / emergency stop</pre>
 </section>
 
+<!-- ═══ MCQ PRACTICE ═══ -->
+<section class="section" id="mcq">
+  <div class="section-header">
+    <span class="section-num">✏️ Quiz</span>
+    <span class="section-emoji">🧠</span>
+    <h2 class="section-title">Practice Questions</h2>
+  </div>
+  <p>Choose the best answer, then click <strong>Show Working</strong> to check.</p>
+
+  <div class="mcq-list">
+
+    <!-- Q1 -->
+    <div class="mcq-card" id="q1">
+      <span class="mcq-num">Question 1</span>
+      <div class="mcq-q">
+        A robot's wheel diameter is <strong>8 cm</strong>. The encoder resolution is <strong>200 pulses per revolution</strong>. The encoder counts <strong>600 pulses</strong>. How far did the robot travel? (Use π ≈ 3.14)
+      </div>
+      <div class="mcq-options">
+        <div class="mcq-opt" onclick="pickOpt(this,'q1',false)"><span class="opt-letter">A</span> 37.7 cm</div>
+        <div class="mcq-opt" onclick="pickOpt(this,'q1',false)"><span class="opt-letter">B</span> 50.2 cm</div>
+        <div class="mcq-opt" onclick="pickOpt(this,'q1',true)"> <span class="opt-letter">C</span> 75.4 cm</div>
+        <div class="mcq-opt" onclick="pickOpt(this,'q1',false)"><span class="opt-letter">D</span> 150.8 cm</div>
+      </div>
+      <button class="mcq-show-btn" onclick="showWorking('q1')">Show Working ▾</button>
+      <div class="mcq-reveal" id="q1-reveal">
+        <strong>Formula:</strong> $d = \dfrac{\text{count} \times \pi \times D}{N}$<br><br>
+        $d = \dfrac{600 \times 3.14 \times 8}{200} = \dfrac{15072}{200} = \mathbf{75.4 \text{ cm}}$<br><br>
+        600 pulses ÷ 200 pulses/rev = 3 full revolutions. Each revolution travels π×D = 25.1 cm. So 3 × 25.1 = 75.4 cm. ✅
+      </div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="mcq-card" id="q2">
+      <span class="mcq-num">Question 2</span>
+      <div class="mcq-q">
+        A differential-drive robot has left wheel speed <strong>v_L = 5 cm/s</strong> and right wheel speed <strong>v_R = 5 cm/s</strong>. What does the robot do?
+      </div>
+      <div class="mcq-options">
+        <div class="mcq-opt" onclick="pickOpt(this,'q2',false)"><span class="opt-letter">A</span> Turns left</div>
+        <div class="mcq-opt" onclick="pickOpt(this,'q2',false)"><span class="opt-letter">B</span> Turns right</div>
+        <div class="mcq-opt" onclick="pickOpt(this,'q2',true)"> <span class="opt-letter">C</span> Goes straight</div>
+        <div class="mcq-opt" onclick="pickOpt(this,'q2',false)"><span class="opt-letter">D</span> Spins on the spot</div>
+      </div>
+      <button class="mcq-show-btn" onclick="showWorking('q2')">Show Working ▾</button>
+      <div class="mcq-reveal" id="q2-reveal">
+        When both wheels spin at the <strong>same speed</strong> (v_L = v_R), the robot goes <strong>straight</strong>.<br><br>
+        $v = (5+5)/2 = 5 \text{ cm/s forward}$<br>
+        $\omega = (5-5)/L = 0$ — no turning at all. ✅
+      </div>
+    </div>
+
+    <!-- Q3 -->
+    <div class="mcq-card" id="q3">
+      <span class="mcq-num">Question 3</span>
+      <div class="mcq-q">
+        In A*, a node has <strong>g = 4</strong> (steps from start) and <strong>h = 3</strong> (estimated steps to goal). What is its f score, and should it be explored before a node with f = 6?
+      </div>
+      <div class="mcq-options">
+        <div class="mcq-opt" onclick="pickOpt(this,'q3',false)"><span class="opt-letter">A</span> f = 1, no it should not</div>
+        <div class="mcq-opt" onclick="pickOpt(this,'q3',true)"> <span class="opt-letter">B</span> f = 7, no — the f=6 node goes first</div>
+        <div class="mcq-opt" onclick="pickOpt(this,'q3',false)"><span class="opt-letter">C</span> f = 7, yes — higher f is better</div>
+        <div class="mcq-opt" onclick="pickOpt(this,'q3',false)"><span class="opt-letter">D</span> f = 12, yes it should</div>
+      </div>
+      <button class="mcq-show-btn" onclick="showWorking('q3')">Show Working ▾</button>
+      <div class="mcq-reveal" id="q3-reveal">
+        $f = g + h = 4 + 3 = \mathbf{7}$<br><br>
+        A* always picks the node with the <strong>lowest f score</strong> next. So the f=6 node would be explored before this f=7 node.<br><br>
+        Think of f as a "total expected trip length" — you always try the shorter-seeming trip first. ✅
+      </div>
+    </div>
+
+    <!-- Q4 -->
+    <div class="mcq-card" id="q4">
+      <span class="mcq-num">Question 4</span>
+      <div class="mcq-q">
+        An obstacle-avoidance robot is in <strong>State 1 (Drive Straight)</strong>. Its front sensor detects an obstacle. According to the state machine, what happens next?
+      </div>
+      <div class="mcq-options">
+        <div class="mcq-opt" onclick="pickOpt(this,'q4',false)"><span class="opt-letter">A</span> It stays in State 1 and drives through the obstacle</div>
+        <div class="mcq-opt" onclick="pickOpt(this,'q4',true)"> <span class="opt-letter">B</span> It switches to State 2 (Turn Left)</div>
+        <div class="mcq-opt" onclick="pickOpt(this,'q4',false)"><span class="opt-letter">C</span> It switches directly to State 3 (Turn Right)</div>
+        <div class="mcq-opt" onclick="pickOpt(this,'q4',false)"><span class="opt-letter">D</span> It stops permanently</div>
+      </div>
+      <button class="mcq-show-btn" onclick="showWorking('q4')">Show Working ▾</button>
+      <div class="mcq-reveal" id="q4-reveal">
+        From the state machine diagram: <strong>State 1 → obstacle ahead → State 2 (Turn Left)</strong>.<br><br>
+        State machines switch based on specific conditions. "Obstacle detected" is the trigger that moves the robot from State 1 to State 2. State 3 (Turn Right) is only reached if the left side is <em>also</em> blocked. ✅
+      </div>
+    </div>
+
+    <!-- Q5 -->
+    <div class="mcq-card" id="q5">
+      <span class="mcq-num">Question 5</span>
+      <div class="mcq-q">
+        Which search algorithm <strong>guarantees finding the shortest path</strong> but uses more memory — BFS or DFS?
+      </div>
+      <div class="mcq-options">
+        <div class="mcq-opt" onclick="pickOpt(this,'q5',false)"><span class="opt-letter">A</span> DFS — it explores deepest paths first</div>
+        <div class="mcq-opt" onclick="pickOpt(this,'q5',true)"> <span class="opt-letter">B</span> BFS — it explores layer by layer so the first path found is always shortest</div>
+        <div class="mcq-opt" onclick="pickOpt(this,'q5',false)"><span class="opt-letter">C</span> Both guarantee the shortest path</div>
+        <div class="mcq-opt" onclick="pickOpt(this,'q5',false)"><span class="opt-letter">D</span> Neither can find the shortest path</div>
+      </div>
+      <button class="mcq-show-btn" onclick="showWorking('q5')">Show Working ▾</button>
+      <div class="mcq-reveal" id="q5-reveal">
+        <strong>BFS (Breadth-First Search)</strong> expands outward ring by ring. The first time it reaches the goal, it must have taken the fewest steps possible — so the path is shortest.<br><br>
+        DFS dives deep along one route first. It might find <em>a</em> path quickly, but not the <em>shortest</em> one.<br><br>
+        The trade-off: BFS keeps all current-level nodes in memory (can be large); DFS only keeps the current path (memory-efficient). ✅
+      </div>
+    </div>
+
+  </div><!-- /mcq-list -->
+</section>
+
 <!-- ═══ COMPETITION CRUNCH ═══ -->
 <div class="crunch">
   <div class="crunch-title">🏆 Competition Crunch — Problem-Solving Framework</div>
@@ -834,5 +1090,31 @@ new_θ = old_θ + Δθ</pre>
 </div>
 
 </main>
+
+<script>
+function pickOpt(el, qid, isCorrect) {
+  const card = document.getElementById(qid);
+  if (card.dataset.answered) return;
+  card.dataset.answered = '1';
+  const opts = card.querySelectorAll('.mcq-opt');
+  opts.forEach(o => {
+    o.style.pointerEvents = 'none';
+    if (o.getAttribute('onclick').includes(',true)')) {
+      o.classList.add('correct');
+      o.querySelector('.opt-letter').textContent += ' ✓';
+    } else if (o === el && !isCorrect) {
+      o.classList.add('wrong');
+    }
+  });
+  showWorking(qid);
+}
+function showWorking(qid) {
+  const reveal = document.getElementById(qid + '-reveal');
+  const btn = document.querySelector('#' + qid + ' .mcq-show-btn');
+  reveal.classList.add('show');
+  if (btn) btn.style.display = 'none';
+  if (window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise([reveal]);
+}
+</script>
 </body>
 </html>

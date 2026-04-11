@@ -481,6 +481,60 @@ pre{
 }
 .next-ch span{ color:var(--a1); font-weight:900; }
 
+/* ── MCQ ── */
+.mcq-list { display: flex; flex-direction: column; gap: 20px; margin: 20px 0; }
+.mcq-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 22px 26px;
+}
+.mcq-num {
+  display: inline-block;
+  background: linear-gradient(135deg, var(--a1), var(--a5));
+  color: #001a14; font-size: .72rem; font-weight: 900;
+  letter-spacing: 1.5px; text-transform: uppercase;
+  padding: 3px 10px; border-radius: 6px; margin-bottom: 12px;
+}
+.mcq-q { font-weight: 700; font-size: .97rem; color: var(--heading); margin-bottom: 16px; line-height: 1.6; }
+.mcq-options { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
+.mcq-opt {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 14px; border-radius: 10px;
+  border: 1px solid var(--border); background: var(--surface2);
+  font-size: .9rem; cursor: pointer;
+  transition: border-color .2s, background .2s;
+  user-select: none;
+}
+.mcq-opt:hover { border-color: var(--a1); background: rgba(0,212,170,.08); }
+.mcq-opt.correct { border-color: var(--a1); background: rgba(0,212,170,.12); color: var(--a1); font-weight: 800; }
+.mcq-opt.wrong   { border-color: var(--a2); background: rgba(255,107,107,.08); color: var(--a2); opacity: .7; }
+.mcq-opt .opt-letter {
+  width: 26px; height: 26px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--surface); border: 1.5px solid var(--border);
+  font-size: .78rem; font-weight: 900; flex-shrink: 0;
+  color: var(--text-muted);
+}
+.mcq-opt.correct .opt-letter { background: var(--a1); border-color: var(--a1); color: #001a14; }
+.mcq-opt.wrong   .opt-letter { background: var(--a2); border-color: var(--a2); color: #330000; }
+.mcq-reveal {
+  display: none;
+  margin-top: 12px; padding: 14px 18px;
+  background: rgba(0,212,170,.07);
+  border: 1px solid rgba(0,212,170,.3);
+  border-radius: 10px; font-size: .88rem; line-height: 1.7;
+}
+.mcq-reveal.show { display: block; }
+.mcq-reveal strong { color: var(--a1); }
+.mcq-show-btn {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 8px; color: var(--text-muted);
+  padding: 7px 16px; cursor: pointer; font-size: .82rem; font-weight: 700;
+  font-family: 'Nunito', sans-serif; transition: all .2s;
+}
+.mcq-show-btn:hover { border-color: var(--a1); color: var(--a1); }
+
 @media(max-width:580px){
   .signal-types,.loop-compare,.pid-grid{ grid-template-columns:1fr; }
   .arch{ flex-direction:column; }
@@ -512,12 +566,13 @@ pre{
     <div class="toc-label">📋 In this chapter</div>
     <div class="toc-grid">
       <a href="#s31" class="toc-item">👁️ 3.1 Sensor Basics</a>
-      <a href="#s32" class="toc-item">📡 3.2 Sensor Types</a>
+      <a href="#s32" class="toc-item">📡 3.2 Sensor Types &amp; LiDAR</a>
       <a href="#s33" class="toc-item">🎛️ 3.3 Open vs Closed Loop</a>
       <a href="#s34" class="toc-item">📊 3.4 PID Control</a>
       <a href="#s35" class="toc-item">🤖 3.5 System Architecture</a>
       <a href="#s36" class="toc-item">🎯 3.6 PWM Motor Control</a>
       <a href="#s37" class="toc-item">🛤️ 3.7 Line Follow &amp; Avoid</a>
+      <a href="#mcq" class="toc-item">🧠 Practice Questions</a>
     </div>
   </div>
 </nav>
@@ -654,38 +709,190 @@ pre{
     </div>
   </div>
 
+  <h3>LiDAR — Laser Distance &amp; Mapping Sensor</h3>
+
+  <p>LiDAR stands for <strong>Li</strong>ght <strong>D</strong>etection <strong>A</strong>nd <strong>R</strong>anging. It works on the same time-of-flight idea as ultrasonic — but uses <strong>laser light pulses</strong> instead of sound, and scans in all directions to build a full 2D map of the surroundings.</p>
+
+  <!-- LiDAR visual -->
+  <div class="ultrasonic-visual">
+    <div style="position:relative;width:100%;height:120px;display:flex;align-items:center;justify-content:center;margin-bottom:18px">
+      <!-- Centre robot -->
+      <span style="font-size:2.4rem;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:2">🤖</span>
+      <!-- Laser beams in 8 directions using SVG -->
+      <svg viewBox="0 0 300 120" style="width:100%;max-width:480px;height:120px;overflow:visible">
+        <!-- beam lines (dashed) -->
+        <g stroke-dasharray="5,4" stroke-width="1.8" opacity="0.7">
+          <line x1="150" y1="60" x2="150" y2="10"  stroke="#00d4aa"/><!-- up -->
+          <line x1="150" y1="60" x2="220" y2="18"  stroke="#00d4aa"/><!-- up-right -->
+          <line x1="150" y1="60" x2="265" y2="60"  stroke="#38b6ff"/><!-- right -->
+          <line x1="150" y1="60" x2="220" y2="102" stroke="#38b6ff"/><!-- down-right -->
+          <line x1="150" y1="60" x2="150" y2="110" stroke="#00d4aa"/><!-- down -->
+          <line x1="150" y1="60" x2="80"  y2="102" stroke="#00d4aa"/><!-- down-left -->
+          <line x1="150" y1="60" x2="35"  y2="60"  stroke="#38b6ff"/><!-- left -->
+          <line x1="150" y1="60" x2="80"  y2="18"  stroke="#38b6ff"/><!-- up-left -->
+        </g>
+        <!-- hit dots with distance labels -->
+        <circle cx="150" cy="10"  r="4" fill="#00d4aa"/>
+        <circle cx="220" cy="18"  r="4" fill="#00d4aa"/>
+        <circle cx="265" cy="60"  r="4" fill="#38b6ff"/>
+        <circle cx="220" cy="102" r="4" fill="#38b6ff"/>
+        <circle cx="150" cy="110" r="4" fill="#00d4aa"/>
+        <circle cx="80"  cy="102" r="4" fill="#00d4aa"/>
+        <circle cx="35"  cy="60"  r="4" fill="#38b6ff"/>
+        <circle cx="80"  cy="18"  r="4" fill="#38b6ff"/>
+        <!-- distance labels -->
+        <text x="155" y="8"   fill="#00d4aa" font-size="9" font-family="Nunito" font-weight="700">0.5 m</text>
+        <text x="225" y="16"  fill="#00d4aa" font-size="9" font-family="Nunito" font-weight="700">0.9 m</text>
+        <text x="268" y="64"  fill="#38b6ff" font-size="9" font-family="Nunito" font-weight="700">1.2 m</text>
+        <text x="222" y="114" fill="#38b6ff" font-size="9" font-family="Nunito" font-weight="700">0.8 m</text>
+        <text x="115" y="118" fill="#00d4aa" font-size="9" font-family="Nunito" font-weight="700">0.5 m</text>
+        <text x="30"  y="114" fill="#00d4aa" font-size="9" font-family="Nunito" font-weight="700">0.7 m</text>
+        <text x="4"   y="64"  fill="#38b6ff" font-size="9" font-family="Nunito" font-weight="700">1.5 m</text>
+        <text x="40"  y="14"  fill="#38b6ff" font-size="9" font-family="Nunito" font-weight="700">1.0 m</text>
+      </svg>
+    </div>
+    <div class="uv-label">Fires laser pulses in all directions → measures time for each echo → builds a full distance map</div>
+  </div>
+
+  <div class="formula-box">
+    $$d = \frac{c \times t}{2}$$
+    <div class="formula-vars">
+      <div class="fv"><span class="fv-sym">d</span><span class="fv-desc">distance to obstacle (metres)</span></div>
+      <div class="fv"><span class="fv-sym">c</span><span class="fv-desc">speed of light ≈ 3 × 10⁸ m/s</span></div>
+      <div class="fv"><span class="fv-sym">t</span><span class="fv-desc">round-trip travel time (seconds)</span></div>
+      <div class="fv"><span class="fv-sym">÷ 2</span><span class="fv-desc">light travels out AND back</span></div>
+    </div>
+    <div style="margin-top:12px;font-size:.85rem;color:var(--text-muted)">Same formula as ultrasonic — only the wave speed changes (light is ~900,000× faster than sound).</div>
+  </div>
+
+  <!-- Ultrasonic vs LiDAR compare -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:18px 0">
+    <div style="border-radius:14px;padding:18px 16px;border:1.5px solid var(--a5);background:rgba(56,182,255,.07)">
+      <div style="font-weight:900;color:var(--a5);margin-bottom:10px">🔊 Ultrasonic</div>
+      <div style="font-size:.83rem;color:var(--text-muted);line-height:1.7">
+        ✔ Cheap and simple<br>
+        ✔ Works in dark or fog<br>
+        ✘ One beam only — one distance at a time<br>
+        ✘ Short range (2 cm – ~4 m)<br>
+        ✘ Struggles with soft / angled surfaces
+      </div>
+    </div>
+    <div style="border-radius:14px;padding:18px 16px;border:1.5px solid var(--a1);background:rgba(0,212,170,.07)">
+      <div style="font-weight:900;color:var(--a1);margin-bottom:10px">🔴 LiDAR</div>
+      <div style="font-size:.83rem;color:var(--text-muted);line-height:1.7">
+        ✔ Scans 360° — builds a full map<br>
+        ✔ Very accurate (&lt; 1 cm error typical)<br>
+        ✔ Long range (up to 100+ m outdoors)<br>
+        ✘ More expensive<br>
+        ✘ Glass &amp; mirrors can fool it
+      </div>
+    </div>
+  </div>
+
+  <div class="tip">
+    <span class="tip-icon">🚗</span>
+    <div><strong>Real-world use:</strong> LiDAR is the "eyes" of self-driving cars and delivery robots. In competition robots it is used for <strong>SLAM</strong> — Simultaneous Localisation And Mapping — where the robot builds a map and figures out its own position at the same time.</div>
+  </div>
+
+  <h3>Camera / Vision Sensor</h3>
+
+  <p>A camera captures a full <strong>image</strong> every frame — giving the robot a rich picture of the whole scene at once, rather than a single measurement. The controller then uses software to extract useful information from that image.</p>
+
+  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px;margin:18px 0">
+    <div style="border-radius:12px;padding:16px 14px;border:1.5px solid var(--border);background:var(--surface)">
+      <div style="font-size:1.6rem;margin-bottom:6px">🎨</div>
+      <div style="font-weight:800;font-size:.88rem;color:var(--heading);margin-bottom:4px">Colour detection</div>
+      <div style="font-size:.78rem;color:var(--text-muted)">Identify objects by colour (e.g. red block vs blue block in sorting tasks)</div>
+    </div>
+    <div style="border-radius:12px;padding:16px 14px;border:1.5px solid var(--border);background:var(--surface)">
+      <div style="font-size:1.6rem;margin-bottom:6px">📐</div>
+      <div style="font-weight:800;font-size:.88rem;color:var(--heading);margin-bottom:4px">Shape recognition</div>
+      <div style="font-size:.78rem;color:var(--text-muted)">Find circles, squares, arrows — useful for target or goal detection</div>
+    </div>
+    <div style="border-radius:12px;padding:16px 14px;border:1.5px solid var(--border);background:var(--surface)">
+      <div style="font-size:1.6rem;margin-bottom:6px">📷</div>
+      <div style="font-weight:800;font-size:.88rem;color:var(--heading);margin-bottom:4px">Line / edge following</div>
+      <div style="font-size:.78rem;color:var(--text-muted)">A wide-angle camera can follow a line far more precisely than two point sensors</div>
+    </div>
+    <div style="border-radius:12px;padding:16px 14px;border:1.5px solid var(--border);background:var(--surface)">
+      <div style="font-size:1.6rem;margin-bottom:6px">🔲</div>
+      <div style="font-weight:800;font-size:.88rem;color:var(--heading);margin-bottom:4px">QR / ArUco markers</div>
+      <div style="font-size:.78rem;color:var(--text-muted)">Read codes placed in the arena to know position, task ID, or score zone</div>
+    </div>
+  </div>
+
+  <div class="tip" style="border-left-color:var(--a4);background:rgba(108,99,255,.07);border-color:rgba(108,99,255,.3)">
+    <span class="tip-icon">💡</span>
+    <div><strong>Camera vs point sensor:</strong> A single camera can replace multiple line sensors, colour sensors, and IR sensors at the cost of needing a more powerful processor to handle the image data. Simple sensors are faster and cheaper for straightforward tasks.</div>
+  </div>
+
   <h3>Other Common Sensors</h3>
   <div class="sensor-grid">
     <div class="sensor-card">
       <div class="sc-icon">🌡️</div>
       <div class="sc-name">Infrared (IR)</div>
-      <div class="sc-detects">IR light / heat</div>
-      <span class="sc-use">Obstacle avoid</span>
+      <div class="sc-detects">IR light reflection</div>
+      <span class="sc-use">Close obstacle detect</span>
     </div>
     <div class="sensor-card">
       <div class="sc-icon">🤜</div>
       <div class="sc-name">Touch / Bump</div>
       <div class="sc-detects">Physical contact</div>
-      <span class="sc-use">Wall detect</span>
+      <span class="sc-use">Wall / edge detect</span>
     </div>
     <div class="sensor-card">
       <div class="sc-icon">🌀</div>
       <div class="sc-name">Gyroscope</div>
-      <div class="sc-detects">Angular velocity</div>
-      <span class="sc-use">Turns / Balance</span>
+      <div class="sc-detects">How fast it rotates</div>
+      <span class="sc-use">Turning / balance</span>
     </div>
     <div class="sensor-card">
       <div class="sc-icon">🔢</div>
       <div class="sc-name">Encoder</div>
       <div class="sc-detects">Wheel rotations</div>
-      <span class="sc-use">Distance / Pos</span>
+      <span class="sc-use">Distance / position</span>
     </div>
     <div class="sensor-card">
       <div class="sc-icon">📐</div>
       <div class="sc-name">Accelerometer</div>
-      <div class="sc-detects">Acceleration / tilt</div>
-      <span class="sc-use">Fall detect</span>
+      <div class="sc-detects">Acceleration &amp; tilt</div>
+      <span class="sc-use">Fall / tilt detect</span>
     </div>
+    <div class="sensor-card">
+      <div class="sc-icon">🧲</div>
+      <div class="sc-name">Magnetic / Compass</div>
+      <div class="sc-detects">Magnetic field direction</div>
+      <span class="sc-use">Heading &amp; navigation</span>
+    </div>
+    <div class="sensor-card">
+      <div class="sc-icon">✋</div>
+      <div class="sc-name">Pressure / Force</div>
+      <div class="sc-detects">Pushing / gripping force</div>
+      <span class="sc-use">Gripper control</span>
+    </div>
+    <div class="sensor-card">
+      <div class="sc-icon">🛰️</div>
+      <div class="sc-name">GPS</div>
+      <div class="sc-detects">Satellite signals</div>
+      <span class="sc-use">Outdoor positioning</span>
+    </div>
+  </div>
+
+  <h3>Sensor Comparison at a Glance</h3>
+  <div class="table-wrap">
+    <table>
+      <thead><tr><th>Sensor</th><th>What it measures</th><th>Typical range</th><th>Best for</th></tr></thead>
+      <tbody>
+        <tr><td>🔊 Ultrasonic</td><td>Distance (1 beam)</td><td>2 cm – 4 m</td><td>Simple obstacle avoidance</td></tr>
+        <tr><td>🔴 LiDAR</td><td>Distance (360° scan)</td><td>0.1 – 100+ m</td><td>Mapping, autonomous navigation</td></tr>
+        <tr><td>📷 Camera</td><td>Full image</td><td>cm – metres</td><td>Colour, shape, marker detection</td></tr>
+        <tr><td>🌡️ IR sensor</td><td>IR reflection / heat</td><td>5 – 80 cm</td><td>Close-range obstacle detection</td></tr>
+        <tr><td>⬛ Greyscale</td><td>Light intensity</td><td>1 – 5 cm</td><td>Line following</td></tr>
+        <tr><td>🔢 Encoder</td><td>Shaft rotation count</td><td>N/A</td><td>Speed &amp; distance tracking</td></tr>
+        <tr><td>🌀 Gyroscope</td><td>Rotation speed</td><td>N/A</td><td>Accurate turning, balance</td></tr>
+        <tr><td>🧲 Magnetic</td><td>Magnetic direction</td><td>N/A</td><td>Robot heading (like a compass)</td></tr>
+      </tbody>
+    </table>
   </div>
 </section>
 
@@ -740,50 +947,91 @@ pre{
     <h2 class="section-title">PID Control</h2>
   </div>
 
-  <p>PID is the most widely used closed-loop control algorithm in robotics. Each letter is a different way of correcting error:</p>
+  <!-- Bicycle analogy -->
+  <div class="tip" style="margin-bottom:22px">
+    <span class="tip-icon">🚲</span>
+    <div>
+      <strong>Think of riding a bicycle in a straight line.</strong><br>
+      You drift a little to the right — you steer left to correct. You don't spin the handlebars wildly; you steer <em>just enough</em> based on how far off you are. And if you were drifting for a long time, you correct a bit more. If you are already turning back fast, you ease off so you don't overshoot. <strong>PID is that exact same three-part thinking — built into the robot's brain.</strong>
+    </div>
+  </div>
+
+  <p><strong>PID</strong> is the most common way a robot continuously corrects itself. The robot checks: <em>How far off am I? Have I been off for a long time? Am I getting better or worse?</em> It uses those three answers to decide how hard to correct. Each letter handles one question:</p>
 
   <div class="pid-grid">
     <div class="pid-card pid-p">
       <div class="pid-letter">P</div>
       <div class="pid-name">Proportional</div>
-      <div class="pid-role">Bigger error → stronger correction. Reacts immediately to how far off you are.</div>
-      <div class="pid-analogy">"How far off am I? Push back by that much."</div>
+      <div class="pid-role">Looks at the <strong>current error</strong> right now. Bigger error → stronger push. Smaller error → gentle nudge.</div>
+      <div class="pid-analogy">🚲 "I've drifted 50 cm — steer a lot. I've drifted 2 cm — steer a tiny bit."</div>
     </div>
     <div class="pid-card pid-i">
       <div class="pid-letter">I</div>
       <div class="pid-name">Integral</div>
-      <div class="pid-role">Fixes persistent small errors that P alone can't fully correct over time.</div>
-      <div class="pid-analogy">"I've been slightly off for a while — build up correction gradually."</div>
+      <div class="pid-role">Keeps a <strong>running total</strong> of all past errors. If there's been a small drift that P couldn't fix, I slowly builds up extra correction.</div>
+      <div class="pid-analogy">🚲 "I've been slightly right of centre for the last 10 seconds — I must be fighting a side-wind, lean left a bit more."</div>
     </div>
     <div class="pid-card pid-d">
       <div class="pid-letter">D</div>
       <div class="pid-name">Derivative</div>
-      <div class="pid-role">Predicts the trend and eases off before overshooting the target.</div>
-      <div class="pid-analogy">"I'm correcting too fast — slow down before I overshoot!"</div>
+      <div class="pid-role">Watches how <strong>fast the error is changing</strong>. If the robot is rushing back to the target too quickly, D eases off so it doesn't overshoot.</div>
+      <div class="pid-analogy">🚲 "I'm snapping back really fast — ease off the handlebars or I'll swing to the other side!"</div>
     </div>
   </div>
 
-  <h3>PID Formula</h3>
-  <div class="formula-box">
-    $$u(t) = K_p \cdot e(t) \;+\; K_i \cdot \int e(t)\,dt \;+\; K_d \cdot \frac{de(t)}{dt}$$
-    <div class="formula-vars">
-      <div class="fv"><span class="fv-sym">u(t)</span><span class="fv-desc">control output (e.g. motor speed)</span></div>
-      <div class="fv"><span class="fv-sym">e(t)</span><span class="fv-desc">current error = target − actual</span></div>
-      <div class="fv"><span class="fv-sym">Kp</span><span class="fv-desc">proportional gain</span></div>
-      <div class="fv"><span class="fv-sym">Ki</span><span class="fv-desc">integral gain</span></div>
-      <div class="fv"><span class="fv-sym">Kd</span><span class="fv-desc">derivative gain</span></div>
+  <h3>The PID Recipe (no calculus needed!)</h3>
+  <div style="background:var(--surface);border:2px solid var(--a4);border-radius:18px;padding:26px 28px;margin:20px 0;position:relative;overflow:hidden;">
+    <div style="position:absolute;top:10px;right:14px;font-size:.62rem;font-weight:900;letter-spacing:3px;color:var(--a4);opacity:.5;">RECIPE</div>
+    <div style="text-align:center;font-size:1.05rem;font-weight:800;color:var(--heading);margin-bottom:18px">
+      Correction = <span style="color:var(--a5)">P part</span> + <span style="color:var(--a4)">I part</span> + <span style="color:var(--a6)">D part</span>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px">
+      <div style="background:rgba(56,182,255,.09);border:1px solid var(--a5);border-radius:12px;padding:14px 16px">
+        <div style="font-weight:900;color:var(--a5);margin-bottom:6px">P part</div>
+        <div style="font-size:.88rem;color:var(--text-muted)">= Kp × <strong style="color:var(--text)">current error</strong><br><em>"How far off am I right now?"</em></div>
+      </div>
+      <div style="background:rgba(108,99,255,.09);border:1px solid var(--a4);border-radius:12px;padding:14px 16px">
+        <div style="font-weight:900;color:var(--a4);margin-bottom:6px">I part</div>
+        <div style="font-size:.88rem;color:var(--text-muted)">= Ki × <strong style="color:var(--text)">sum of all past errors</strong><br><em>"Have I been off for a long time?"</em></div>
+      </div>
+      <div style="background:rgba(255,159,67,.09);border:1px solid var(--a6);border-radius:12px;padding:14px 16px">
+        <div style="font-weight:900;color:var(--a6);margin-bottom:6px">D part</div>
+        <div style="font-size:.88rem;color:var(--text-muted)">= Kd × <strong style="color:var(--text)">change in error since last check</strong><br><em>"Am I getting better or worse fast?"</em></div>
+      </div>
+    </div>
+    <div style="margin-top:16px;font-size:.82rem;color:var(--text-muted);text-align:center">
+      Kp, Ki, Kd are numbers you choose (called <strong style="color:var(--text)">gains</strong>) — bigger number = that part has more influence
     </div>
   </div>
 
-  <h3>Simplified Version</h3>
-  <pre><span class="hl">Output</span>  =  <span class="val">Kp</span> × current error
-        +  <span class="val">Ki</span> × accumulated error (history)
-        +  <span class="val">Kd</span> × rate of change of error (trend)</pre>
+  <h3>Worked Example — Robot Tracking a Line</h3>
+  <div style="background:var(--surface2);border:1px solid var(--border);border-left:4px solid var(--a1);border-radius:14px;padding:20px 24px;margin:16px 0;font-size:.92rem">
+    <p>The robot should be at position 0 (centre of line). The sensor reads it is <strong style="color:var(--a2)">+8 cm to the right</strong>. Set Kp = 2, Ki = 0, Kd = 0 (P-only for now).</p>
+    <p><strong>Error</strong> = target − actual = 0 − 8 = <strong style="color:var(--a2)">−8 cm</strong></p>
+    <p><strong>P correction</strong> = Kp × error = 2 × (−8) = <strong style="color:var(--a1)">−16</strong></p>
+    <p style="margin-bottom:0">The robot steers left by a correction of 16 units — bigger drift → bigger steer. ✅</p>
+  </div>
 
   <h3>Tuning Steps for Competition</h3>
-  <pre><span class="kw">Step 1:</span>  Start with <span class="hl">P only</span> (Ki = Kd = 0) — tune until it basically works
-<span class="kw">Step 2:</span>  Add <span class="hl">D</span> to reduce oscillation and overshooting
-<span class="kw">Step 3:</span>  If there's still a steady error, add a small <span class="hl">I</span> term</pre>
+  <div style="display:flex;flex-direction:column;gap:10px;margin:14px 0">
+    <div style="display:flex;gap:14px;align-items:flex-start;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 18px">
+      <span style="font-size:1.4rem;flex-shrink:0">1️⃣</span>
+      <div><strong style="color:var(--a5)">Start with P only</strong> — turn off I and D (set Ki = Kd = 0). Adjust Kp until the robot roughly reaches the target (it may wobble a bit — that's OK for now).</div>
+    </div>
+    <div style="display:flex;gap:14px;align-items:flex-start;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 18px">
+      <span style="font-size:1.4rem;flex-shrink:0">2️⃣</span>
+      <div><strong style="color:var(--a6)">Add a little D</strong> — this acts like brakes. The robot stops swinging back and forth past the target (overshooting).</div>
+    </div>
+    <div style="display:flex;gap:14px;align-items:flex-start;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px 18px">
+      <span style="font-size:1.4rem;flex-shrink:0">3️⃣</span>
+      <div><strong style="color:var(--a4)">Add a tiny I only if needed</strong> — if the robot always stops a little short of the target (a "stubborn" leftover error), I slowly accumulates extra push to close the gap.</div>
+    </div>
+  </div>
+
+  <div class="tip">
+    <span class="tip-icon">💡</span>
+    <div><strong>Key idea:</strong> In most primary-level competitions, <strong>P-only</strong> (or P+D) is enough. You do not need to understand the maths behind I and D — just know what each letter <em>does</em> and why we might switch it on.</div>
+  </div>
 </section>
 
 <!-- ═══ 3.5 ARCHITECTURE ═══ -->
@@ -848,13 +1096,56 @@ pre{
     <h2 class="section-title">PWM Motor Control</h2>
   </div>
 
-  <p><strong>PWM = Pulse Width Modulation</strong> — controls motor speed by varying how long the signal is "on" vs "off" in each cycle. <span class="exam-tag">Exam: 2021Q5</span></p>
+  <!-- Light-switch analogy -->
+  <div class="tip" style="margin-bottom:20px">
+    <span class="tip-icon">💡</span>
+    <div>
+      <strong>Imagine flicking a light switch very, very fast.</strong><br>
+      If you flick it ON for half a second, then OFF for half a second, the bulb appears to glow at half brightness.
+      If you leave it ON for 9 tenths of a second and OFF for only 1 tenth, it appears nearly full brightness.<br><br>
+      Motors work the same way. The controller switches the power <strong>on and off hundreds of times per second</strong>. The motor spins fast, so these tiny pulses feel like a steady, smooth power — just at a lower average level. That's all PWM is!
+    </div>
+  </div>
 
+  <p><strong>PWM = Pulse Width Modulation</strong> — a way to control motor speed by adjusting how much of each time-slice the power is ON. <span class="exam-tag">Exam: 2021Q5</span></p>
+
+  <!-- Plain-English diagram -->
+  <div style="background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:22px 20px;margin:18px 0">
+    <div style="font-weight:800;color:var(--heading);margin-bottom:16px;font-size:.95rem">How duty cycle controls speed:</div>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+        <div style="width:100px;font-weight:800;color:var(--a6);font-size:.88rem;flex-shrink:0">25% duty</div>
+        <div style="flex:1;min-width:140px;height:22px;border-radius:6px;overflow:hidden;background:rgba(255,159,67,.15);border:1px solid var(--border);display:flex">
+          <div style="width:25%;background:var(--a6);height:100%;border-radius:4px 0 0 4px"></div>
+        </div>
+        <div style="font-size:.82rem;color:var(--text-muted);flex-shrink:0">Slow — ON 1/4 of the time</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+        <div style="width:100px;font-weight:800;color:var(--a6);font-size:.88rem;flex-shrink:0">50% duty</div>
+        <div style="flex:1;min-width:140px;height:22px;border-radius:6px;overflow:hidden;background:rgba(255,159,67,.15);border:1px solid var(--border);display:flex">
+          <div style="width:50%;background:var(--a6);height:100%;border-radius:4px 0 0 4px"></div>
+        </div>
+        <div style="font-size:.82rem;color:var(--text-muted);flex-shrink:0">Half speed — ON half the time</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+        <div style="width:100px;font-weight:800;color:var(--a6);font-size:.88rem;flex-shrink:0">100% duty</div>
+        <div style="flex:1;min-width:140px;height:22px;border-radius:6px;overflow:hidden;background:rgba(255,159,67,.15);border:1px solid var(--border);display:flex">
+          <div style="width:100%;background:var(--a6);height:100%;border-radius:4px"></div>
+        </div>
+        <div style="font-size:.82rem;color:var(--text-muted);flex-shrink:0">Full speed — ON all the time</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>Duty Cycle Formula</h3>
   <div class="formula-box">
-    $$\text{Duty Cycle} = \frac{t_{\text{high}}}{T} \times 100\%$$
+    $$\text{Duty Cycle} = \frac{t_{\text{ON}}}{T} \times 100\%$$
     <div class="formula-vars">
-      <div class="fv"><span class="fv-sym">t<sub>high</sub></span><span class="fv-desc">time signal is HIGH (on) in one period</span></div>
-      <div class="fv"><span class="fv-sym">T</span><span class="fv-desc">total period length</span></div>
+      <div class="fv"><span class="fv-sym">t<sub>ON</sub></span><span class="fv-desc">time the power is ON in one cycle (seconds)</span></div>
+      <div class="fv"><span class="fv-sym">T</span><span class="fv-desc">total length of one cycle (seconds)</span></div>
+    </div>
+    <div style="margin-top:14px;font-size:.88rem;color:var(--text-muted)">
+      Example: ON for 3 ms, OFF for 7 ms → T = 10 ms → Duty Cycle = 3/10 × 100% = <strong style="color:var(--a6)">30%</strong>
     </div>
   </div>
 
@@ -866,6 +1157,9 @@ pre{
       <input type="range" id="pwm-slider" min="0" max="100" value="50" step="5">
     </div>
     <div class="pwm-signal" id="pwm-signal"></div>
+    <div style="font-size:.78rem;color:var(--text-muted);margin-bottom:12px;text-align:center">
+      Orange bars = power ON &nbsp;·&nbsp; Faded bars = power OFF &nbsp;·&nbsp; More orange = more speed
+    </div>
     <div class="pwm-stats">
       <div class="pwm-stat">
         <span class="pwm-stat-val" id="speed-val">50%</span>
@@ -883,19 +1177,22 @@ pre{
   </div>
 
   <h3>Motor Direction Control</h3>
-  <pre><span class="cm"># Pseudocode — motor H-bridge control</span>
+  <p style="font-size:.88rem;color:var(--text-muted);margin-bottom:10px">
+    A motor driver chip (called an <strong style="color:var(--text)">H-bridge</strong>) uses two control pins (IN1, IN2) to choose direction, and PWM to choose speed. Think of IN1/IN2 like a two-way switch: one side makes it go forward, the other makes it reverse.
+  </p>
+  <pre><span class="cm"># Motor direction — pseudocode</span>
 
-<span class="cm"># Forward</span>
-<span class="val">IN1</span> = <span class="hl">HIGH</span>
-<span class="val">IN2</span> = LOW
-<span class="val">PWM</span> = <span class="kw">80%</span>   <span class="cm"># 80% speed</span>
+<span class="cm"># Go FORWARD at 80% speed</span>
+<span class="val">IN1</span> = <span class="hl">HIGH</span>   <span class="cm"># pin 1 ON  → sets direction to forward</span>
+<span class="val">IN2</span> = LOW    <span class="cm"># pin 2 OFF</span>
+<span class="val">PWM</span> = <span class="kw">80%</span>   <span class="cm"># 80% duty cycle → 80% speed</span>
 
-<span class="cm"># Reverse</span>
-<span class="val">IN1</span> = LOW
-<span class="val">IN2</span> = <span class="hl">HIGH</span>
+<span class="cm"># Go REVERSE at 80% speed</span>
+<span class="val">IN1</span> = LOW    <span class="cm"># pin 1 OFF → flips direction</span>
+<span class="val">IN2</span> = <span class="hl">HIGH</span>   <span class="cm"># pin 2 ON</span>
 <span class="val">PWM</span> = <span class="kw">80%</span>
 
-<span class="cm"># Stop</span>
+<span class="cm"># STOP (both pins OFF → no current flows)</span>
 <span class="val">IN1</span> = LOW
 <span class="val">IN2</span> = LOW</pre>
 </section>
@@ -974,13 +1271,131 @@ pre{
 <span class="kw">else</span>:                     Stop → turn left or right to go around</pre>
 </section>
 
+<!-- ═══ MCQ PRACTICE ═══ -->
+<section class="section" id="mcq">
+  <div class="section-header">
+    <span class="section-num">✏️ Quiz</span>
+    <span class="section-emoji">🧠</span>
+    <h2 class="section-title">Practice Questions</h2>
+  </div>
+  <p>Choose the best answer, then click <strong>Show Working</strong> to check.</p>
+
+  <div class="mcq-list">
+
+    <!-- Q1 -->
+    <div class="mcq-card" id="q1">
+      <span class="mcq-num">Question 1</span>
+      <div class="mcq-q">
+        A robot's ultrasonic sensor sends a sound pulse. The echo returns after <strong>0.006 seconds</strong>. How far away is the obstacle? (Speed of sound = 340 m/s)
+      </div>
+      <div class="mcq-options">
+        <div class="mcq-opt" onclick="pickOpt(this,'q1',false)"><span class="opt-letter">A</span> 2.04 m</div>
+        <div class="mcq-opt" onclick="pickOpt(this,'q1',true)"> <span class="opt-letter">B</span> 1.02 m</div>
+        <div class="mcq-opt" onclick="pickOpt(this,'q1',false)"><span class="opt-letter">C</span> 0.51 m</div>
+        <div class="mcq-opt" onclick="pickOpt(this,'q1',false)"><span class="opt-letter">D</span> 4.08 m</div>
+      </div>
+      <button class="mcq-show-btn" onclick="showWorking('q1')">Show Working ▾</button>
+      <div class="mcq-reveal" id="q1-reveal">
+        <strong>Formula:</strong> $d = \dfrac{v \times t}{2}$<br><br>
+        $d = \dfrac{340 \times 0.006}{2} = \dfrac{2.04}{2} = \mathbf{1.02 \text{ m}}$<br><br>
+        We divide by 2 because the sound travels <em>out</em> to the obstacle and <em>back</em> — the round trip is twice the actual distance. ✅
+      </div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="mcq-card" id="q2">
+      <span class="mcq-num">Question 2</span>
+      <div class="mcq-q">
+        A PWM signal has a period of <strong>20 ms</strong>. The power is ON for <strong>5 ms</strong>. What is the duty cycle?
+      </div>
+      <div class="mcq-options">
+        <div class="mcq-opt" onclick="pickOpt(this,'q2',false)"><span class="opt-letter">A</span> 5%</div>
+        <div class="mcq-opt" onclick="pickOpt(this,'q2',false)"><span class="opt-letter">B</span> 20%</div>
+        <div class="mcq-opt" onclick="pickOpt(this,'q2',true)"> <span class="opt-letter">C</span> 25%</div>
+        <div class="mcq-opt" onclick="pickOpt(this,'q2',false)"><span class="opt-letter">D</span> 75%</div>
+      </div>
+      <button class="mcq-show-btn" onclick="showWorking('q2')">Show Working ▾</button>
+      <div class="mcq-reveal" id="q2-reveal">
+        <strong>Formula:</strong> $\text{Duty Cycle} = \dfrac{t_{\text{ON}}}{T} \times 100\%$<br><br>
+        $= \dfrac{5}{20} \times 100\% = \mathbf{25\%}$<br><br>
+        25% duty cycle means the motor runs at roughly 25% of full speed. ✅
+      </div>
+    </div>
+
+    <!-- Q3 -->
+    <div class="mcq-card" id="q3">
+      <span class="mcq-num">Question 3</span>
+      <div class="mcq-q">
+        In a line-following robot, the <strong>left sensor reads 0</strong> (black) and the <strong>right sensor reads 1</strong> (white). What should the robot do?
+      </div>
+      <div class="mcq-options">
+        <div class="mcq-opt" onclick="pickOpt(this,'q3',false)"><span class="opt-letter">A</span> Turn left</div>
+        <div class="mcq-opt" onclick="pickOpt(this,'q3',true)"> <span class="opt-letter">B</span> Turn right</div>
+        <div class="mcq-opt" onclick="pickOpt(this,'q3',false)"><span class="opt-letter">C</span> Go straight</div>
+        <div class="mcq-opt" onclick="pickOpt(this,'q3',false)"><span class="opt-letter">D</span> Stop</div>
+      </div>
+      <button class="mcq-show-btn" onclick="showWorking('q3')">Show Working ▾</button>
+      <div class="mcq-reveal" id="q3-reveal">
+        Left = 0 means the <strong>left sensor is over the black line</strong> — the robot has drifted to the <strong>left</strong>.<br><br>
+        To get back on track, the robot must <strong>turn right</strong>. ✅<br><br>
+        Memory tip: the sensor that reads 0 (sees the line) is the side you've drifted toward — turn the other way.
+      </div>
+    </div>
+
+    <!-- Q4 -->
+    <div class="mcq-card" id="q4">
+      <span class="mcq-num">Question 4</span>
+      <div class="mcq-q">
+        A robot's PID controller has <strong>Kp = 3</strong>, Ki = 0, Kd = 0. The robot is currently <strong>4 cm to the left</strong> of the target line (error = +4 cm). What is the correction output?
+      </div>
+      <div class="mcq-options">
+        <div class="mcq-opt" onclick="pickOpt(this,'q4',false)"><span class="opt-letter">A</span> 4</div>
+        <div class="mcq-opt" onclick="pickOpt(this,'q4',false)"><span class="opt-letter">B</span> 3</div>
+        <div class="mcq-opt" onclick="pickOpt(this,'q4',true)"> <span class="opt-letter">C</span> 12</div>
+        <div class="mcq-opt" onclick="pickOpt(this,'q4',false)"><span class="opt-letter">D</span> 7</div>
+      </div>
+      <button class="mcq-show-btn" onclick="showWorking('q4')">Show Working ▾</button>
+      <div class="mcq-reveal" id="q4-reveal">
+        With only the P part active:<br><br>
+        <strong>Correction = Kp × error = 3 × 4 = 12</strong><br><br>
+        The correction output is 12 (steering right to get back on the line). The bigger the error, the stronger the correction — that's what "Proportional" means. ✅
+      </div>
+    </div>
+
+    <!-- Q5 -->
+    <div class="mcq-card" id="q5">
+      <span class="mcq-num">Question 5</span>
+      <div class="mcq-q">
+        Which control system is <strong>more accurate</strong> for a robot that must stop at an exact position — open-loop or closed-loop? Why?
+      </div>
+      <div class="mcq-options">
+        <div class="mcq-opt" onclick="pickOpt(this,'q5',false)"><span class="opt-letter">A</span> Open-loop — it's simpler and faster</div>
+        <div class="mcq-opt" onclick="pickOpt(this,'q5',true)"> <span class="opt-letter">B</span> Closed-loop — it uses sensor feedback to keep correcting until the target is reached</div>
+        <div class="mcq-opt" onclick="pickOpt(this,'q5',false)"><span class="opt-letter">C</span> Both are equally accurate</div>
+        <div class="mcq-opt" onclick="pickOpt(this,'q5',false)"><span class="opt-letter">D</span> Open-loop — it uses more sensors</div>
+      </div>
+      <button class="mcq-show-btn" onclick="showWorking('q5')">Show Working ▾</button>
+      <div class="mcq-reveal" id="q5-reveal">
+        <strong>Closed-loop</strong> is more accurate because it continuously checks its own position using a sensor.<br><br>
+        Open-loop just sends a command (e.g. "run for 2 seconds") and <em>hopes</em> the robot ends up at the right place. If the floor is slippery or the battery is low, there's no correction.<br><br>
+        Closed-loop detects any error and adjusts until the robot is actually at the target. ✅
+      </div>
+    </div>
+
+  </div><!-- /mcq-list -->
+</section>
+
 <!-- ═══ SUMMARY ═══ -->
 <div class="summary-section" id="summary">
   <div class="summary-title">📝 Chapter Summary — Key Points to Remember</div>
   <table class="summary-table">
     <tr>
       <td>Ultrasonic distance</td>
-      <td>$$d = \frac{v \times t}{2}$$ &nbsp; (sound speed ≈ 340 m/s)</td>
+      <td>$$d = \frac{v \times t}{2}$$ &nbsp; (sound ≈ 340 m/s) — 1 beam, short range</td>
+    </tr>
+    <tr>
+      <td>LiDAR distance</td>
+      <td>$$d = \frac{c \times t}{2}$$ &nbsp; (light ≈ 3×10⁸ m/s) — 360° scan, builds a map</td>
     </tr>
     <tr>
       <td>Closed-loop control</td>
@@ -988,11 +1403,11 @@ pre{
     </tr>
     <tr>
       <td>PID</td>
-      <td>P = proportional · I = integral · D = derivative</td>
+      <td><strong>P</strong> = correct by current error &nbsp;·&nbsp; <strong>I</strong> = correct built-up past error &nbsp;·&nbsp; <strong>D</strong> = prevent overshoot</td>
     </tr>
     <tr>
       <td>PWM duty cycle</td>
-      <td>$$\text{Duty Cycle} = \frac{t_{\text{high}}}{T} \times 100\%$$</td>
+      <td>$$\text{Duty Cycle} = \frac{t_{\text{ON}}}{T} \times 100\%$$ &nbsp; (higher % = faster motor)</td>
     </tr>
     <tr>
       <td>Line-following</td>
@@ -1052,6 +1467,31 @@ function updatePWM(){
 
 slider.addEventListener('input', updatePWM);
 updatePWM();
+
+// ── MCQ ──
+function pickOpt(el, qid, isCorrect) {
+  const card = document.getElementById(qid);
+  if (card.dataset.answered) return;
+  card.dataset.answered = '1';
+  const opts = card.querySelectorAll('.mcq-opt');
+  opts.forEach(o => {
+    o.style.pointerEvents = 'none';
+    if (o.getAttribute('onclick').includes(',true)')) {
+      o.classList.add('correct');
+      o.querySelector('.opt-letter').textContent += ' ✓';
+    } else if (o === el && !isCorrect) {
+      o.classList.add('wrong');
+    }
+  });
+  showWorking(qid);
+}
+function showWorking(qid) {
+  const reveal = document.getElementById(qid + '-reveal');
+  const btn = document.querySelector('#' + qid + ' .mcq-show-btn');
+  reveal.classList.add('show');
+  if (btn) btn.style.display = 'none';
+  if (window.MathJax && MathJax.typesetPromise) MathJax.typesetPromise([reveal]);
+}
 </script>
 
 </body>
