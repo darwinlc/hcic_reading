@@ -4,25 +4,25 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>HCIC Study Guide</title>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
 <style>
 :root {
   --nav-w:     270px;
-  --bg:        #080b14;
-  --nav-bg:    #0d1121;
-  --nav-border:#1a2240;
-  --surf:      #111524;
-  --surf2:     #181d30;
-  --border:    #1e2640;
-  --c1: #f7971e;
-  --c2: #6c63ff;
-  --c3: #00d4aa;
-  --c4: #e040fb;
-  --c5: #ffd740;
-  --text:       #d8e4f8;
-  --text-muted: #5a6e96;
-  --heading:    #eef2ff;
+  --bg:        #F2F2F7;
+  --nav-bg:    #FFFFFF;
+  --nav-border: rgba(60,60,67,0.12);
+  --surf:      #FFFFFF;
+  --surf2:     #F2F2F7;
+  --border:    rgba(60,60,67,0.12);
+  --c1: #FF9500;
+  --c2: #007AFF;
+  --c3: #34C759;
+  --c4: #AF52DE;
+  --c5: #FFCC00;
+  --text:       #1C1C1E;
+  --text-muted: #6C6C70;
+  --heading:    #1C1C1E;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -32,7 +32,7 @@ body {
   height: 100vh;
   overflow: hidden;
   background: var(--bg);
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Poppins', sans-serif;
   color: var(--text);
 }
 
@@ -43,6 +43,7 @@ body {
   height: 100vh;
   background: var(--nav-bg);
   border-right: 1px solid var(--nav-border);
+  box-shadow: 2px 0 12px rgba(0,0,0,0.06);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -129,12 +130,12 @@ body {
   color: inherit;
 }
 .nav-item:hover {
-  background: var(--surf2);
+  background: rgba(0,122,255,0.06);
   transform: translateX(3px);
 }
 .nav-item.active {
-  background: var(--surf2);
-  border-color: var(--active-color, var(--c1));
+  background: rgba(0,122,255,0.08);
+  border-color: var(--active-color, var(--c2));
   transform: translateX(3px);
 }
 
@@ -158,16 +159,16 @@ body {
   margin-top: 1px;
 }
 .nav-badge {
-  font-size: .65rem; font-weight: 900;
+  font-size: .65rem; font-weight: 700;
   padding: 2px 7px; border-radius: 8px;
   flex-shrink: 0;
-  background: var(--surf);
+  background: var(--surf2);
   color: var(--text-muted);
   border: 1px solid var(--border);
 }
 .nav-item.active .nav-badge {
-  background: rgba(255,255,255,.08);
-  color: var(--heading);
+  background: rgba(0,122,255,0.1);
+  color: var(--c2);
 }
 
 /* visited checkmark */
@@ -202,6 +203,7 @@ body {
   height: 52px;
   background: var(--nav-bg);
   border-bottom: 1px solid var(--nav-border);
+  box-shadow: 0 1px 6px rgba(0,0,0,0.06);
   display: flex;
   align-items: center;
   padding: 0 18px;
@@ -213,14 +215,14 @@ body {
 #menu-btn {
   background: var(--surf2);
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: 10px;
   color: var(--text);
   width: 34px; height: 34px;
   display: flex; align-items: center; justify-content: center;
   cursor: pointer; font-size: 1rem; flex-shrink: 0;
   transition: background .2s;
 }
-#menu-btn:hover { background: var(--border); }
+#menu-btn:hover { background: rgba(0,0,0,0.08); }
 
 #topbar-title {
   font-weight: 800; font-size: .95rem;
@@ -234,17 +236,17 @@ body {
 .topbar-btn {
   background: var(--surf2);
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: 10px;
   color: var(--text-muted);
   padding: 5px 12px;
-  cursor: pointer; font-size: .8rem; font-weight: 700;
+  cursor: pointer; font-size: .8rem; font-weight: 600;
   transition: all .2s;
-  font-family: 'Nunito', sans-serif;
+  font-family: 'Poppins', sans-serif;
   display: flex; align-items: center; gap: 5px;
 }
 .topbar-btn:hover:not(:disabled) {
-  background: var(--border);
-  color: var(--text);
+  background: rgba(0,122,255,0.08);
+  color: var(--c2);
 }
 .topbar-btn:disabled {
   opacity: .3; cursor: not-allowed;
@@ -298,21 +300,24 @@ body {
   margin-bottom: 32px;
 }
 .wc {
-  border-radius: 14px; padding: 18px 14px;
+  border-radius: 16px; padding: 18px 14px;
   border: 1.5px solid; cursor: pointer;
+  background: #FFFFFF;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
   transition: transform .25s, box-shadow .25s;
   text-align: center;
 }
-.wc:hover { transform: translateY(-5px); box-shadow: 0 12px 32px rgba(0,0,0,.4); }
+.wc:hover { transform: translateY(-6px); box-shadow: 0 12px 28px rgba(0,0,0,0.13); }
 .wc-icon { font-size: 1.8rem; margin-bottom: 8px; }
-.wc-title { font-weight: 800; font-size: .85rem; color: var(--heading); }
+.wc-title { font-weight: 700; font-size: .85rem; color: var(--heading); }
 .wc-sub   { font-size: .72rem; color: var(--text-muted); margin-top: 4px; }
 
 .welcome-tip {
   font-size: .8rem; color: var(--text-muted);
   background: var(--surf);
   border: 1px solid var(--border);
-  border-radius: 10px; padding: 10px 18px;
+  border-radius: 12px; padding: 10px 18px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
 }
 
 /* loading spinner */
@@ -322,6 +327,10 @@ body {
   background: var(--bg); z-index: 4;
   pointer-events: none;
   opacity: 0; transition: opacity .2s;
+}
+.spinner {
+  border-top-color: var(--c2) !important;
+  border-color: var(--border);
 }
 #loader.show { opacity: 1; }
 .spinner {
