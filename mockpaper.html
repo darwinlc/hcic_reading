@@ -1,0 +1,1613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HCIC Mock Test Papers</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Sora:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --surface2: #1c2333;
+    --border: #30363d;
+    --accent: #00d4aa;
+    --accent2: #f78166;
+    --accent3: #d2a8ff;
+    --text: #e6edf3;
+    --text-dim: #8b949e;
+    --correct: #3fb950;
+    --wrong: #f85149;
+    --warn: #d29922;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Sora', sans-serif;
+    min-height: 100vh;
+  }
+
+  /* ── Header ── */
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 20px 32px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .logo {
+    width: 40px; height: 40px;
+    background: var(--accent);
+    border-radius: 10px;
+    display: grid; place-items: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700; font-size: 18px;
+    color: #0d1117;
+    flex-shrink: 0;
+  }
+  header h1 { font-size: 20px; font-weight: 800; }
+  header span { font-size: 13px; color: var(--text-dim); display: block; }
+
+  /* ── Set Tabs ── */
+  .tab-bar {
+    display: flex; gap: 4px;
+    padding: 16px 32px 0;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+  }
+  .tab-btn {
+    padding: 8px 20px;
+    border: 1px solid transparent;
+    border-bottom: none;
+    border-radius: 8px 8px 0 0;
+    background: transparent;
+    color: var(--text-dim);
+    font-family: 'Sora', sans-serif;
+    font-size: 13px; font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all .2s;
+  }
+  .tab-btn:hover { color: var(--text); background: var(--surface2); }
+  .tab-btn.active {
+    background: var(--bg);
+    color: var(--accent);
+    border-color: var(--border);
+  }
+
+  /* ── Paper ── */
+  .paper { display: none; padding: 32px; max-width: 860px; margin: 0 auto; }
+  .paper.active { display: block; }
+
+  .paper-header {
+    background: linear-gradient(135deg, #1e2a3a 0%, #1a2332 100%);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin-bottom: 28px;
+    position: relative;
+    overflow: hidden;
+  }
+  .paper-header::before {
+    content: '';
+    position: absolute; top: 0; right: 0;
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, rgba(0,212,170,.08) 0%, transparent 70%);
+  }
+  .paper-header h2 {
+    font-size: 22px; font-weight: 800;
+    color: var(--accent); margin-bottom: 6px;
+  }
+  .paper-header p { font-size: 13px; color: var(--text-dim); line-height: 1.6; }
+  .meta-row {
+    display: flex; flex-wrap: wrap; gap: 16px;
+    margin-top: 14px;
+  }
+  .meta-tag {
+    background: rgba(0,212,170,.1);
+    border: 1px solid rgba(0,212,170,.25);
+    color: var(--accent);
+    border-radius: 6px;
+    padding: 4px 12px;
+    font-size: 12px; font-weight: 600;
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* ── Section heading ── */
+  .section-title {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 14px; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .08em;
+    color: var(--accent3);
+    margin: 28px 0 16px;
+  }
+  .section-title::after {
+    content: ''; flex: 1; height: 1px;
+    background: linear-gradient(90deg, var(--border), transparent);
+  }
+
+  /* ── Questions ── */
+  .question-block {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px 22px;
+    margin-bottom: 14px;
+    transition: border-color .2s;
+  }
+  .question-block:hover { border-color: #444c56; }
+
+  .q-number {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px; font-weight: 700;
+    color: var(--accent2);
+    letter-spacing: .06em;
+    margin-bottom: 8px;
+  }
+  .q-text {
+    font-size: 14.5px; line-height: 1.7;
+    margin-bottom: 14px;
+  }
+  code {
+    font-family: 'JetBrains Mono', monospace;
+    background: #0d1117;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1px 6px;
+    font-size: 13px;
+    color: #79c0ff;
+  }
+  pre {
+    font-family: 'JetBrains Mono', monospace;
+    background: #0d1117;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    font-size: 13px;
+    color: #e6edf3;
+    line-height: 1.6;
+    overflow-x: auto;
+    margin: 10px 0 14px;
+  }
+  pre .kw { color: #ff7b72; }
+  pre .fn { color: #d2a8ff; }
+  pre .str { color: #a5d6ff; }
+  pre .num { color: #79c0ff; }
+  pre .cm { color: #8b949e; }
+
+  /* ── MCQ options ── */
+  .options { display: grid; gap: 8px; }
+  .option-label {
+    display: flex; align-items: flex-start; gap: 10px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    cursor: pointer;
+    transition: all .15s;
+    font-size: 13.5px; line-height: 1.5;
+    user-select: none;
+  }
+  .option-label:hover {
+    border-color: var(--accent);
+    background: rgba(0,212,170,.05);
+  }
+  .option-label input[type="radio"] { display: none; }
+  .option-label.selected {
+    border-color: var(--accent);
+    background: rgba(0,212,170,.1);
+    color: var(--accent);
+  }
+  .option-label.correct {
+    border-color: var(--correct);
+    background: rgba(63,185,80,.12);
+    color: var(--correct);
+  }
+  .option-label.wrong {
+    border-color: var(--wrong);
+    background: rgba(248,81,73,.1);
+    color: var(--wrong);
+  }
+  .opt-key {
+    font-family: 'JetBrains Mono', monospace;
+    font-weight: 700; font-size: 12px;
+    background: rgba(255,255,255,.06);
+    border-radius: 4px;
+    padding: 1px 6px;
+    flex-shrink: 0; margin-top: 1px;
+  }
+
+  /* ── Open-ended ── */
+  .open-q {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px 22px;
+    margin-bottom: 14px;
+  }
+  .answer-box {
+    width: 100%;
+    min-height: 120px;
+    background: #0d1117;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    padding: 12px 14px;
+    resize: vertical;
+    outline: none;
+    line-height: 1.6;
+    transition: border-color .2s;
+    margin-top: 12px;
+  }
+  .answer-box:focus { border-color: var(--accent); }
+  .marks-badge {
+    float: right;
+    font-size: 11px; font-weight: 700;
+    color: var(--warn);
+    font-family: 'JetBrains Mono', monospace;
+    background: rgba(210,153,34,.1);
+    border: 1px solid rgba(210,153,34,.3);
+    border-radius: 4px;
+    padding: 2px 8px;
+    margin-left: 8px;
+  }
+
+  /* ── Actions ── */
+  .actions {
+    display: flex; gap: 12px; flex-wrap: wrap;
+    margin-top: 28px;
+  }
+  .btn {
+    padding: 10px 22px;
+    border-radius: 8px;
+    border: none;
+    font-family: 'Sora', sans-serif;
+    font-size: 13px; font-weight: 700;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: #0d1117;
+  }
+  .btn-primary:hover { background: #00bfa0; transform: translateY(-1px); }
+  .btn-outline {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text);
+  }
+  .btn-outline:hover { border-color: var(--text-dim); }
+
+  /* ── Score panel ── */
+  .score-panel {
+    display: none;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 22px 26px;
+    margin-top: 22px;
+  }
+  .score-panel.visible { display: block; }
+  .score-big {
+    font-size: 36px; font-weight: 800;
+    font-family: 'JetBrains Mono', monospace;
+    color: var(--accent);
+  }
+  .score-label { font-size: 13px; color: var(--text-dim); margin-bottom: 12px; }
+  .answer-key { margin-top: 14px; }
+  .ak-item {
+    display: flex; gap: 10px; align-items: flex-start;
+    padding: 8px 0;
+    border-top: 1px solid var(--border);
+    font-size: 13px; line-height: 1.5;
+  }
+  .ak-q { font-weight: 700; color: var(--accent2); width: 28px; flex-shrink: 0; }
+  .ak-ans { color: var(--correct); font-family: 'JetBrains Mono', monospace; font-weight: 600; }
+  .ak-exp { color: var(--text-dim); font-size: 12.5px; }
+  .verdict { display: inline-block; font-size: 11px; font-weight: 700;
+    padding: 2px 8px; border-radius: 4px; margin-left: 6px; }
+  .verdict.right { background: rgba(63,185,80,.15); color: var(--correct); }
+  .verdict.wrong2 { background: rgba(248,81,73,.12); color: var(--wrong); }
+
+  @media (max-width: 600px) {
+    .paper { padding: 20px 16px; }
+    .tab-bar { padding: 12px 16px 0; }
+    header { padding: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">HC</div>
+  <div>
+    <h1>HCIC Mock Test Papers</h1>
+    <span>Hwa Chong Info-communications Challenge — Practice Set · Primary 6</span>
+  </div>
+</header>
+
+<div class="tab-bar">
+  <button class="tab-btn active" onclick="switchSet(0)">Set 1</button>
+  <button class="tab-btn" onclick="switchSet(1)">Set 2</button>
+  <button class="tab-btn" onclick="switchSet(2)">Set 3</button>
+  <button class="tab-btn" onclick="switchSet(3)">Set 4</button>
+  <button class="tab-btn" onclick="switchSet(4)">Set 5</button>
+</div>
+
+<!-- ══════════════════════════════════════════════
+     SET 1
+══════════════════════════════════════════════ -->
+<div class="paper active" id="set0">
+  <div class="paper-header">
+    <h2>Mock Paper — Set 1</h2>
+    <p>Section A: 15 Multiple Choice Questions (1 mark each) &nbsp;|&nbsp; Section B: 2 Open-Ended Questions</p>
+    <div class="meta-row">
+      <span class="meta-tag">⏱ 90 minutes</span>
+      <span class="meta-tag">📘 Python · Robotics · AI Knowledge</span>
+      <span class="meta-tag">🏆 HCIC Style</span>
+    </div>
+  </div>
+
+  <div class="section-title">Section A — Multiple Choice (15 × 1 mark)</div>
+
+  <!-- Q1 -->
+  <div class="question-block">
+    <div class="q-number">QUESTION 01</div>
+    <div class="q-text">What is the output of the following Python code?
+<pre><span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="num">1</span>, <span class="num">5</span>):
+    <span class="fn">print</span>(i * <span class="num">2</span>, end=<span class="str">" "</span>)</pre></div>
+    <div class="options" id="s0q1">
+      <label class="option-label" onclick="selectOpt(this,'s0q1','A')"><input type="radio"><span class="opt-key">A</span> 2 4 6 8 10</label>
+      <label class="option-label" onclick="selectOpt(this,'s0q1','B')"><input type="radio"><span class="opt-key">B</span> 2 4 6 8</label>
+      <label class="option-label" onclick="selectOpt(this,'s0q1','C')"><input type="radio"><span class="opt-key">C</span> 1 2 3 4</label>
+      <label class="option-label" onclick="selectOpt(this,'s0q1','D')"><input type="radio"><span class="opt-key">D</span> 0 2 4 6 8</label>
+    </div>
+  </div>
+
+  <!-- Q2 -->
+  <div class="question-block">
+    <div class="q-number">QUESTION 02</div>
+    <div class="q-text">In a Caesar Cipher with a shift of 3, what does the letter <code>D</code> encrypt to?</div>
+    <div class="options" id="s0q2">
+      <label class="option-label" onclick="selectOpt(this,'s0q2','A')"><input type="radio"><span class="opt-key">A</span> F</label>
+      <label class="option-label" onclick="selectOpt(this,'s0q2','B')"><input type="radio"><span class="opt-key">B</span> G</label>
+      <label class="option-label" onclick="selectOpt(this,'s0q2','C')"><input type="radio"><span class="opt-key">C</span> A</label>
+      <label class="option-label" onclick="selectOpt(this,'s0q2','D')"><input type="radio"><span class="opt-key">D</span> H</label>
+    </div>
+  </div>
+
+  <!-- Q3 -->
+  <div class="question-block">
+    <div class="q-number">QUESTION 03</div>
+    <div class="q-text">Which Python data type would best store a student's name?</div>
+    <div class="options" id="s0q3">
+      <label class="option-label" onclick="selectOpt(this,'s0q3','A')"><input type="radio"><span class="opt-key">A</span> int</label>
+      <label class="option-label" onclick="selectOpt(this,'s0q3','B')"><input type="radio"><span class="opt-key">B</span> bool</label>
+      <label class="option-label" onclick="selectOpt(this,'s0q3','C')"><input type="radio"><span class="opt-key">C</span> str</label>
+      <label class="option-label" onclick="selectOpt(this,'s0q3','D')"><input type="radio"><span class="opt-key">D</span> float</label>
+    </div>
+  </div>
+
+  <!-- Q4 -->
+  <div class="question-block">
+    <div class="q-number">QUESTION 04</div>
+    <div class="q-text">What does the following Python code print?
+<pre>x = [<span class="num">10</span>, <span class="num">20</span>, <span class="num">30</span>, <span class="num">40</span>]
+<span class="fn">print</span>(x[<span class="num">2</span>])</pre></div>
+    <div class="options" id="s0q4">
+      <label class="option-label" onclick="selectOpt(this,'s0q4','A')"><input type="radio"><span class="opt-key">A</span> 20</label>
+      <label class="option-label" onclick="selectOpt(this,'s0q4','B')"><input type="radio"><span class="opt-key">B</span> 10</label>
+      <label class="option-label" onclick="selectOpt(this,'s0q4','C')"><input type="radio"><span class="opt-key">C</span> 30</label>
+      <label class="option-label" onclick="selectOpt(this,'s0q4','D')"><input type="radio"><span class="opt-key">D</span> 40</label>
+    </div>
+  </div>
+
+  <!-- Q5 -->
+  <div class="question-block">
+    <div class="q-number">QUESTION 05</div>
+    <div class="q-text">A LEGO Spike Prime robot has a colour sensor. Which of the following is a typical use of a colour sensor in a line-following robot?</div>
+    <div class="options" id="s0q5">
+      <label class="option-label" onclick="selectOpt(this,'s0q5','A')"><input type="radio"><span class="opt-key">A</span> Detecting the distance to an obstacle</label>
+      <label class="option-label" onclick="selectOpt(this,'s0q5','B')"><input type="radio"><span class="opt-key">B</span> Detecting whether the surface below is black or white to stay on a track</label>
+      <label class="option-label" onclick="selectOpt(this,'s0q5','C')"><input type="radio"><span class="opt-key">C</span> Measuring the robot's speed</label>
+      <label class="option-label" onclick="selectOpt(this,'s0q5','D')"><input type="radio"><span class="opt-key">D</span> Counting the number of rotations of the wheel</label>
+    </div>
+  </div>
+
+  <!-- Q6 -->
+  <div class="question-block">
+    <div class="q-number">QUESTION 06</div>
+    <div class="q-text">What is the binary representation of the decimal number <strong>13</strong>?</div>
+    <div class="options" id="s0q6">
+      <label class="option-label" onclick="selectOpt(this,'s0q6','A')"><input type="radio"><span class="opt-key">A</span> 1011</label>
+      <label class="option-label" onclick="selectOpt(this,'s0q6','B')"><input type="radio"><span class="opt-key">B</span> 1101</label>
+      <label class="option-label" onclick="selectOpt(this,'s0q6','C')"><input type="radio"><span class="opt-key">C</span> 1110</label>
+      <label class="option-label" onclick="selectOpt(this,'s0q6','D')"><input type="radio"><span class="opt-key">D</span> 1001</label>
+    </div>
+  </div>
+
+  <!-- Q7 -->
+  <div class="question-block">
+    <div class="q-number">QUESTION 07</div>
+    <div class="q-text">Which Python keyword is used to define a function?</div>
+    <div class="options" id="s0q7">
+      <label class="option-label" onclick="selectOpt(this,'s0q7','A')"><input type="radio"><span class="opt-key">A</span> func</label>
+      <label class="option-label" onclick="selectOpt(this,'s0q7','B')"><input type="radio"><span class="opt-key">B</span> define</label>
+      <label class="option-label" onclick="selectOpt(this,'s0q7','C')"><input type="radio"><span class="opt-key">C</span> def</label>
+      <label class="option-label" onclick="selectOpt(this,'s0q7','D')"><input type="radio"><span class="opt-key">D</span> function</label>
+    </div>
+  </div>
+
+  <!-- Q8 -->
+  <div class="question-block">
+    <div class="q-number">QUESTION 08</div>
+    <div class="q-text">OpenAI's family of large language models (GPT) stands for:</div>
+    <div class="options" id="s0q8">
+      <label class="option-label" onclick="selectOpt(this,'s0q8','A')"><input type="radio"><span class="opt-key">A</span> General Processing Technology</label>
+      <label class="option-label" onclick="selectOpt(this,'s0q8','B')"><input type="radio"><span class="opt-key">B</span> Generative Pre-trained Transformer</label>
+      <label class="option-label" onclick="selectOpt(this,'s0q8','C')"><input type="radio"><span class="opt-key">C</span> Guided Pattern Training</label>
+      <label class="option-label" onclick="selectOpt(this,'s0q8','D')"><input type="radio"><span class="opt-key">D</span> Global Predictive Text</label>
+    </div>
+  </div>
+
+  <!-- Q9 -->
+  <div class="question-block">
+    <div class="q-number">QUESTION 09</div>
+    <div class="q-text">What does the <code>len()</code> function do in Python?</div>
+    <div class="options" id="s0q9">
+      <label class="option-label" onclick="selectOpt(this,'s0q9','A')"><input type="radio"><span class="opt-key">A</span> Returns the largest item in a list</label>
+      <label class="option-label" onclick="selectOpt(this,'s0q9','B')"><input type="radio"><span class="opt-key">B</span> Returns the number of items in an object</label>
+      <label class="option-label" onclick="selectOpt(this,'s0q9','C')"><input type="radio"><span class="opt-key">C</span> Converts a value to an integer</label>
+      <label class="option-label" onclick="selectOpt(this,'s0q9','D')"><input type="radio"><span class="opt-key">D</span> Returns the last item in a list</label>
+    </div>
+  </div>
+
+  <!-- Q10 -->
+  <div class="question-block">
+    <div class="q-number">QUESTION 10</div>
+    <div class="q-text">A microcontroller used commonly in robotics projects for beginners is:</div>
+    <div class="options" id="s0q10">
+      <label class="option-label" onclick="selectOpt(this,'s0q10','A')"><input type="radio"><span class="opt-key">A</span> Arduino Uno</label>
+      <label class="option-label" onclick="selectOpt(this,'s0q10','B')"><input type="radio"><span class="opt-key">B</span> Intel Core i9</label>
+      <label class="option-label" onclick="selectOpt(this,'s0q10','C')"><input type="radio"><span class="opt-key">C</span> Nvidia A100</label>
+      <label class="option-label" onclick="selectOpt(this,'s0q10','D')"><input type="radio"><span class="opt-key">D</span> AMD Ryzen 7</label>
+    </div>
+  </div>
+
+  <!-- Q11 -->
+  <div class="question-block">
+    <div class="q-number">QUESTION 11</div>
+    <div class="q-text">What is the output of <code>7 % 3</code> in Python?</div>
+    <div class="options" id="s0q11">
+      <label class="option-label" onclick="selectOpt(this,'s0q11','A')"><input type="radio"><span class="opt-key">A</span> 2</label>
+      <label class="option-label" onclick="selectOpt(this,'s0q11','B')"><input type="radio"><span class="opt-key">B</span> 3</label>
+      <label class="option-label" onclick="selectOpt(this,'s0q11','C')"><input type="radio"><span class="opt-key">C</span> 1</label>
+      <label class="option-label" onclick="selectOpt(this,'s0q11','D')"><input type="radio"><span class="opt-key">D</span> 4</label>
+    </div>
+  </div>
+
+  <!-- Q12 -->
+  <div class="question-block">
+    <div class="q-number">QUESTION 12</div>
+    <div class="q-text">Google DeepMind's AI model series used for advanced reasoning and multimodal tasks is called:</div>
+    <div class="options" id="s0q12">
+      <label class="option-label" onclick="selectOpt(this,'s0q12','A')"><input type="radio"><span class="opt-key">A</span> Gemini</label>
+      <label class="option-label" onclick="selectOpt(this,'s0q12','B')"><input type="radio"><span class="opt-key">B</span> Bard</label>
+      <label class="option-label" onclick="selectOpt(this,'s0q12','C')"><input type="radio"><span class="opt-key">C</span> Claude</label>
+      <label class="option-label" onclick="selectOpt(this,'s0q12','D')"><input type="radio"><span class="opt-key">D</span> LLaMA</label>
+    </div>
+  </div>
+
+  <!-- Q13 -->
+  <div class="question-block">
+    <div class="q-number">QUESTION 13</div>
+    <div class="q-text">Which of the following correctly creates a list in Python?</div>
+    <div class="options" id="s0q13">
+      <label class="option-label" onclick="selectOpt(this,'s0q13','A')"><input type="radio"><span class="opt-key">A</span> <code>mylist = {1, 2, 3}</code></label>
+      <label class="option-label" onclick="selectOpt(this,'s0q13','B')"><input type="radio"><span class="opt-key">B</span> <code>mylist = (1, 2, 3)</code></label>
+      <label class="option-label" onclick="selectOpt(this,'s0q13','C')"><input type="radio"><span class="opt-key">C</span> <code>mylist = [1, 2, 3]</code></label>
+      <label class="option-label" onclick="selectOpt(this,'s0q13','D')"><input type="radio"><span class="opt-key">D</span> <code>mylist = &lt;1, 2, 3&gt;</code></label>
+    </div>
+  </div>
+
+  <!-- Q14 -->
+  <div class="question-block">
+    <div class="q-number">QUESTION 14</div>
+    <div class="q-text">In pseudocode, what does the following do?<br><br>
+      <code>IF score >= 75 THEN output "Pass" ELSE output "Fail"</code></div>
+    <div class="options" id="s0q14">
+      <label class="option-label" onclick="selectOpt(this,'s0q14','A')"><input type="radio"><span class="opt-key">A</span> Always prints "Pass"</label>
+      <label class="option-label" onclick="selectOpt(this,'s0q14','B')"><input type="radio"><span class="opt-key">B</span> Prints "Pass" if score is 75 or more, otherwise "Fail"</label>
+      <label class="option-label" onclick="selectOpt(this,'s0q14','C')"><input type="radio"><span class="opt-key">C</span> Prints "Fail" if score is 75 or more</label>
+      <label class="option-label" onclick="selectOpt(this,'s0q14','D')"><input type="radio"><span class="opt-key">D</span> Prints both "Pass" and "Fail"</label>
+    </div>
+  </div>
+
+  <!-- Q15 -->
+  <div class="question-block">
+    <div class="q-number">QUESTION 15</div>
+    <div class="q-text">Meta AI's open-source large language model series is named:</div>
+    <div class="options" id="s0q15">
+      <label class="option-label" onclick="selectOpt(this,'s0q15','A')"><input type="radio"><span class="opt-key">A</span> Mistral</label>
+      <label class="option-label" onclick="selectOpt(this,'s0q15','B')"><input type="radio"><span class="opt-key">B</span> LLaMA</label>
+      <label class="option-label" onclick="selectOpt(this,'s0q15','C')"><input type="radio"><span class="opt-key">C</span> Falcon</label>
+      <label class="option-label" onclick="selectOpt(this,'s0q15','D')"><input type="radio"><span class="opt-key">D</span> Grok</label>
+    </div>
+  </div>
+
+  <div class="section-title">Section B — Open-Ended Questions</div>
+
+  <div class="open-q">
+    <div class="q-number">QUESTION 16 <span class="marks-badge">[5 marks]</span></div>
+    <div class="q-text">Write a Python function called <code>count_vowels</code> that takes a string as input and returns the number of vowels (a, e, i, o, u — both uppercase and lowercase) in that string.<br><br>
+    Example: <code>count_vowels("Hello World")</code> should return <code>3</code>.</div>
+    <textarea class="answer-box" placeholder="# Write your Python code here..."></textarea>
+  </div>
+
+  <div class="open-q">
+    <div class="q-number">QUESTION 17 <span class="marks-badge">[5 marks]</span></div>
+    <div class="q-text">A LEGO Spike Prime robot is placed at position (0, 0) facing North. It receives the following commands in order:<br><br>
+    • Move forward 3 steps<br>
+    • Turn right 90°<br>
+    • Move forward 2 steps<br>
+    • Turn right 90°<br>
+    • Move forward 1 step<br><br>
+    (a) What are the robot's final coordinates (x, y)?<br>
+    (b) Which direction is the robot facing at the end?</div>
+    <textarea class="answer-box" placeholder="Write your answer here..."></textarea>
+  </div>
+
+  <div class="actions">
+    <button class="btn btn-primary" onclick="submitSet(0)">Submit & Check MCQ Score</button>
+    <button class="btn btn-outline" onclick="resetSet(0)">Reset</button>
+  </div>
+  <div class="score-panel" id="score0"></div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+     SET 2
+══════════════════════════════════════════════ -->
+<div class="paper" id="set1">
+  <div class="paper-header">
+    <h2>Mock Paper — Set 2</h2>
+    <p>Section A: 15 Multiple Choice Questions (1 mark each) &nbsp;|&nbsp; Section B: 2 Open-Ended Questions</p>
+    <div class="meta-row">
+      <span class="meta-tag">⏱ 90 minutes</span>
+      <span class="meta-tag">📘 Python · Robotics · AI Knowledge</span>
+      <span class="meta-tag">🏆 HCIC Style</span>
+    </div>
+  </div>
+
+  <div class="section-title">Section A — Multiple Choice (15 × 1 mark)</div>
+
+  <div class="question-block">
+    <div class="q-number">QUESTION 01</div>
+    <div class="q-text">What is the output of this code?
+<pre>total = <span class="num">0</span>
+<span class="kw">for</span> n <span class="kw">in</span> [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>, <span class="num">4</span>, <span class="num">5</span>]:
+    total += n
+<span class="fn">print</span>(total)</pre></div>
+    <div class="options" id="s1q1">
+      <label class="option-label" onclick="selectOpt(this,'s1q1','A')"><input type="radio"><span class="opt-key">A</span> 10</label>
+      <label class="option-label" onclick="selectOpt(this,'s1q1','B')"><input type="radio"><span class="opt-key">B</span> 15</label>
+      <label class="option-label" onclick="selectOpt(this,'s1q1','C')"><input type="radio"><span class="opt-key">C</span> 5</label>
+      <label class="option-label" onclick="selectOpt(this,'s1q1','D')"><input type="radio"><span class="opt-key">D</span> 14</label>
+    </div>
+  </div>
+
+  <div class="question-block">
+    <div class="q-number">QUESTION 02</div>
+    <div class="q-text">Decode the Caesar Cipher message <code>KHoor</code> with a shift of 3 (decrypt).</div>
+    <div class="options" id="s1q2">
+      <label class="option-label" onclick="selectOpt(this,'s1q2','A')"><input type="radio"><span class="opt-key">A</span> World</label>
+      <label class="option-label" onclick="selectOpt(this,'s1q2','B')"><input type="radio"><span class="opt-key">B</span> Hello</label>
+      <label class="option-label" onclick="selectOpt(this,'s1q2','C')"><input type="radio"><span class="opt-key">C</span> Hillo</label>
+      <label class="option-label" onclick="selectOpt(this,'s1q2','D')"><input type="radio"><span class="opt-key">D</span> Jello</label>
+    </div>
+  </div>
+
+  <div class="question-block">
+    <div class="q-number">QUESTION 03</div>
+    <div class="q-text">Which of the following is a correct <code>if</code> statement in Python?</div>
+    <div class="options" id="s1q3">
+      <label class="option-label" onclick="selectOpt(this,'s1q3','A')"><input type="radio"><span class="opt-key">A</span> <code>if x = 5:</code></label>
+      <label class="option-label" onclick="selectOpt(this,'s1q3','B')"><input type="radio"><span class="opt-key">B</span> <code>if (x == 5)</code></label>
+      <label class="option-label" onclick="selectOpt(this,'s1q3','C')"><input type="radio"><span class="opt-key">C</span> <code>if x == 5:</code></label>
+      <label class="option-label" onclick="selectOpt(this,'s1q3','D')"><input type="radio"><span class="opt-key">D</span> <code>if x === 5:</code></label>
+    </div>
+  </div>
+
+  <div class="question-block">
+    <div class="q-number">QUESTION 04</div>
+    <div class="q-text">What decimal number does the binary <code>1010</code> represent?</div>
+    <div class="options" id="s1q4">
+      <label class="option-label" onclick="selectOpt(this,'s1q4','A')"><input type="radio"><span class="opt-key">A</span> 8</label>
+      <label class="option-label" onclick="selectOpt(this,'s1q4','B')"><input type="radio"><span class="opt-key">B</span> 12</label>
+      <label class="option-label" onclick="selectOpt(this,'s1q4','C')"><input type="radio"><span class="opt-key">C</span> 10</label>
+      <label class="option-label" onclick="selectOpt(this,'s1q4','D')"><input type="radio"><span class="opt-key">D</span> 11</label>
+    </div>
+  </div>
+
+  <div class="question-block">
+    <div class="q-number">QUESTION 05</div>
+    <div class="q-text">Anthropic's family of AI assistants is named:</div>
+    <div class="options" id="s1q5">
+      <label class="option-label" onclick="selectOpt(this,'s1q5','A')"><input type="radio"><span class="opt-key">A</span> Gemini</label>
+      <label class="option-label" onclick="selectOpt(this,'s1q5','B')"><input type="radio"><span class="opt-key">B</span> GPT</label>
+      <label class="option-label" onclick="selectOpt(this,'s1q5','C')"><input type="radio"><span class="opt-key">C</span> Claude</label>
+      <label class="option-label" onclick="selectOpt(this,'s1q5','D')"><input type="radio"><span class="opt-key">D</span> LLaMA</label>
+    </div>
+  </div>
+
+  <div class="question-block">
+    <div class="q-number">QUESTION 06</div>
+    <div class="q-text">What is the correct Python syntax to append an element <code>5</code> to a list called <code>nums</code>?</div>
+    <div class="options" id="s1q6">
+      <label class="option-label" onclick="selectOpt(this,'s1q6','A')"><input type="radio"><span class="opt-key">A</span> <code>nums.add(5)</code></label>
+      <label class="option-label" onclick="selectOpt(this,'s1q6','B')"><input type="radio"><span class="opt-key">B</span> <code>nums.push(5)</code></label>
+      <label class="option-label" onclick="selectOpt(this,'s1q6','C')"><input type="radio"><span class="opt-key">C</span> <code>nums.append(5)</code></label>
+      <label class="option-label" onclick="selectOpt(this,'s1q6','D')"><input type="radio"><span class="opt-key">D</span> <code>nums.insert(5)</code></label>
+    </div>
+  </div>
+
+  <div class="question-block">
+    <div class="q-number">QUESTION 07</div>
+    <div class="q-text">A robot's ultrasonic sensor is mainly used to:</div>
+    <div class="options" id="s1q7">
+      <label class="option-label" onclick="selectOpt(this,'s1q7','A')"><input type="radio"><span class="opt-key">A</span> Detect colours on the floor</label>
+      <label class="option-label" onclick="selectOpt(this,'s1q7','B')"><input type="radio"><span class="opt-key">B</span> Measure the distance to an object in front of the robot</label>
+      <label class="option-label" onclick="selectOpt(this,'s1q7','C')"><input type="radio"><span class="opt-key">C</span> Count the number of wheel rotations</label>
+      <label class="option-label" onclick="selectOpt(this,'s1q7','D')"><input type="radio"><span class="opt-key">D</span> Play sounds</label>
+    </div>
+  </div>
+
+  <div class="question-block">
+    <div class="q-number">QUESTION 08</div>
+    <div class="q-text">What does this function return?
+<pre><span class="kw">def</span> <span class="fn">double</span>(n):
+    <span class="kw">return</span> n * <span class="num">2</span>
+
+<span class="fn">print</span>(<span class="fn">double</span>(<span class="num">7</span>))</pre></div>
+    <div class="options" id="s1q8">
+      <label class="option-label" onclick="selectOpt(this,'s1q8','A')"><input type="radio"><span class="opt-key">A</span> 7</label>
+      <label class="option-label" onclick="selectOpt(this,'s1q8','B')"><input type="radio"><span class="opt-key">B</span> 14</label>
+      <label class="option-label" onclick="selectOpt(this,'s1q8','C')"><input type="radio"><span class="opt-key">C</span> 49</label>
+      <label class="option-label" onclick="selectOpt(this,'s1q8','D')"><input type="radio"><span class="opt-key">D</span> 72</label>
+    </div>
+  </div>
+
+  <div class="question-block">
+    <div class="q-number">QUESTION 09</div>
+    <div class="q-text">Which AI company created the "o3" and "o4-mini" reasoning model series?</div>
+    <div class="options" id="s1q9">
+      <label class="option-label" onclick="selectOpt(this,'s1q9','A')"><input type="radio"><span class="opt-key">A</span> Google DeepMind</label>
+      <label class="option-label" onclick="selectOpt(this,'s1q9','B')"><input type="radio"><span class="opt-key">B</span> Anthropic</label>
+      <label class="option-label" onclick="selectOpt(this,'s1q9','C')"><input type="radio"><span class="opt-key">C</span> OpenAI</label>
+      <label class="option-label" onclick="selectOpt(this,'s1q9','D')"><input type="radio"><span class="opt-key">D</span> Meta AI</label>
+    </div>
+  </div>
+
+  <div class="question-block">
+    <div class="q-number">QUESTION 10</div>
+    <div class="q-text">What is the value of <code>2 ** 4</code> in Python?</div>
+    <div class="options" id="s1q10">
+      <label class="option-label" onclick="selectOpt(this,'s1q10','A')"><input type="radio"><span class="opt-key">A</span> 8</label>
+      <label class="option-label" onclick="selectOpt(this,'s1q10','B')"><input type="radio"><span class="opt-key">B</span> 16</label>
+      <label class="option-label" onclick="selectOpt(this,'s1q10','C')"><input type="radio"><span class="opt-key">C</span> 24</label>
+      <label class="option-label" onclick="selectOpt(this,'s1q10','D')"><input type="radio"><span class="opt-key">D</span> 6</label>
+    </div>
+  </div>
+
+  <div class="question-block">
+    <div class="q-number">QUESTION 11</div>
+    <div class="q-text">In a flowchart, a diamond shape represents:</div>
+    <div class="options" id="s1q11">
+      <label class="option-label" onclick="selectOpt(this,'s1q11','A')"><input type="radio"><span class="opt-key">A</span> Input / Output</label>
+      <label class="option-label" onclick="selectOpt(this,'s1q11','B')"><input type="radio"><span class="opt-key">B</span> A process / calculation step</label>
+      <label class="option-label" onclick="selectOpt(this,'s1q11','C')"><input type="radio"><span class="opt-key">C</span> A decision / condition</label>
+      <label class="option-label" onclick="selectOpt(this,'s1q11','D')"><input type="radio"><span class="opt-key">D</span> Start / End</label>
+    </div>
+  </div>
+
+  <div class="question-block">
+    <div class="q-number">QUESTION 12</div>
+    <div class="q-text">Elon Musk's AI company, which created the "Grok" large language model, is called:</div>
+    <div class="options" id="s1q12">
+      <label class="option-label" onclick="selectOpt(this,'s1q12','A')"><input type="radio"><span class="opt-key">A</span> SpaceX AI</label>
+      <label class="option-label" onclick="selectOpt(this,'s1q12','B')"><input type="radio"><span class="opt-key">B</span> xAI</label>
+      <label class="option-label" onclick="selectOpt(this,'s1q12','C')"><input type="radio"><span class="opt-key">C</span> Tesla AI</label>
+      <label class="option-label" onclick="selectOpt(this,'s1q12','D')"><input type="radio"><span class="opt-key">D</span> Neuralink</label>
+    </div>
+  </div>
+
+  <div class="question-block">
+    <div class="q-number">QUESTION 13</div>
+    <div class="q-text">What will the following code print?
+<pre>word = <span class="str">"Python"</span>
+<span class="fn">print</span>(word[<span class="num">0</span>] + word[-<span class="num">1</span>])</pre></div>
+    <div class="options" id="s1q13">
+      <label class="option-label" onclick="selectOpt(this,'s1q13','A')"><input type="radio"><span class="opt-key">A</span> Pn</label>
+      <label class="option-label" onclick="selectOpt(this,'s1q13','B')"><input type="radio"><span class="opt-key">B</span> Py</label>
+      <label class="option-label" onclick="selectOpt(this,'s1q13','C')"><input type="radio"><span class="opt-key">C</span> on</label>
+      <label class="option-label" onclick="selectOpt(this,'s1q13','D')"><input type="radio"><span class="opt-key">D</span> Ph</label>
+    </div>
+  </div>
+
+  <div class="question-block">
+    <div class="q-number">QUESTION 14</div>
+    <div class="q-text">Which sensor on a LEGO Spike Prime robot measures how hard something is pushed against it?</div>
+    <div class="options" id="s1q14">
+      <label class="option-label" onclick="selectOpt(this,'s1q14','A')"><input type="radio"><span class="opt-key">A</span> Ultrasonic sensor</label>
+      <label class="option-label" onclick="selectOpt(this,'s1q14','B')"><input type="radio"><span class="opt-key">B</span> Colour sensor</label>
+      <label class="option-label" onclick="selectOpt(this,'s1q14','C')"><input type="radio"><span class="opt-key">C</span> Gyro sensor</label>
+      <label class="option-label" onclick="selectOpt(this,'s1q14','D')"><input type="radio"><span class="opt-key">D</span> Force sensor</label>
+    </div>
+  </div>
+
+  <div class="question-block">
+    <div class="q-number">QUESTION 15</div>
+    <div class="q-text">In the string <code>"Singapore"</code>, what does <code>"Singapore"[3:7]</code> return?</div>
+    <div class="options" id="s1q15">
+      <label class="option-label" onclick="selectOpt(this,'s1q15','A')"><input type="radio"><span class="opt-key">A</span> "Sing"</label>
+      <label class="option-label" onclick="selectOpt(this,'s1q15','B')"><input type="radio"><span class="opt-key">B</span> "gapo"</label>
+      <label class="option-label" onclick="selectOpt(this,'s1q15','C')"><input type="radio"><span class="opt-key">C</span> "apor"</label>
+      <label class="option-label" onclick="selectOpt(this,'s1q15','D')"><input type="radio"><span class="opt-key">D</span> "ingap"</label>
+    </div>
+  </div>
+
+  <div class="section-title">Section B — Open-Ended Questions</div>
+
+  <div class="open-q">
+    <div class="q-number">QUESTION 16 <span class="marks-badge">[5 marks]</span></div>
+    <div class="q-text">Write a Python program that asks the user to enter a number and prints whether it is <strong>Even</strong> or <strong>Odd</strong>.<br><br>
+    Example output for input <code>7</code>: <code>7 is Odd</code><br>
+    Example output for input <code>4</code>: <code>4 is Even</code></div>
+    <textarea class="answer-box" placeholder="# Write your Python code here..."></textarea>
+  </div>
+
+  <div class="open-q">
+    <div class="q-number">QUESTION 17 <span class="marks-badge">[5 marks]</span></div>
+    <div class="q-text">Explain in your own words what <strong>machine learning</strong> is and give ONE real-life example of where it is used today. Your answer should be 3–5 sentences.</div>
+    <textarea class="answer-box" placeholder="Write your answer here..."></textarea>
+  </div>
+
+  <div class="actions">
+    <button class="btn btn-primary" onclick="submitSet(1)">Submit & Check MCQ Score</button>
+    <button class="btn btn-outline" onclick="resetSet(1)">Reset</button>
+  </div>
+  <div class="score-panel" id="score1"></div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+     SET 3
+══════════════════════════════════════════════ -->
+<div class="paper" id="set2">
+  <div class="paper-header">
+    <h2>Mock Paper — Set 3</h2>
+    <p>Section A: 15 Multiple Choice Questions (1 mark each) &nbsp;|&nbsp; Section B: 2 Open-Ended Questions</p>
+    <div class="meta-row">
+      <span class="meta-tag">⏱ 90 minutes</span>
+      <span class="meta-tag">📘 Python · Robotics · AI Knowledge</span>
+      <span class="meta-tag">🏆 HCIC Style</span>
+    </div>
+  </div>
+
+  <div class="section-title">Section A — Multiple Choice (15 × 1 mark)</div>
+
+  <div class="question-block">
+    <div class="q-number">QUESTION 01</div>
+    <div class="q-text">What is the output?
+<pre>nums = [<span class="num">5</span>, <span class="num">3</span>, <span class="num">8</span>, <span class="num">1</span>]
+nums.<span class="fn">sort</span>()
+<span class="fn">print</span>(nums)</pre></div>
+    <div class="options" id="s2q1">
+      <label class="option-label" onclick="selectOpt(this,'s2q1','A')"><input type="radio"><span class="opt-key">A</span> [5, 3, 8, 1]</label>
+      <label class="option-label" onclick="selectOpt(this,'s2q1','B')"><input type="radio"><span class="opt-key">B</span> [8, 5, 3, 1]</label>
+      <label class="option-label" onclick="selectOpt(this,'s2q1','C')"><input type="radio"><span class="opt-key">C</span> [1, 3, 5, 8]</label>
+      <label class="option-label" onclick="selectOpt(this,'s2q1','D')"><input type="radio"><span class="opt-key">D</span> [1, 5, 3, 8]</label>
+    </div>
+  </div>
+
+  <div class="question-block">
+    <div class="q-number">QUESTION 02</div>
+    <div class="q-text">The message <code>ATTACK</code> is encoded using a Caesar Cipher with shift 1. What is the ciphertext?</div>
+    <div class="options" id="s2q2">
+      <label class="option-label" onclick="selectOpt(this,'s2q2','A')"><input type="radio"><span class="opt-key">A</span> BUUBDL</label>
+      <label class="option-label" onclick="selectOpt(this,'s2q2','B')"><input type="radio"><span class="opt-key">B</span> BTTACK</label>
+      <label class="option-label" onclick="selectOpt(this,'s2q2','C')"><input type="radio"><span class="opt-key">C</span> ATTZCK</label>
+      <label class="option-label" onclick="selectOpt(this,'s2q2','D')"><input type="radio"><span class="opt-key">D</span> ZSSZBJ</label>
+    </div>
+  </div>
+
+  <div class="question-block">
+    <div class="q-number">QUESTION 03</div>
+    <div class="q-text">How many bits are in one byte?</div>
+    <div class="options" id="s2q3">
+      <label class="option-label" onclick="selectOpt(this,'s2q3','A')"><input type="radio"><span class="opt-key">A</span> 4</label>
+      <label class="option-label" onclick="selectOpt(this,'s2q3','B')"><input type="radio"><span class="opt-key">B</span> 16</label>
+      <label class="option-label" onclick="selectOpt(this,'s2q3','C')"><input type="radio"><span class="opt-key">C</span> 8</label>
+      <label class="option-label" onclick="selectOpt(this,'s2q3','D')"><input type="radio"><span class="opt-key">D</span> 32</label>
+    </div>
+  </div>
+
+  <div class="question-block">
+    <div class="q-number">QUESTION 04</div>
+    <div class="q-text">What does <code>str(42)</code> return in Python?</div>
+    <div class="options" id="s2q4">
+      <label class="option-label" onclick="selectOpt(this,'s2q4','A')"><input type="radio"><span class="opt-key">A</span> The integer 42</label>
+      <label class="option-label" onclick="selectOpt(this,'s2q4','B')"><input type="radio"><span class="opt-key">B</span> The string "42"</label>
+      <label class="option-label" onclick="selectOpt(this,'s2q4','C')"><input type="radio"><span class="opt-key">C</span> The float 42.0</label>
+      <label class="option-label" onclick="selectOpt(this,'s2q4','D')"><input type="radio"><span class="opt-key">D</span> An error</label>
+    </div>
+  </div>
+
+  <div class="question-block">
+    <div class="q-number">QUESTION 05</div>
+    <div class="q-text">Which AI model family is developed by Microsoft-backed OpenAI and named with the prefix "o" to highlight its reasoning capability (e.g. o1, o3)?</div>
+    <div class="options" id="s2q5">
+      <label class="option-label" onclick="selectOpt(this,'s2q5','A')"><input type="radio"><span class="opt-key">A</span> Gemini Ultra</label>
+      <label class="option-label" onclick="selectOpt(this,'s2q5','B')"><input type="radio"><span class="opt-key">B</span> Claude Opus</label>
+      <label class="option-label" onclick="selectOpt(this,'s2q5','C')"><input type="radio"><span class="opt-key">C</span> OpenAI o-series</label>
+      <label class="option-label" onclick="selectOpt(this,'s2q5','D')"><input type="radio"><span class="opt-key">D</span> LLaMA 3</label>
+    </div>
+  </div>
+
+  <div class="question-block">
+    <div class="q-number">QUESTION 06</div>
+    <div class="q-text">A <code>while</code> loop runs as long as its condition is:</div>
+    <div class="options" id="s2q6">
+      <label class="option-label" onclick="selectOpt(this,'s2q6','A')"><input type="radio"><span class="opt-key">A</span> False</label>
+      <label class="option-label" onclick="selectOpt(this,'s2q6','B')"><input type="radio"><span class="opt-key">B</span> True</label>
+      <label class="option-label" onclick="selectOpt(this,'s2q6','C')"><input type="radio"><span class="opt-key">C</span> Zero</label>
+      <label class="option-label" onclick="selectOpt(this,'s2q6','D')"><input type="radio"><span class="opt-key">D</span> None</label>
+    </div>
+  </div>
+
+  <div class="question-block">
+    <div class="q-number">QUESTION 07</div>
+    <div class="q-text">In LEGO Spike Prime, the gyro/motion sensor measures:</div>
+    <div class="options" id="s2q7">
+      <label class="option-label" onclick="selectOpt(this,'s2q7','A')"><input type="radio"><span class="opt-key">A</span> Distance to the nearest wall</label>
+      <label class="option-label" onclick="selectOpt(this,'s2q7','B')"><input type="radio"><span class="opt-key">B</span> Colour of the surface</label>
+      <label class="option-label" onclick="selectOpt(this,'s2q7','C')"><input type="radio"><span class="opt-key">C</span> The tilt and rotation angle of the hub</label>
+      <label class="option-label" onclick="selectOpt(this,'s2q7','D')"><input type="radio"><span class="opt-key">D</span> The temperature of the motor</label>
+    </div>
+  </div>
+
+  <div class="question-block">
+    <div class="q-number">QUESTION 08</div>
+    <div class="q-text">Which of the following expressions evaluates to <code>True</code> in Python?</div>
+    <div class="options" id="s2q8">
+      <label class="option-label" onclick="selectOpt(this,'s2q8','A')"><input type="radio"><span class="opt-key">A</span> <code>5 > 10</code></label>
+      <label class="option-label" onclick="selectOpt(this,'s2q8','B')"><input type="radio"><span class="opt-key">B</span> <code>3 == 4</code></label>
+      <label class="option-label" onclick="selectOpt(this,'s2q8','C')"><input type="radio"><span class="opt-key">C</span> <code>10 >= 10</code></label>
+      <label class="option-label" onclick="selectOpt(this,'s2q8','D')"><input type="radio"><span class="opt-key">D</span> <code>7 != 7</code></label>
+    </div>
+  </div>
+
+  <div class="question-block">
+    <div class="q-number">QUESTION 09</div>
+    <div class="q-text">The "Gemini 2.0 Flash" AI model is made by:</div>
+    <div class="options" id="s2q9">
+      <label class="option-label" onclick="selectOpt(this,'s2q9','A')"><input type="radio"><span class="opt-key">A</span> Meta</label>
+      <label class="option-label" onclick="selectOpt(this,'s2q9','B')"><input type="radio"><span class="opt-key">B</span> Microsoft</label>
+      <label class="option-label" onclick="selectOpt(this,'s2q9','C')"><input type="radio"><span class="opt-key">C</span> Google DeepMind</label>
+      <label class="option-label" onclick="selectOpt(this,'s2q9','D')"><input type="radio"><span class="opt-key">D</span> OpenAI</label>
+    </div>
+  </div>
+
+  <div class="question-block">
+    <div class="q-number">QUESTION 10</div>
+    <div class="q-text">How many times does the loop body execute?
+<pre><span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="num">2</span>, <span class="num">10</span>, <span class="num">2</span>):
+    <span class="fn">print</span>(i)</pre></div>
+    <div class="options" id="s2q10">
+      <label class="option-label" onclick="selectOpt(this,'s2q10','A')"><input type="radio"><span class="opt-key">A</span> 5</label>
+      <label class="option-label" onclick="selectOpt(this,'s2q10','B')"><input type="radio"><span class="opt-key">B</span> 8</label>
+      <label class="option-label" onclick="selectOpt(this,'s2q10','C')"><input type="radio"><span class="opt-key">C</span> 4</label>
+      <label class="option-label" onclick="selectOpt(this,'s2q10','D')"><input type="radio"><span class="opt-key">D</span> 3</label>
+    </div>
+  </div>
+
+  <div class="question-block">
+    <div class="q-number">QUESTION 11</div>
+    <div class="q-text">In Python, which keyword exits a loop immediately?</div>
+    <div class="options" id="s2q11">
+      <label class="option-label" onclick="selectOpt(this,'s2q11','A')"><input type="radio"><span class="opt-key">A</span> stop</label>
+      <label class="option-label" onclick="selectOpt(this,'s2q11','B')"><input type="radio"><span class="opt-key">B</span> exit</label>
+      <label class="option-label" onclick="selectOpt(this,'s2q11','C')"><input type="radio"><span class="opt-key">C</span> break</label>
+      <label class="option-label" onclick="selectOpt(this,'s2q11','D')"><input type="radio"><span class="opt-key">D</span> end</label>
+    </div>
+  </div>
+
+  <div class="question-block">
+    <div class="q-number">QUESTION 12</div>
+    <div class="q-text">The French AI startup that created the "Mistral" open-source language model is called:</div>
+    <div class="options" id="s2q12">
+      <label class="option-label" onclick="selectOpt(this,'s2q12','A')"><input type="radio"><span class="opt-key">A</span> Mistral AI</label>
+      <label class="option-label" onclick="selectOpt(this,'s2q12','B')"><input type="radio"><span class="opt-key">B</span> Hugging Face</label>
+      <label class="option-label" onclick="selectOpt(this,'s2q12','C')"><input type="radio"><span class="opt-key">C</span> Stability AI</label>
+      <label class="option-label" onclick="selectOpt(this,'s2q12','D')"><input type="radio"><span class="opt-key">D</span> Cohere</label>
+    </div>
+  </div>
+
+  <div class="question-block">
+    <div class="q-number">QUESTION 13</div>
+    <div class="q-text">What does the following output?
+<pre><span class="fn">print</span>(<span class="str">"Ha"</span> * <span class="num">3</span>)</pre></div>
+    <div class="options" id="s2q13">
+      <label class="option-label" onclick="selectOpt(this,'s2q13','A')"><input type="radio"><span class="opt-key">A</span> Ha Ha Ha</label>
+      <label class="option-label" onclick="selectOpt(this,'s2q13','B')"><input type="radio"><span class="opt-key">B</span> HaHaHa</label>
+      <label class="option-label" onclick="selectOpt(this,'s2q13','C')"><input type="radio"><span class="opt-key">C</span> Ha3</label>
+      <label class="option-label" onclick="selectOpt(this,'s2q13','D')"><input type="radio"><span class="opt-key">D</span> Error</label>
+    </div>
+  </div>
+
+  <div class="question-block">
+    <div class="q-number">QUESTION 14</div>
+    <div class="q-text">In robotics, PID stands for:</div>
+    <div class="options" id="s2q14">
+      <label class="option-label" onclick="selectOpt(this,'s2q14','A')"><input type="radio"><span class="opt-key">A</span> Power, Input, Direction</label>
+      <label class="option-label" onclick="selectOpt(this,'s2q14','B')"><input type="radio"><span class="opt-key">B</span> Proportional, Integral, Derivative</label>
+      <label class="option-label" onclick="selectOpt(this,'s2q14','C')"><input type="radio"><span class="opt-key">C</span> Program, Iterate, Debug</label>
+      <label class="option-label" onclick="selectOpt(this,'s2q14','D')"><input type="radio"><span class="opt-key">D</span> Position, Index, Data</label>
+    </div>
+  </div>
+
+  <div class="question-block">
+    <div class="q-number">QUESTION 15</div>
+    <div class="q-text">What is the hexadecimal (base-16) value of decimal 255?</div>
+    <div class="options" id="s2q15">
+      <label class="option-label" onclick="selectOpt(this,'s2q15','A')"><input type="radio"><span class="opt-key">A</span> EE</label>
+      <label class="option-label" onclick="selectOpt(this,'s2q15','B')"><input type="radio"><span class="opt-key">B</span> FF</label>
+      <label class="option-label" onclick="selectOpt(this,'s2q15','C')"><input type="radio"><span class="opt-key">C</span> FE</label>
+      <label class="option-label" onclick="selectOpt(this,'s2q15','D')"><input type="radio"><span class="opt-key">D</span> 255</label>
+    </div>
+  </div>
+
+  <div class="section-title">Section B — Open-Ended Questions</div>
+
+  <div class="open-q">
+    <div class="q-number">QUESTION 16 <span class="marks-badge">[5 marks]</span></div>
+    <div class="q-text">Write a Python function <code>fibonacci(n)</code> that returns a list of the first <code>n</code> Fibonacci numbers.<br><br>
+    Example: <code>fibonacci(6)</code> → <code>[0, 1, 1, 2, 3, 5]</code></div>
+    <textarea class="answer-box" placeholder="# Write your Python code here..."></textarea>
+  </div>
+
+  <div class="open-q">
+    <div class="q-number">QUESTION 17 <span class="marks-badge">[5 marks]</span></div>
+    <div class="q-text">A robot on a grid starts at (0,0) facing East. It executes the program below:<br><br>
+    <code>REPEAT 3: [Move forward 2, Turn left 90°]</code><br><br>
+    (a) Trace the robot's path and list all positions visited.<br>
+    (b) Where does the robot end up after the full program?</div>
+    <textarea class="answer-box" placeholder="Write your answer here..."></textarea>
+  </div>
+
+  <div class="actions">
+    <button class="btn btn-primary" onclick="submitSet(2)">Submit & Check MCQ Score</button>
+    <button class="btn btn-outline" onclick="resetSet(2)">Reset</button>
+  </div>
+  <div class="score-panel" id="score2"></div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+     SET 4
+══════════════════════════════════════════════ -->
+<div class="paper" id="set3">
+  <div class="paper-header">
+    <h2>Mock Paper — Set 4</h2>
+    <p>Section A: 15 Multiple Choice Questions (1 mark each) &nbsp;|&nbsp; Section B: 2 Open-Ended Questions</p>
+    <div class="meta-row">
+      <span class="meta-tag">⏱ 90 minutes</span>
+      <span class="meta-tag">📘 Python · Robotics · AI Knowledge</span>
+      <span class="meta-tag">🏆 HCIC Style — Harder</span>
+    </div>
+  </div>
+
+  <div class="section-title">Section A — Multiple Choice (15 × 1 mark)</div>
+
+  <div class="question-block">
+    <div class="q-number">QUESTION 01</div>
+    <div class="q-text">What is the output?
+<pre><span class="kw">def</span> <span class="fn">mystery</span>(x):
+    <span class="kw">if</span> x % <span class="num">2</span> == <span class="num">0</span>:
+        <span class="kw">return</span> x // <span class="num">2</span>
+    <span class="kw">else</span>:
+        <span class="kw">return</span> x * <span class="num">3</span> + <span class="num">1</span>
+
+<span class="fn">print</span>(<span class="fn">mystery</span>(<span class="num">6</span>))</pre></div>
+    <div class="options" id="s3q1">
+      <label class="option-label" onclick="selectOpt(this,'s3q1','A')"><input type="radio"><span class="opt-key">A</span> 19</label>
+      <label class="option-label" onclick="selectOpt(this,'s3q1','B')"><input type="radio"><span class="opt-key">B</span> 3</label>
+      <label class="option-label" onclick="selectOpt(this,'s3q1','C')"><input type="radio"><span class="opt-key">C</span> 6</label>
+      <label class="option-label" onclick="selectOpt(this,'s3q1','D')"><input type="radio"><span class="opt-key">D</span> 12</label>
+    </div>
+  </div>
+
+  <div class="question-block">
+    <div class="q-number">QUESTION 02</div>
+    <div class="q-text">Using a Caesar Cipher with shift 13 (ROT13), what is the encryption of <code>A</code>?</div>
+    <div class="options" id="s3q2">
+      <label class="option-label" onclick="selectOpt(this,'s3q2','A')"><input type="radio"><span class="opt-key">A</span> M</label>
+      <label class="option-label" onclick="selectOpt(this,'s3q2','B')"><input type="radio"><span class="opt-key">B</span> N</label>
+      <label class="option-label" onclick="selectOpt(this,'s3q2','C')"><input type="radio"><span class="opt-key">C</span> Z</label>
+      <label class="option-label" onclick="selectOpt(this,'s3q2','D')"><input type="radio"><span class="opt-key">D</span> L</label>
+    </div>
+  </div>
+
+  <div class="question-block">
+    <div class="q-number">QUESTION 03</div>
+    <div class="q-text">What is the result of <code>bin(18)</code> in Python?</div>
+    <div class="options" id="s3q3">
+      <label class="option-label" onclick="selectOpt(this,'s3q3','A')"><input type="radio"><span class="opt-key">A</span> '0b10010'</label>
+      <label class="option-label" onclick="selectOpt(this,'s3q3','B')"><input type="radio"><span class="opt-key">B</span> '0b10100'</label>
+      <label class="option-label" onclick="selectOpt(this,'s3q3','C')"><input type="radio"><span class="opt-key">C</span> '10010'</label>
+      <label class="option-label" onclick="selectOpt(this,'s3q3','D')"><input type="radio"><span class="opt-key">D</span> '0b11000'</label>
+    </div>
+  </div>
+
+  <div class="question-block">
+    <div class="q-number">QUESTION 04</div>
+    <div class="q-text">The "Claude 3.7 Sonnet" model is produced by which AI company?</div>
+    <div class="options" id="s3q4">
+      <label class="option-label" onclick="selectOpt(this,'s3q4','A')"><input type="radio"><span class="opt-key">A</span> OpenAI</label>
+      <label class="option-label" onclick="selectOpt(this,'s3q4','B')"><input type="radio"><span class="opt-key">B</span> Google</label>
+      <label class="option-label" onclick="selectOpt(this,'s3q4','C')"><input type="radio"><span class="opt-key">C</span> Anthropic</label>
+      <label class="option-label" onclick="selectOpt(this,'s3q4','D')"><input type="radio"><span class="opt-key">D</span> Meta</label>
+    </div>
+  </div>
+
+  <div class="question-block">
+    <div class="q-number">QUESTION 05</div>
+    <div class="q-text">What does this code output?
+<pre>x = <span class="num">10</span>
+y = <span class="num">3</span>
+<span class="fn">print</span>(x // y, x % y)</pre></div>
+    <div class="options" id="s3q5">
+      <label class="option-label" onclick="selectOpt(this,'s3q5','A')"><input type="radio"><span class="opt-key">A</span> 3 1</label>
+      <label class="option-label" onclick="selectOpt(this,'s3q5','B')"><input type="radio"><span class="opt-key">B</span> 3.33 1</label>
+      <label class="option-label" onclick="selectOpt(this,'s3q5','C')"><input type="radio"><span class="opt-key">C</span> 3 0</label>
+      <label class="option-label" onclick="selectOpt(this,'s3q5','D')"><input type="radio"><span class="opt-key">D</span> 4 1</label>
+    </div>
+  </div>
+
+  <div class="question-block">
+    <div class="q-number">QUESTION 06</div>
+    <div class="q-text">In LEGO Spike Prime, when a motor is set to run at power level 50 vs 100, what changes?</div>
+    <div class="options" id="s3q6">
+      <label class="option-label" onclick="selectOpt(this,'s3q6','A')"><input type="radio"><span class="opt-key">A</span> The direction of rotation</label>
+      <label class="option-label" onclick="selectOpt(this,'s3q6','B')"><input type="radio"><span class="opt-key">B</span> The speed of rotation — 50 is slower than 100</label>
+      <label class="option-label" onclick="selectOpt(this,'s3q6','C')"><input type="radio"><span class="opt-key">C</span> The number of degrees rotated</label>
+      <label class="option-label" onclick="selectOpt(this,'s3q6','D')"><input type="radio"><span class="opt-key">D</span> The colour of the LED on the hub</label>
+    </div>
+  </div>
+
+  <div class="question-block">
+    <div class="q-number">QUESTION 07</div>
+    <div class="q-text">Which of the following is a valid Python dictionary?</div>
+    <div class="options" id="s3q7">
+      <label class="option-label" onclick="selectOpt(this,'s3q7','A')"><input type="radio"><span class="opt-key">A</span> <code>[name: "Alice", age: 12]</code></label>
+      <label class="option-label" onclick="selectOpt(this,'s3q7','B')"><input type="radio"><span class="opt-key">B</span> <code>{"name": "Alice", "age": 12}</code></label>
+      <label class="option-label" onclick="selectOpt(this,'s3q7','C')"><input type="radio"><span class="opt-key">C</span> <code>("name", "Alice", "age", 12)</code></label>
+      <label class="option-label" onclick="selectOpt(this,'s3q7','D')"><input type="radio"><span class="opt-key">D</span> <code>&lt;"name": "Alice"&gt;</code></label>
+    </div>
+  </div>
+
+  <div class="question-block">
+    <div class="q-number">QUESTION 08</div>
+    <div class="q-text">In AI model naming, the suffix "Turbo" in "GPT-4 Turbo" generally means the model is:</div>
+    <div class="options" id="s3q8">
+      <label class="option-label" onclick="selectOpt(this,'s3q8','A')"><input type="radio"><span class="opt-key">A</span> Slower but more accurate</label>
+      <label class="option-label" onclick="selectOpt(this,'s3q8','B')"><input type="radio"><span class="opt-key">B</span> A smaller, faster, and cheaper version</label>
+      <label class="option-label" onclick="selectOpt(this,'s3q8','C')"><input type="radio"><span class="opt-key">C</span> A bigger, more powerful model</label>
+      <label class="option-label" onclick="selectOpt(this,'s3q8','D')"><input type="radio"><span class="opt-key">D</span> Only used for image generation</label>
+    </div>
+  </div>
+
+  <div class="question-block">
+    <div class="q-number">QUESTION 09</div>
+    <div class="q-text">What is the output of this nested loop?
+<pre><span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="num">1</span>, <span class="num">3</span>):
+    <span class="kw">for</span> j <span class="kw">in</span> <span class="fn">range</span>(<span class="num">1</span>, <span class="num">3</span>):
+        <span class="fn">print</span>(i * j, end=<span class="str">" "</span>)</pre></div>
+    <div class="options" id="s3q9">
+      <label class="option-label" onclick="selectOpt(this,'s3q9','A')"><input type="radio"><span class="opt-key">A</span> 1 2 3 4</label>
+      <label class="option-label" onclick="selectOpt(this,'s3q9','B')"><input type="radio"><span class="opt-key">B</span> 1 2 2 4</label>
+      <label class="option-label" onclick="selectOpt(this,'s3q9','C')"><input type="radio"><span class="opt-key">C</span> 1 2 3 4 5 6</label>
+      <label class="option-label" onclick="selectOpt(this,'s3q9','D')"><input type="radio"><span class="opt-key">D</span> 2 4 6 8</label>
+    </div>
+  </div>
+
+  <div class="question-block">
+    <div class="q-number">QUESTION 10</div>
+    <div class="q-text">What does "multimodal AI" mean?</div>
+    <div class="options" id="s3q10">
+      <label class="option-label" onclick="selectOpt(this,'s3q10','A')"><input type="radio"><span class="opt-key">A</span> An AI that only processes text</label>
+      <label class="option-label" onclick="selectOpt(this,'s3q10','B')"><input type="radio"><span class="opt-key">B</span> An AI that can handle multiple types of data such as text, images, and audio</label>
+      <label class="option-label" onclick="selectOpt(this,'s3q10','C')"><input type="radio"><span class="opt-key">C</span> An AI with multiple copies running simultaneously</label>
+      <label class="option-label" onclick="selectOpt(this,'s3q10','D')"><input type="radio"><span class="opt-key">D</span> An AI made by multiple companies together</label>
+    </div>
+  </div>
+
+  <div class="question-block">
+    <div class="q-number">QUESTION 11</div>
+    <div class="q-text">Which Python code correctly checks if a key <code>"age"</code> exists in dictionary <code>d</code>?</div>
+    <div class="options" id="s3q11">
+      <label class="option-label" onclick="selectOpt(this,'s3q11','A')"><input type="radio"><span class="opt-key">A</span> <code>"age" in d.values()</code></label>
+      <label class="option-label" onclick="selectOpt(this,'s3q11','B')"><input type="radio"><span class="opt-key">B</span> <code>d.contains("age")</code></label>
+      <label class="option-label" onclick="selectOpt(this,'s3q11','C')"><input type="radio"><span class="opt-key">C</span> <code>"age" in d</code></label>
+      <label class="option-label" onclick="selectOpt(this,'s3q11','D')"><input type="radio"><span class="opt-key">D</span> <code>d.has("age")</code></label>
+    </div>
+  </div>
+
+  <div class="question-block">
+    <div class="q-number">QUESTION 12</div>
+    <div class="q-text">In AI model naming, "Haiku", "Sonnet", and "Opus" are tiers used by which company, going from smallest/fastest to largest/most powerful?</div>
+    <div class="options" id="s3q12">
+      <label class="option-label" onclick="selectOpt(this,'s3q12','A')"><input type="radio"><span class="opt-key">A</span> OpenAI</label>
+      <label class="option-label" onclick="selectOpt(this,'s3q12','B')"><input type="radio"><span class="opt-key">C</span> Google</label>
+      <label class="option-label" onclick="selectOpt(this,'s3q12','C')"><input type="radio"><span class="opt-key">C</span> Anthropic</label>
+      <label class="option-label" onclick="selectOpt(this,'s3q12','D')"><input type="radio"><span class="opt-key">D</span> Meta</label>
+    </div>
+  </div>
+
+  <div class="question-block">
+    <div class="q-number">QUESTION 13</div>
+    <div class="q-text">What does this code print?
+<pre>s = <span class="str">"abcde"</span>
+<span class="fn">print</span>(s[::<span class="num">-1</span>])</pre></div>
+    <div class="options" id="s3q13">
+      <label class="option-label" onclick="selectOpt(this,'s3q13','A')"><input type="radio"><span class="opt-key">A</span> abcde</label>
+      <label class="option-label" onclick="selectOpt(this,'s3q13','B')"><input type="radio"><span class="opt-key">B</span> edcba</label>
+      <label class="option-label" onclick="selectOpt(this,'s3q13','C')"><input type="radio"><span class="opt-key">C</span> ace</label>
+      <label class="option-label" onclick="selectOpt(this,'s3q13','D')"><input type="radio"><span class="opt-key">D</span> bcd</label>
+    </div>
+  </div>
+
+  <div class="question-block">
+    <div class="q-number">QUESTION 14</div>
+    <div class="q-text">An encoder in a robot motor is used to:</div>
+    <div class="options" id="s3q14">
+      <label class="option-label" onclick="selectOpt(this,'s3q14','A')"><input type="radio"><span class="opt-key">A</span> Generate electricity for the battery</label>
+      <label class="option-label" onclick="selectOpt(this,'s3q14','B')"><input type="radio"><span class="opt-key">B</span> Measure the number of rotations or angle of the motor shaft precisely</label>
+      <label class="option-label" onclick="selectOpt(this,'s3q14','C')"><input type="radio"><span class="opt-key">C</span> Control the colour of the robot's LED</label>
+      <label class="option-label" onclick="selectOpt(this,'s3q14','D')"><input type="radio"><span class="opt-key">D</span> Detect nearby Wi-Fi signals</label>
+    </div>
+  </div>
+
+  <div class="question-block">
+    <div class="q-number">QUESTION 15</div>
+    <div class="q-text">What would <code>list(range(5, 0, -1))</code> produce?</div>
+    <div class="options" id="s3q15">
+      <label class="option-label" onclick="selectOpt(this,'s3q15','A')"><input type="radio"><span class="opt-key">A</span> [1, 2, 3, 4, 5]</label>
+      <label class="option-label" onclick="selectOpt(this,'s3q15','B')"><input type="radio"><span class="opt-key">B</span> [5, 4, 3, 2, 1]</label>
+      <label class="option-label" onclick="selectOpt(this,'s3q15','C')"><input type="radio"><span class="opt-key">C</span> [5, 4, 3, 2, 1, 0]</label>
+      <label class="option-label" onclick="selectOpt(this,'s3q15','D')"><input type="radio"><span class="opt-key">D</span> [0, 1, 2, 3, 4, 5]</label>
+    </div>
+  </div>
+
+  <div class="section-title">Section B — Open-Ended Questions</div>
+
+  <div class="open-q">
+    <div class="q-number">QUESTION 16 <span class="marks-badge">[5 marks]</span></div>
+    <div class="q-text">Write a Python program that takes a sentence as input and prints the number of words in the sentence AND the longest word.<br><br>
+    Example input: <code>"The quick brown fox"</code><br>
+    Expected output:<br>
+    <code>Number of words: 4</code><br>
+    <code>Longest word: quick</code></div>
+    <textarea class="answer-box" placeholder="# Write your Python code here..."></textarea>
+  </div>
+
+  <div class="open-q">
+    <div class="q-number">QUESTION 17 <span class="marks-badge">[5 marks]</span></div>
+    <div class="q-text">Name THREE major AI companies and for each, name ONE AI model they have released. Explain in one sentence what makes each model or company notable.</div>
+    <textarea class="answer-box" placeholder="Write your answer here..."></textarea>
+  </div>
+
+  <div class="actions">
+    <button class="btn btn-primary" onclick="submitSet(3)">Submit & Check MCQ Score</button>
+    <button class="btn btn-outline" onclick="resetSet(3)">Reset</button>
+  </div>
+  <div class="score-panel" id="score3"></div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+     SET 5
+══════════════════════════════════════════════ -->
+<div class="paper" id="set4">
+  <div class="paper-header">
+    <h2>Mock Paper — Set 5</h2>
+    <p>Section A: 15 Multiple Choice Questions (1 mark each) &nbsp;|&nbsp; Section B: 2 Open-Ended Questions</p>
+    <div class="meta-row">
+      <span class="meta-tag">⏱ 90 minutes</span>
+      <span class="meta-tag">📘 Python · Robotics · AI Knowledge</span>
+      <span class="meta-tag">🏆 HCIC Style — Most Challenging</span>
+    </div>
+  </div>
+
+  <div class="section-title">Section A — Multiple Choice (15 × 1 mark)</div>
+
+  <div class="question-block">
+    <div class="q-number">QUESTION 01</div>
+    <div class="q-text">What is the final value of <code>result</code>?
+<pre>result = <span class="num">1</span>
+<span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="num">1</span>, <span class="num">5</span>):
+    result *= i
+<span class="fn">print</span>(result)</pre></div>
+    <div class="options" id="s4q1">
+      <label class="option-label" onclick="selectOpt(this,'s4q1','A')"><input type="radio"><span class="opt-key">A</span> 10</label>
+      <label class="option-label" onclick="selectOpt(this,'s4q1','B')"><input type="radio"><span class="opt-key">B</span> 24</label>
+      <label class="option-label" onclick="selectOpt(this,'s4q1','C')"><input type="radio"><span class="opt-key">C</span> 120</label>
+      <label class="option-label" onclick="selectOpt(this,'s4q1','D')"><input type="radio"><span class="opt-key">D</span> 15</label>
+    </div>
+  </div>
+
+  <div class="question-block">
+    <div class="q-number">QUESTION 02</div>
+    <div class="q-text">Add the binary numbers <code>1011</code> and <code>0110</code>. What is the result in binary?</div>
+    <div class="options" id="s4q2">
+      <label class="option-label" onclick="selectOpt(this,'s4q2','A')"><input type="radio"><span class="opt-key">A</span> 10001</label>
+      <label class="option-label" onclick="selectOpt(this,'s4q2','B')"><input type="radio"><span class="opt-key">B</span> 10010</label>
+      <label class="option-label" onclick="selectOpt(this,'s4q2','C')"><input type="radio"><span class="opt-key">C</span> 10011</label>
+      <label class="option-label" onclick="selectOpt(this,'s4q2','D')"><input type="radio"><span class="opt-key">D</span> 1111</label>
+    </div>
+  </div>
+
+  <div class="question-block">
+    <div class="q-number">QUESTION 03</div>
+    <div class="q-text">What does the following recursive function return for <code>f(4)</code>?
+<pre><span class="kw">def</span> <span class="fn">f</span>(n):
+    <span class="kw">if</span> n == <span class="num">0</span>:
+        <span class="kw">return</span> <span class="num">0</span>
+    <span class="kw">return</span> n + <span class="fn">f</span>(n - <span class="num">1</span>)</pre></div>
+    <div class="options" id="s4q3">
+      <label class="option-label" onclick="selectOpt(this,'s4q3','A')"><input type="radio"><span class="opt-key">A</span> 4</label>
+      <label class="option-label" onclick="selectOpt(this,'s4q3','B')"><input type="radio"><span class="opt-key">B</span> 10</label>
+      <label class="option-label" onclick="selectOpt(this,'s4q3','C')"><input type="radio"><span class="opt-key">C</span> 6</label>
+      <label class="option-label" onclick="selectOpt(this,'s4q3','D')"><input type="radio"><span class="opt-key">D</span> 24</label>
+    </div>
+  </div>
+
+  <div class="question-block">
+    <div class="q-number">QUESTION 04</div>
+    <div class="q-text">Anthropic's naming convention for Claude models uses tiers like "Haiku", "Sonnet", and "Opus". Which tier is the MOST capable and powerful?</div>
+    <div class="options" id="s4q4">
+      <label class="option-label" onclick="selectOpt(this,'s4q4','A')"><input type="radio"><span class="opt-key">A</span> Haiku</label>
+      <label class="option-label" onclick="selectOpt(this,'s4q4','B')"><input type="radio"><span class="opt-key">B</span> Sonnet</label>
+      <label class="option-label" onclick="selectOpt(this,'s4q4','C')"><input type="radio"><span class="opt-key">C</span> Opus</label>
+      <label class="option-label" onclick="selectOpt(this,'s4q4','D')"><input type="radio"><span class="opt-key">D</span> All are equally capable</label>
+    </div>
+  </div>
+
+  <div class="question-block">
+    <div class="q-number">QUESTION 05</div>
+    <div class="q-text">What does this list comprehension produce?
+<pre>result = [x**<span class="num">2</span> <span class="kw">for</span> x <span class="kw">in</span> <span class="fn">range</span>(<span class="num">1</span>, <span class="num">5</span>) <span class="kw">if</span> x % <span class="num">2</span> == <span class="num">0</span>]</pre></div>
+    <div class="options" id="s4q5">
+      <label class="option-label" onclick="selectOpt(this,'s4q5','A')"><input type="radio"><span class="opt-key">A</span> [1, 4, 9, 16]</label>
+      <label class="option-label" onclick="selectOpt(this,'s4q5','B')"><input type="radio"><span class="opt-key">B</span> [4, 16]</label>
+      <label class="option-label" onclick="selectOpt(this,'s4q5','C')"><input type="radio"><span class="opt-key">C</span> [2, 4]</label>
+      <label class="option-label" onclick="selectOpt(this,'s4q5','D')"><input type="radio"><span class="opt-key">D</span> [1, 9]</label>
+    </div>
+  </div>
+
+  <div class="question-block">
+    <div class="q-number">QUESTION 06</div>
+    <div class="q-text">In Python, what is the difference between <code>==</code> and <code>is</code>?</div>
+    <div class="options" id="s4q6">
+      <label class="option-label" onclick="selectOpt(this,'s4q6','A')"><input type="radio"><span class="opt-key">A</span> They are identical in all cases</label>
+      <label class="option-label" onclick="selectOpt(this,'s4q6','B')"><input type="radio"><span class="opt-key">B</span> <code>==</code> checks value equality; <code>is</code> checks if two variables point to the exact same object in memory</label>
+      <label class="option-label" onclick="selectOpt(this,'s4q6','C')"><input type="radio"><span class="opt-key">C</span> <code>is</code> is used only for numbers; <code>==</code> is for strings</label>
+      <label class="option-label" onclick="selectOpt(this,'s4q6','D')"><input type="radio"><span class="opt-key">D</span> <code>==</code> checks type; <code>is</code> checks value</label>
+    </div>
+  </div>
+
+  <div class="question-block">
+    <div class="q-number">QUESTION 07</div>
+    <div class="q-text">OpenAI's image generation model (used in ChatGPT to create images) is called:</div>
+    <div class="options" id="s4q7">
+      <label class="option-label" onclick="selectOpt(this,'s4q7','A')"><input type="radio"><span class="opt-key">A</span> Midjourney</label>
+      <label class="option-label" onclick="selectOpt(this,'s4q7','B')"><input type="radio"><span class="opt-key">B</span> Stable Diffusion</label>
+      <label class="option-label" onclick="selectOpt(this,'s4q7','C')"><input type="radio"><span class="opt-key">C</span> DALL-E</label>
+      <label class="option-label" onclick="selectOpt(this,'s4q7','D')"><input type="radio"><span class="opt-key">D</span> Firefly</label>
+    </div>
+  </div>
+
+  <div class="question-block">
+    <div class="q-number">QUESTION 08</div>
+    <div class="q-text">In a robot maze-solving algorithm, which approach explores all nearest nodes first before going deeper?</div>
+    <div class="options" id="s4q8">
+      <label class="option-label" onclick="selectOpt(this,'s4q8','A')"><input type="radio"><span class="opt-key">A</span> Depth-First Search (DFS)</label>
+      <label class="option-label" onclick="selectOpt(this,'s4q8','B')"><input type="radio"><span class="opt-key">B</span> Breadth-First Search (BFS)</label>
+      <label class="option-label" onclick="selectOpt(this,'s4q8','C')"><input type="radio"><span class="opt-key">C</span> Binary Search</label>
+      <label class="option-label" onclick="selectOpt(this,'s4q8','D')"><input type="radio"><span class="opt-key">D</span> Bubble Sort</label>
+    </div>
+  </div>
+
+  <div class="question-block">
+    <div class="q-number">QUESTION 09</div>
+    <div class="q-text">Which of the following statements about Python's <code>try/except</code> block is TRUE?</div>
+    <div class="options" id="s4q9">
+      <label class="option-label" onclick="selectOpt(this,'s4q9','A')"><input type="radio"><span class="opt-key">A</span> The <code>except</code> block always runs regardless of errors</label>
+      <label class="option-label" onclick="selectOpt(this,'s4q9','B')"><input type="radio"><span class="opt-key">B</span> The <code>try</code> block runs first; if an error occurs, execution jumps to <code>except</code></label>
+      <label class="option-label" onclick="selectOpt(this,'s4q9','C')"><input type="radio"><span class="opt-key">C</span> Python doesn't support error handling</label>
+      <label class="option-label" onclick="selectOpt(this,'s4q9','D')"><input type="radio"><span class="opt-key">D</span> <code>try/except</code> can only handle division by zero errors</label>
+    </div>
+  </div>
+
+  <div class="question-block">
+    <div class="q-number">QUESTION 10</div>
+    <div class="q-text">In the context of AI models, what does "LLM" stand for?</div>
+    <div class="options" id="s4q10">
+      <label class="option-label" onclick="selectOpt(this,'s4q10','A')"><input type="radio"><span class="opt-key">A</span> Layered Logic Module</label>
+      <label class="option-label" onclick="selectOpt(this,'s4q10','B')"><input type="radio"><span class="opt-key">B</span> Large Language Model</label>
+      <label class="option-label" onclick="selectOpt(this,'s4q10','C')"><input type="radio"><span class="opt-key">C</span> Linear Learning Machine</label>
+      <label class="option-label" onclick="selectOpt(this,'s4q10','D')"><input type="radio"><span class="opt-key">D</span> Linked List Memory</label>
+    </div>
+  </div>
+
+  <div class="question-block">
+    <div class="q-number">QUESTION 11</div>
+    <div class="q-text">Given: <code>d = {"a": 1, "b": 2, "c": 3}</code>, what does <code>list(d.keys())</code> return?</div>
+    <div class="options" id="s4q11">
+      <label class="option-label" onclick="selectOpt(this,'s4q11','A')"><input type="radio"><span class="opt-key">A</span> [1, 2, 3]</label>
+      <label class="option-label" onclick="selectOpt(this,'s4q11','B')"><input type="radio"><span class="opt-key">B</span> ["a", "b", "c"]</label>
+      <label class="option-label" onclick="selectOpt(this,'s4q11','C')"><input type="radio"><span class="opt-key">C</span> [("a",1), ("b",2), ("c",3)]</label>
+      <label class="option-label" onclick="selectOpt(this,'s4q11','D')"><input type="radio"><span class="opt-key">D</span> {"a", "b", "c"}</label>
+    </div>
+  </div>
+
+  <div class="question-block">
+    <div class="q-number">QUESTION 12</div>
+    <div class="q-text">Google's AI model "Gemini" is named in tiers. From smallest/fastest to largest/most powerful, the correct order is:</div>
+    <div class="options" id="s4q12">
+      <label class="option-label" onclick="selectOpt(this,'s4q12','A')"><input type="radio"><span class="opt-key">A</span> Ultra → Pro → Nano</label>
+      <label class="option-label" onclick="selectOpt(this,'s4q12','B')"><input type="radio"><span class="opt-key">B</span> Flash → Pro → Ultra</label>
+      <label class="option-label" onclick="selectOpt(this,'s4q12','C')"><input type="radio"><span class="opt-key">C</span> Nano → Flash → Pro → Ultra</label>
+      <label class="option-label" onclick="selectOpt(this,'s4q12','D')"><input type="radio"><span class="opt-key">D</span> Micro → Nano → Flash → Ultra</label>
+    </div>
+  </div>
+
+  <div class="question-block">
+    <div class="q-number">QUESTION 13</div>
+    <div class="q-text">What is the output of:
+<pre>a = [<span class="num">1</span>, <span class="num">2</span>, <span class="num">3</span>]
+b = a
+b.<span class="fn">append</span>(<span class="num">4</span>)
+<span class="fn">print</span>(a)</pre></div>
+    <div class="options" id="s4q13">
+      <label class="option-label" onclick="selectOpt(this,'s4q13','A')"><input type="radio"><span class="opt-key">A</span> [1, 2, 3]</label>
+      <label class="option-label" onclick="selectOpt(this,'s4q13','B')"><input type="radio"><span class="opt-key">B</span> [1, 2, 3, 4]</label>
+      <label class="option-label" onclick="selectOpt(this,'s4q13','C')"><input type="radio"><span class="opt-key">C</span> [4]</label>
+      <label class="option-label" onclick="selectOpt(this,'s4q13','D')"><input type="radio"><span class="opt-key">D</span> Error</label>
+    </div>
+  </div>
+
+  <div class="question-block">
+    <div class="q-number">QUESTION 14</div>
+    <div class="q-text">A robot detects an obstacle 10 cm ahead using an ultrasonic sensor. If the robot is moving at 5 cm/s, how long does it have to stop before hitting the obstacle?</div>
+    <div class="options" id="s4q14">
+      <label class="option-label" onclick="selectOpt(this,'s4q14','A')"><input type="radio"><span class="opt-key">A</span> 0.5 seconds</label>
+      <label class="option-label" onclick="selectOpt(this,'s4q14','B')"><input type="radio"><span class="opt-key">B</span> 2 seconds</label>
+      <label class="option-label" onclick="selectOpt(this,'s4q14','C')"><input type="radio"><span class="opt-key">C</span> 5 seconds</label>
+      <label class="option-label" onclick="selectOpt(this,'s4q14','D')"><input type="radio"><span class="opt-key">D</span> 10 seconds</label>
+    </div>
+  </div>
+
+  <div class="question-block">
+    <div class="q-number">QUESTION 15</div>
+    <div class="q-text">Which of the following best describes "training data" for an AI model?</div>
+    <div class="options" id="s4q15">
+      <label class="option-label" onclick="selectOpt(this,'s4q15','A')"><input type="radio"><span class="opt-key">A</span> The physical hardware the AI runs on</label>
+      <label class="option-label" onclick="selectOpt(this,'s4q15','B')"><input type="radio"><span class="opt-key">B</span> The dataset of examples used to teach the AI model patterns and how to respond</label>
+      <label class="option-label" onclick="selectOpt(this,'s4q15','C')"><input type="radio"><span class="opt-key">C</span> The programming language used to write the AI</label>
+      <label class="option-label" onclick="selectOpt(this,'s4q15','D')"><input type="radio"><span class="opt-key">D</span> The internet connection speed needed to run the AI</label>
+    </div>
+  </div>
+
+  <div class="section-title">Section B — Open-Ended Questions</div>
+
+  <div class="open-q">
+    <div class="q-number">QUESTION 16 <span class="marks-badge">[5 marks]</span></div>
+    <div class="q-text">Write a Python function <code>caesar_encrypt(text, shift)</code> that encrypts a string using the Caesar Cipher. Only shift alphabetic characters; leave spaces and punctuation unchanged. Both uppercase and lowercase should be preserved.<br><br>
+    Example: <code>caesar_encrypt("Hello, World!", 3)</code> → <code>"Khoor, Zruog!"</code></div>
+    <textarea class="answer-box" placeholder="# Write your Python code here..."></textarea>
+  </div>
+
+  <div class="open-q">
+    <div class="q-number">QUESTION 17 <span class="marks-badge">[5 marks]</span></div>
+    <div class="q-text">You are designing a robot to sort coloured blocks into bins. The robot has a colour sensor and a motorised arm.<br><br>
+    Write the pseudocode algorithm for the robot to:<br>
+    (a) Read the colour of a block using the sensor<br>
+    (b) Move the arm to the correct bin (Red → Bin 1, Blue → Bin 2, Green → Bin 3, Other → Bin 4)<br>
+    (c) Drop the block<br>
+    (d) Return to starting position and repeat for the next block<br><br>
+    Your answer should use clear IF/ELSE statements and a loop.</div>
+    <textarea class="answer-box" placeholder="Write your pseudocode here..."></textarea>
+  </div>
+
+  <div class="actions">
+    <button class="btn btn-primary" onclick="submitSet(4)">Submit & Check MCQ Score</button>
+    <button class="btn btn-outline" onclick="resetSet(4)">Reset</button>
+  </div>
+  <div class="score-panel" id="score4"></div>
+</div>
+
+
+<script>
+// ── Answer keys ──
+const answerKeys = [
+  // Set 1
+  {
+    s0q1:  {ans:'B', exp:'range(1,5) gives 1,2,3,4 → ×2 = 2 4 6 8'},
+    s0q2:  {ans:'B', exp:'D(4)+3=G(7) — 4th letter + 3 = 7th letter = G'},
+    s0q3:  {ans:'C', exp:'str stores text (strings)'},
+    s0q4:  {ans:'C', exp:'Index 2 of [10,20,30,40] is 30 (0-indexed)'},
+    s0q5:  {ans:'B', exp:'Colour sensors distinguish black/white to follow a line'},
+    s0q6:  {ans:'B', exp:'13 = 8+4+1 = 1101 in binary'},
+    s0q7:  {ans:'C', exp:'Python uses "def" to define a function'},
+    s0q8:  {ans:'B', exp:'GPT = Generative Pre-trained Transformer'},
+    s0q9:  {ans:'B', exp:'len() returns the count of items in any sequence'},
+    s0q10: {ans:'A', exp:'Arduino Uno is a popular beginner microcontroller for robotics'},
+    s0q11: {ans:'C', exp:'7 ÷ 3 = 2 remainder 1; % gives the remainder'},
+    s0q12: {ans:'A', exp:'Gemini is Google DeepMind\'s flagship AI model series'},
+    s0q13: {ans:'C', exp:'Square brackets [] create a list in Python'},
+    s0q14: {ans:'B', exp:'IF condition THEN → branch A, ELSE → branch B'},
+    s0q15: {ans:'B', exp:'LLaMA (Large Language Model Meta AI) is Meta\'s open-source LLM series'},
+  },
+  // Set 2
+  {
+    s1q1:  {ans:'B', exp:'1+2+3+4+5 = 15'},
+    s1q2:  {ans:'B', exp:'K-3=H, H-3=E, o-3=l, o-3=l, r-3=o → Hello'},
+    s1q3:  {ans:'C', exp:'Correct Python syntax: if x == 5: (double equals, colon)'},
+    s1q4:  {ans:'C', exp:'1010 = 1×8 + 0×4 + 1×2 + 0×1 = 10'},
+    s1q5:  {ans:'C', exp:'Claude is Anthropic\'s AI assistant series'},
+    s1q6:  {ans:'C', exp:'list.append(item) adds to the end of the list'},
+    s1q7:  {ans:'B', exp:'Ultrasonic sensors emit sound waves to measure distance'},
+    s1q8:  {ans:'B', exp:'double(7) returns 7×2 = 14'},
+    s1q9:  {ans:'C', exp:'OpenAI released the o1, o3, and o4-mini reasoning model series'},
+    s1q10: {ans:'B', exp:'2**4 = 2×2×2×2 = 16 (exponentiation)'},
+    s1q11: {ans:'C', exp:'Diamond = decision / branch in a flowchart'},
+    s1q12: {ans:'B', exp:'xAI is Elon Musk\'s AI company that created Grok'},
+    s1q13: {ans:'A', exp:'"Python"[0]="P", "Python"[-1]="n" → "P"+"n"="Pn"'},
+    s1q14: {ans:'D', exp:'Force sensors measure push/press force on the hub'},
+    s1q15: {ans:'C', exp:'"Singapore"[3:7] → s=0,i=1,n=2,g=3,a=4,p=5,o=6,r=7 → "apor"'},
+  },
+  // Set 3
+  {
+    s2q1:  {ans:'C', exp:'sort() sorts ascending: [1, 3, 5, 8]'},
+    s2q2:  {ans:'A', exp:'A→B, T→U, T→U, A→B, C→D, K→L = BUUBDL'},
+    s2q3:  {ans:'C', exp:'1 byte = 8 bits'},
+    s2q4:  {ans:'B', exp:'str() converts a value to its string representation'},
+    s2q5:  {ans:'C', exp:'OpenAI\'s o-series (o1, o3) are designed for extended reasoning'},
+    s2q6:  {ans:'B', exp:'A while loop continues while its condition evaluates to True'},
+    s2q7:  {ans:'C', exp:'The gyro/motion sensor detects orientation and rotation (tilt/yaw)'},
+    s2q8:  {ans:'C', exp:'10 >= 10 is True (10 is equal to 10, and >= includes equality)'},
+    s2q9:  {ans:'C', exp:'Gemini (including Gemini 2.0 Flash) is Google DeepMind\'s model'},
+    s2q10: {ans:'C', exp:'range(2,10,2) = 2,4,6,8 → 4 iterations'},
+    s2q11: {ans:'C', exp:'"break" immediately exits the enclosing loop'},
+    s2q12: {ans:'A', exp:'Mistral AI is the French startup that created the Mistral models'},
+    s2q13: {ans:'B', exp:'"Ha" * 3 = "HaHaHa" (string repetition, no spaces)'},
+    s2q14: {ans:'B', exp:'PID = Proportional, Integral, Derivative (a control system algorithm)'},
+    s2q15: {ans:'B', exp:'255 = 15×16 + 15 = FF in hexadecimal'},
+  },
+  // Set 4
+  {
+    s3q1:  {ans:'B', exp:'6 is even → 6//2 = 3'},
+    s3q2:  {ans:'B', exp:'ROT13: A(0) + 13 = N(13)'},
+    s3q3:  {ans:'A', exp:'18 in binary is 10010; Python\'s bin() prefixes "0b"'},
+    s3q4:  {ans:'C', exp:'Claude 3.7 Sonnet is an Anthropic model'},
+    s3q5:  {ans:'A', exp:'10//3 = 3 (floor division), 10%3 = 1 (remainder)'},
+    s3q6:  {ans:'B', exp:'Higher power level = faster motor speed in Spike Prime'},
+    s3q7:  {ans:'B', exp:'Python dictionaries use curly braces with key:value pairs'},
+    s3q8:  {ans:'B', exp:'"Turbo" in OpenAI naming usually means faster and more efficient'},
+    s3q9:  {ans:'B', exp:'i=1:j=1→1,j=2→2; i=2:j=1→2,j=2→4 → "1 2 2 4"'},
+    s3q10: {ans:'B', exp:'Multimodal AI processes multiple input types: text, image, audio, etc.'},
+    s3q11: {ans:'C', exp:'"key" in dict checks if a key exists in the dictionary'},
+    s3q12: {ans:'C', exp:'Anthropic\'s Claude tiers: Haiku (fast) → Sonnet → Opus (most powerful)'},
+    s3q13: {ans:'B', exp:'s[::-1] reverses the string → "edcba"'},
+    s3q14: {ans:'B', exp:'Motor encoders measure precise rotation angle/count for position control'},
+    s3q15: {ans:'B', exp:'range(5,0,-1) counts down: 5,4,3,2,1'},
+  },
+  // Set 5
+  {
+    s4q1:  {ans:'B', exp:'1×1×2×3×4 = 24 (factorial of 4)'},
+    s4q2:  {ans:'A', exp:'1011(11)+0110(6)=17=10001 in binary'},
+    s4q3:  {ans:'B', exp:'f(4)=4+f(3)=4+3+f(2)=4+3+2+f(1)=4+3+2+1+f(0)=10'},
+    s4q4:  {ans:'C', exp:'Opus is the highest tier in Anthropic\'s naming (most capable)'},
+    s4q5:  {ans:'B', exp:'Even x in range(1,5): x=2→4, x=4→16 → [4,16]'},
+    s4q6:  {ans:'B', exp:'== checks value; "is" checks object identity (same memory location)'},
+    s4q7:  {ans:'C', exp:'DALL-E is OpenAI\'s image generation model (DALL-E 2, DALL-E 3)'},
+    s4q8:  {ans:'B', exp:'BFS explores level by level (nearest nodes first) — good for shortest path'},
+    s4q9:  {ans:'B', exp:'try block runs; if exception occurs, control passes to except block'},
+    s4q10: {ans:'B', exp:'LLM = Large Language Model (e.g. GPT-4, Claude, Gemini)'},
+    s4q11: {ans:'B', exp:'d.keys() returns the keys: ["a","b","c"]'},
+    s4q12: {ans:'C', exp:'Gemini tiers smallest→largest: Nano → Flash → Pro → Ultra'},
+    s4q13: {ans:'B', exp:'b=a means both point to same list object; b.append(4) modifies the shared list'},
+    s4q14: {ans:'B', exp:'time = distance/speed = 10cm ÷ 5cm/s = 2 seconds'},
+    s4q15: {ans:'B', exp:'Training data is the dataset of examples used to teach/train the AI model'},
+  },
+];
+
+// ── State ──
+const selected = {};
+
+function selectOpt(el, groupId, letter) {
+  const labels = el.closest('.options').querySelectorAll('.option-label');
+  labels.forEach(l => l.classList.remove('selected', 'correct', 'wrong'));
+  el.classList.add('selected');
+  selected[groupId] = letter;
+}
+
+function switchSet(idx) {
+  document.querySelectorAll('.paper').forEach((p,i) => p.classList.toggle('active', i===idx));
+  document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', i===idx));
+}
+
+function submitSet(setIdx) {
+  const key = answerKeys[setIdx];
+  let correct = 0;
+  const panel = document.getElementById('score' + setIdx);
+  let html = '';
+
+  for (const [qid, {ans, exp}] of Object.entries(key)) {
+    const userAns = selected[qid];
+    const isCorrect = userAns === ans;
+    if (isCorrect) correct++;
+
+    // Highlight options
+    const opts = document.querySelectorAll('#' + qid + ' .option-label');
+    opts.forEach(opt => {
+      opt.classList.remove('correct','wrong','selected');
+      const letter = opt.querySelector('.opt-key').textContent.trim();
+      if (letter === ans) opt.classList.add('correct');
+      else if (letter === userAns && !isCorrect) opt.classList.add('wrong');
+    });
+
+    const qNum = parseInt(qid.replace(/s\dq/, ''));
+    const verdict = isCorrect
+      ? '<span class="verdict right">✓ Correct</span>'
+      : `<span class="verdict wrong2">✗ Wrong — Answer: ${ans}</span>`;
+
+    html += `<div class="ak-item"><span class="ak-q">Q${qNum}</span><div><span class="ak-ans">${ans}</span>${verdict}<div class="ak-exp">${exp}</div></div></div>`;
+  }
+
+  const pct = Math.round(correct / 15 * 100);
+  const grade = pct >= 87 ? '🏆 Platinum Zone' : pct >= 73 ? '🥇 Gold Zone' : pct >= 60 ? '🥈 Silver Zone' : pct >= 47 ? '🥉 Bronze Zone' : '📚 Keep Practising';
+
+  panel.innerHTML = `
+    <div class="score-big">${correct} / 15</div>
+    <div class="score-label">Section A score &nbsp;·&nbsp; ${pct}% &nbsp;·&nbsp; ${grade}</div>
+    <p style="font-size:12px;color:var(--text-dim);margin-bottom:4px;">Section B open-ended answers should be marked by a teacher or parent. Model answers available in the answer key below.</p>
+    <div class="answer-key">${html}</div>`;
+  panel.classList.add('visible');
+  panel.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+function resetSet(setIdx) {
+  const paper = document.getElementById('set' + setIdx);
+  paper.querySelectorAll('.option-label').forEach(l => l.classList.remove('selected','correct','wrong'));
+  paper.querySelectorAll('textarea').forEach(t => t.value = '');
+  const panel = document.getElementById('score' + setIdx);
+  panel.classList.remove('visible');
+  panel.innerHTML = '';
+  // Clear selections for this set
+  const prefix = 's' + setIdx;
+  for (const k of Object.keys(selected)) {
+    if (k.startsWith(prefix)) delete selected[k];
+  }
+}
+</script>
+</body>
+</html>
