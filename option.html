@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Options Signal Guide — Layman's Reference</title>
+<style>
+  :root {
+    --bg:        #f8fafc;
+    --card:      #ffffff;
+    --border:    #e2e8f0;
+    --text:      #1e293b;
+    --muted:     #64748b;
+    --accent:    #2563eb;
+    --green:     #16a34a;
+    --red:       #dc2626;
+    --amber:     #d97706;
+    --purple:    #7c3aed;
+    --teal:      #0891b2;
+    --tag-bg:    #eff6ff;
+    --tag-text:  #1d4ed8;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  /* ── Layout ── */
+  .page { max-width: 960px; margin: 0 auto; padding: 32px 24px 64px; }
+
+  .hero {
+    background: linear-gradient(135deg, #1e3a5f 0%, #2563eb 100%);
+    color: #fff;
+    padding: 40px 32px 36px;
+    border-radius: 16px;
+    margin-bottom: 36px;
+  }
+  .hero h1 { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+  .hero p  { opacity: 0.85; font-size: 15px; max-width: 620px; }
+
+  h2 {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text);
+    margin: 40px 0 16px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid var(--border);
+  }
+  h3 { font-size: 16px; font-weight: 600; margin-bottom: 6px; color: var(--text); }
+
+  /* ── Cards ── */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px 22px;
+    margin-bottom: 14px;
+  }
+  .card-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  @media (max-width: 640px) { .card-grid { grid-template-columns: 1fr; } }
+
+  /* ── Signal header strip ── */
+  .signal-label {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    padding: 2px 10px;
+    border-radius: 20px;
+    margin-bottom: 10px;
+  }
+  .sl-blue   { background:#dbeafe; color:#1d4ed8; }
+  .sl-green  { background:#dcfce7; color:#15803d; }
+  .sl-red    { background:#fee2e2; color:#b91c1c; }
+  .sl-amber  { background:#fef3c7; color:#b45309; }
+  .sl-purple { background:#ede9fe; color:#6d28d9; }
+  .sl-teal   { background:#cffafe; color:#0e7490; }
+
+  /* ── Interpretation table ── */
+  .interp {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    font-size: 14px;
+  }
+  .interp th {
+    background: #f1f5f9;
+    text-align: left;
+    padding: 8px 12px;
+    font-weight: 600;
+    border-bottom: 1px solid var(--border);
+  }
+  .interp td {
+    padding: 8px 12px;
+    border-bottom: 1px solid #f1f5f9;
+    vertical-align: top;
+  }
+  .interp tr:last-child td { border-bottom: none; }
+
+  /* ── Decision flowchart ── */
+  .flow {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    margin-top: 10px;
+  }
+  .flow-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+  }
+  .flow-line {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0;
+  }
+  .flow-num {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    font-weight: 700;
+    font-size: 14px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .flow-connector {
+    width: 2px;
+    flex: 1;
+    min-height: 20px;
+    background: #cbd5e1;
+    margin: 4px 0;
+  }
+  .flow-body {
+    padding: 6px 0 24px;
+    flex: 1;
+  }
+  .flow-q  { font-weight: 600; color: var(--text); margin-bottom: 6px; }
+  .flow-answers { display: flex; gap: 10px; flex-wrap: wrap; }
+  .flow-yes {
+    background: #dcfce7; color: #15803d;
+    border-radius: 8px; padding: 5px 12px;
+    font-size: 13px; font-weight: 500;
+  }
+  .flow-no {
+    background: #fee2e2; color: #b91c1c;
+    border-radius: 8px; padding: 5px 12px;
+    font-size: 13px; font-weight: 500;
+  }
+  .flow-neutral {
+    background: #f1f5f9; color: #475569;
+    border-radius: 8px; padding: 5px 12px;
+    font-size: 13px; font-weight: 500;
+  }
+
+  /* ── Example block ── */
+  .example {
+    background: #f8fafc;
+    border-left: 4px solid var(--accent);
+    border-radius: 0 8px 8px 0;
+    padding: 12px 16px;
+    margin-top: 10px;
+    font-size: 13.5px;
+  }
+  .example strong { color: var(--accent); }
+
+  /* ── Email mock ── */
+  .email-mock {
+    background: #0d0d1a;
+    color: #e0e0e0;
+    border-radius: 12px;
+    padding: 20px;
+    font-size: 13px;
+    font-family: 'Segoe UI', sans-serif;
+    margin-top: 14px;
+  }
+  .email-mock .row { padding: 5px 10px; }
+  .email-mock .hdr { background:#1e3a5f; padding:10px 14px; border-radius: 6px 6px 0 0;
+                     font-size: 15px; font-weight: bold; color: #7ec8e3; }
+  .email-mock .label { color: #9ca3af; }
+  .email-mock .val-red    { color: #f87171; }
+  .email-mock .val-green  { color: #34d399; }
+  .email-mock .val-amber  { color: #fbbf24; }
+  .email-mock .val-purple { color: #a78bfa; }
+  .email-mock .val-blue   { color: #60a5fa; }
+  .email-mock .sell-row   { background:#14290f; padding: 6px 14px; color:#86efac; font-weight:bold; }
+  .email-mock .section-hdr { background:#1a2744; padding: 6px 14px; color:#60a5fa;
+                              font-size: 12px; font-weight: bold; }
+  .email-mock .gex-hdr    { background:#1a1a2e; padding: 6px 14px; color:#a78bfa;
+                              font-size: 12px; font-weight: bold; }
+  .email-mock .dark-row   { background:#111827; padding: 5px 10px; }
+
+  /* ── Tip boxes ── */
+  .tip {
+    display: flex;
+    gap: 10px;
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    border-radius: 8px;
+    padding: 12px 14px;
+    margin-top: 10px;
+    font-size: 13.5px;
+  }
+  .tip-icon { font-size: 18px; flex-shrink: 0; }
+
+  .warn {
+    background: #fff1f2;
+    border-color: #fecaca;
+  }
+
+  /* ── Quick ref table ── */
+  .qref {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+    margin-top: 10px;
+  }
+  .qref th {
+    background: #1e3a5f;
+    color: #fff;
+    padding: 9px 14px;
+    text-align: left;
+    font-weight: 600;
+  }
+  .qref td { padding: 8px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  .qref tr:nth-child(even) td { background: #f8fafc; }
+  .bull { color: var(--green); font-weight: 600; }
+  .bear { color: var(--red);   font-weight: 600; }
+  .neut { color: var(--muted); }
+
+  /* ── TOC ── */
+  .toc {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 22px;
+    margin-bottom: 32px;
+  }
+  .toc h3 { margin-bottom: 10px; color: var(--muted); font-size: 13px; text-transform: uppercase; letter-spacing: .08em; }
+  .toc ol  { padding-left: 20px; }
+  .toc li  { margin-bottom: 4px; }
+  .toc a   { color: var(--accent); text-decoration: none; }
+  .toc a:hover { text-decoration: underline; }
+
+  code {
+    background: #f1f5f9;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-family: 'Cascadia Code', monospace;
+    color: #be185d;
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ── Hero ── -->
+  <div class="hero">
+    <h1>Options Signal Guide</h1>
+    <p>A plain-English reference for reading the daily Options Signal Email.
+       No finance degree required — each signal is explained with what it means,
+       how to read the number, and what action (if any) to consider.</p>
+  </div>
+
+  <!-- ── TOC ── -->
+  <div class="toc">
+    <h3>Contents</h3>
+    <ol>
+      <li><a href="#email-layout">How the email is laid out</a></li>
+      <li><a href="#iv-trend">IV Trend — are buyers or sellers in control today?</a></li>
+      <li><a href="#pc-ratio">P/C Ratio — overall market lean</a></li>
+      <li><a href="#max-pain">Max Pain — where the market is "pulled"</a></li>
+      <li><a href="#oi-walls">OI Walls per Expiry — near-term barriers</a></li>
+      <li><a href="#gex-walls">GEX Walls — smarter, gamma-weighted barriers</a></li>
+      <li><a href="#limits">SELL / BUY Limits</a></li>
+      <li><a href="#oi-jumps">OI Jumps — new money moving in</a></li>
+      <li><a href="#unusual-vol">Unusual Volume — activity spikes</a></li>
+      <li><a href="#squeeze">Squeeze Probability</a></li>
+      <li><a href="#decision">Decision Flowchart — putting it all together</a></li>
+      <li><a href="#quickref">Quick Reference Table</a></li>
+    </ol>
+  </div>
+
+
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <h2 id="email-layout">1 · How the email is laid out</h2>
+
+  <p>Each ticker (BTC, ETH, MU, U, QCOM) gets its own block. Top to bottom:</p>
+
+  <div class="email-mock">
+    <div class="hdr">BTC &nbsp; $103,400 &nbsp; <span style="font-size:12px;color:#fbbf24">IV ↑ +8.2%</span></div>
+    <div class="row"><span class="label">P/C OI Ratio &nbsp;</span> 1.23 ← Bearish lean</div>
+    <div class="dark-row"><span class="label">P/C Vol Ratio</span> 0.74 ← Neutral</div>
+    <div class="row"><span class="label">Max Pain 2026-05-23 (5d)</span> &nbsp; <span class="val-amber">$101,000</span> &nbsp; price 2.4% above → mild downward pull</div>
+    <div class="section-hdr">OI Walls — 2026-05-23 (5d)</div>
+    <div class="row"><span class="label">Call Wall &nbsp;</span> <span class="val-red">$105,000 (3,200 OI)</span> &nbsp; 1.5% above · resistance · near-money</div>
+    <div class="dark-row"><span class="label">Put Wall &nbsp;&nbsp;</span> <span class="val-green">$100,000 (2,800 OI)</span> &nbsp; 3.3% below · support</div>
+    <div class="sell-row">→ SELL limit &nbsp; $104,685</div>
+    <div class="section-hdr">OI Walls — 2026-06-20 (33d)</div>
+    <div class="row"><span class="label">Call Wall &nbsp;</span> <span class="val-red">$120,000 (8,000 OI)</span> &nbsp; 16.1% above · low priority</div>
+    <div class="dark-row"><span class="label">Put Wall &nbsp;&nbsp;</span> <span class="val-green">$90,000 (5,500 OI)</span> &nbsp; 13.0% below · low priority</div>
+    <div class="gex-hdr">GEX Walls (gamma-weighted · all expiries)</div>
+    <div class="row"><span class="label">GEX Call &nbsp;</span> <span class="val-red">$104,000</span> &nbsp; 0.6% above · resistance · near-money</div>
+    <div class="dark-row"><span class="label">GEX Put &nbsp;&nbsp;</span> <span class="val-green">$101,000</span> &nbsp; 2.3% below · support</div>
+    <div class="row" style="padding-top:8px;color:#9ca3af;font-size:12px">OI Jumps (vs ~24h ago, ≥ 500):</div>
+    <div class="row" style="background:#0f172a;font-family:monospace;font-size:12px;color:#f87171">
+      BTC260523C00105000 &nbsp; CALL $105,000 exp 2026-05-23 &nbsp;| +2,100 OI &nbsp;<span class="val-purple">IV 0.72 → cheap, buy env</span>
+    </div>
+    <div class="row" style="padding-top:8px;color:#9ca3af;font-size:12px">Unusual Volume (vol/OI > 2×, OI ≥ 10):</div>
+    <div class="row" style="background:#0f172a;font-family:monospace;font-size:12px;color:#34d399">
+      BTC260523P00100000 &nbsp; PUT &nbsp;$100,000 exp 2026-05-23 &nbsp;| vol 4,200 / OI 1,800 (2.3×) &nbsp;<span class="val-purple">IV 0.68 → cheap, buy env</span>
+      <br/>&nbsp;&nbsp;<span style="color:#fbbf24;font-size:11px">⚡ HIGH squeeze probability</span>
+    </div>
+  </div>
+
+  <div class="tip" style="margin-top:14px">
+    <span class="tip-icon">💡</span>
+    <span>Read <strong>OI Walls</strong> first (this week's expiry), then <strong>GEX Walls</strong> to confirm.
+    If both say the same strike, the signal is stronger. Then check <strong>OI Jumps</strong> and
+    <strong>Unusual Volume</strong> to see who is actually moving money right now.</span>
+  </div>
+
+
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <h2 id="iv-trend">2 · IV Trend — are buyers or sellers in control today?</h2>
+
+  <div class="card">
+    <span class="signal-label sl-amber">In the header</span>
+    <h3>What is IV (Implied Volatility)?</h3>
+    <p>Think of IV as the <strong>price of insurance</strong> on an option.
+       When lots of people rush to buy options (calls or puts), the price — and IV — goes up.
+       When people are selling options or nobody is interested, IV falls.</p>
+
+    <div class="example">
+      <strong>Analogy:</strong> IV is like the cost of a home insurance policy.
+      If a hurricane is coming (market uncertainty), insurance gets expensive (high IV).
+      In calm weather, it's cheap (low IV).
+    </div>
+  </div>
+
+  <div class="card-grid">
+    <div class="card">
+      <span class="signal-label sl-amber">IV ↑ (rising) — shown in amber</span>
+      <h3>Buyers active</h3>
+      <p>Someone is aggressively buying options — they expect a big move.
+         This is a signal to look at the <strong>OI Jumps</strong> section next:
+         which strike are they targeting?</p>
+      <div class="tip" style="margin-top:8px">
+        <span class="tip-icon">→</span>
+        <span>Go to squeeze check if the bought strike is near-money.</span>
+      </div>
+    </div>
+    <div class="card">
+      <span class="signal-label sl-teal">IV ↓ (falling) — shown in blue</span>
+      <h3>Sellers active</h3>
+      <p>People are selling options and collecting premium.
+         This often means market makers expect price to stay flat
+         — a "covered call ceiling" is likely forming above spot.</p>
+      <div class="tip" style="margin-top:8px">
+        <span class="tip-icon">→</span>
+        <span>The call wall is probably more reliable as resistance today.</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <span class="signal-label sl-blue">IV level in OI Jumps / Unusual Volume</span>
+    <h3>Rich vs Cheap premium</h3>
+    <table class="interp">
+      <tr><th>What you see</th><th>Plain English</th><th>Implication</th></tr>
+      <tr><td><code>IV 1.20 → rich, sell env</code></td>
+          <td>Options are expensive. Market expects big swings.</td>
+          <td>Good time for <em>sellers</em> of options. Buyers are overpaying for protection.</td></tr>
+      <tr><td><code>IV 0.35 → cheap, buy env</code></td>
+          <td>Options are cheap. Market is complacent.</td>
+          <td>Good time to <em>buy</em> options — low premium cost, but only if you expect a move.</td></tr>
+      <tr><td><code>IV 0.65</code></td>
+          <td>Normal range. No strong IV signal.</td>
+          <td>Look at other signals for direction.</td></tr>
+    </table>
+  </div>
+
+
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <h2 id="pc-ratio">3 · P/C Ratio — overall market lean</h2>
+
+  <div class="card">
+    <span class="signal-label sl-blue">P/C OI Ratio &amp; P/C Vol Ratio</span>
+    <h3>What is it?</h3>
+    <p><strong>P/C = (Total Put OI or Volume) ÷ (Total Call OI or Volume)</strong></p>
+    <p style="margin-top:8px">Puts are bets that the price will <em>fall</em>.
+       Calls are bets that the price will <em>rise</em>.</p>
+    <ul style="margin-top:8px;padding-left:18px">
+      <li><strong>P/C &lt; 1</strong> → more calls than puts → people are mostly bullish</li>
+      <li><strong>P/C &gt; 1</strong> → more puts than calls → people are mostly hedging or bearish</li>
+    </ul>
+    <div class="example">
+      <strong>Analogy:</strong> Imagine 1,000 people bet on a football game.
+      700 bet Team A wins (calls), 300 bet Team B wins (puts). P/C = 0.43 → strongly bullish crowd.
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>How to read the label</h3>
+    <table class="interp">
+      <tr><th>Ratio range</th><th>Label shown</th><th>What it means</th></tr>
+      <tr><td><code>&lt; 0.7</code></td><td class="bull">BULLISH</td>
+          <td>Heavy call buying. Options market is optimistic. Price often continues higher — but can also mean it's getting "too bullish" (contrarian warning).</td></tr>
+      <tr><td><code>0.7 – 1.0</code></td><td class="neut">Neutral</td>
+          <td>Balanced. No strong lean either way.</td></tr>
+      <tr><td><code>1.0 – 1.3</code></td><td class="bear">Bearish lean</td>
+          <td>More puts being bought/held. Some concern or hedging happening.</td></tr>
+      <tr><td><code>&gt; 1.3</code></td><td class="bear">BEARISH</td>
+          <td>Heavy put buying. Options market is defensive. Can also signal a bottom if extreme (fear peak).</td></tr>
+    </table>
+
+    <div class="tip" style="margin-top:12px">
+      <span class="tip-icon">💡</span>
+      <span><strong>OI ratio</strong> = accumulated positions (slower to change, shows longer-term positioning).
+      <strong>Vol ratio</strong> = today's trading activity (faster, shows what's happening right now).
+      If Vol ratio contradicts OI ratio, recent activity is shifting sentiment.</span>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <h2 id="max-pain">4 · Max Pain — where the market is "pulled"</h2>
+
+  <div class="card">
+    <span class="signal-label sl-amber">Max Pain — shown in gold</span>
+    <h3>What is Max Pain?</h3>
+    <p>Max pain is the strike price where <strong>the most option contracts expire worthless</strong>
+       — meaning option <em>sellers</em> (usually market makers and institutions) make the most money.</p>
+    <p style="margin-top:8px">The theory: because dealers hold large hedging positions,
+       there is subtle gravitational pull toward max pain as expiry approaches.</p>
+    <div class="example">
+      <strong>Analogy:</strong> Imagine 100 bets are placed at various prices for where BTC will be Friday.
+      Most bets cluster around $103,000. The "house" (market makers) wins most if price ends up
+      at $103,000. So they have an incentive to keep it there. That's max pain.
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>How to read the pull label</h3>
+    <table class="interp">
+      <tr><th>What you see</th><th>Plain English</th></tr>
+      <tr><td><code>price 5.2% above → mild downward pull</code></td>
+          <td>Current price is above max pain. As expiry nears, expect mild selling pressure back toward max pain.</td></tr>
+      <tr><td><code>price 3.1% below → mild upward pull</code></td>
+          <td>Current price is below max pain. Expect mild buying pressure pushing up toward max pain.</td></tr>
+      <tr><td><code>near max pain → range-bound</code></td>
+          <td>Price is already close to max pain. Expect choppy, sideways action — no strong directional pull.</td></tr>
+    </table>
+
+    <div class="tip warn" style="margin-top:12px">
+      <span class="tip-icon">⚠️</span>
+      <span>Max pain is most reliable <strong>within 7 days of expiry</strong>.
+      For expiries more than 2 weeks away, treat it as a rough reference only — the pull is weak.</span>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <h2 id="oi-walls">5 · OI Walls per Expiry — near-term barriers</h2>
+
+  <div class="card">
+    <span class="signal-label sl-red">Call Wall — shown in red</span>
+    <span class="signal-label sl-green" style="margin-left:6px">Put Wall — shown in green</span>
+    <h3>What is an OI Wall?</h3>
+    <p>An OI (Open Interest) Wall is the strike price with the <strong>most outstanding option contracts</strong>
+       for a specific expiry date.</p>
+    <ul style="margin-top:8px;padding-left:18px">
+      <li><strong>Call Wall</strong> = the strike where the most calls sit. Acts as a <em>ceiling</em> — dealers sell stock as price approaches, pushing it back down.</li>
+      <li><strong>Put Wall</strong> = the strike where the most puts sit. Acts as a <em>floor</em> — dealers buy stock as price falls, providing support.</li>
+    </ul>
+    <div class="example">
+      <strong>Analogy:</strong> Think of the call wall as a glass ceiling and the put wall as a trampoline.
+      Price tends to bounce between them, especially close to expiry.
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Why is it shown per expiry now?</h3>
+    <p>Previously, all expiries were added together. Problem: a June contract with 10,000 OI would
+       overwhelm a May contract with 2,000 OI — making the May wall invisible even though it's
+       what controls price <em>this week</em>.</p>
+    <p style="margin-top:8px">Now each expiry has its own wall. Rule of thumb:</p>
+    <ul style="margin-top:8px;padding-left:18px">
+      <li><strong>Nearest expiry</strong> = most relevant for current week's trading</li>
+      <li><strong>Second expiry</strong> = useful context for medium-term direction</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3>Reading the distance labels</h3>
+    <table class="interp">
+      <tr><th>Label</th><th>What it means</th><th>Action</th></tr>
+      <tr><td><code>near-money</code></td>
+          <td>Wall is within 5% of current price. Strong, active barrier.</td>
+          <td>High confidence the wall will hold. Use the SELL/BUY limit.</td></tr>
+      <tr><td><code>(no label)</code></td>
+          <td>5–15% from current price. Normal range.</td>
+          <td>Wall exists but price has room to move before hitting it.</td></tr>
+      <tr><td><code>low priority</code></td>
+          <td>Wall is more than 15% from current price.</td>
+          <td>Mostly irrelevant for near-term trading. Note it as a long-term level.</td></tr>
+      <tr><td><code>★ significant OI</code></td>
+          <td>More than 10,000 contracts at that strike. Unusually strong wall.</td>
+          <td>This wall is less likely to break. Pay extra attention.</td></tr>
+      <tr><td><code>already breached ↑</code></td>
+          <td>Call wall is <em>below</em> current price — price blew past it.</td>
+          <td>Bullish signal. Old resistance became support. Look for next call wall above.</td></tr>
+    </table>
+  </div>
+
+
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <h2 id="gex-walls">6 · GEX Walls — smarter, gamma-weighted barriers</h2>
+
+  <div class="card">
+    <span class="signal-label sl-purple">GEX Walls — shown in purple header</span>
+    <h3>What is GEX?</h3>
+    <p>GEX (Gamma Exposure) is a more sophisticated version of the OI wall.
+       Instead of counting contracts equally, it <strong>weights each contract by its gamma</strong>
+       — a measure of how much the contract forces dealers to hedge.</p>
+
+    <div class="example">
+      <strong>Analogy:</strong> Imagine two walls:<br><br>
+      Wall A: 10,000 options expiring in 6 months, far from current price.<br>
+      Wall B: 2,000 options expiring in 3 days, right at current price.<br><br>
+      OI wall picks Wall A (bigger number). GEX wall picks Wall B — because those 2,000 near-expiry,
+      near-money contracts force dealers to hedge <em>much more aggressively right now</em>.
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>GEX vs OI Wall — when to trust which</h3>
+    <table class="interp">
+      <tr><th>Scenario</th><th>Trust more</th><th>Why</th></tr>
+      <tr><td>This week's price action (≤ 7 days)</td>
+          <td class="bull">GEX Wall</td>
+          <td>Near-expiry + near-money gamma dominates. GEX automatically focuses there.</td></tr>
+      <tr><td>Next month's direction</td>
+          <td class="neut">OI Wall (2nd expiry)</td>
+          <td>GEX has less signal for far-dated options. Raw OI is cleaner.</td></tr>
+      <tr><td>OI Wall and GEX Wall agree (same strike)</td>
+          <td class="bull">Both</td>
+          <td>High confidence barrier. Strong confluence = harder to break.</td></tr>
+      <tr><td>OI Wall and GEX Wall disagree</td>
+          <td class="neut">GEX Wall</td>
+          <td>GEX is picking up near-term hedging. OI may be dominated by far-dated noise.</td></tr>
+    </table>
+  </div>
+
+
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <h2 id="limits">7 · SELL / BUY Limits</h2>
+
+  <div class="card">
+    <span class="signal-label sl-green">→ SELL limit &amp; → BUY limit — shown in green</span>
+    <h3>What are these?</h3>
+    <p>These are <strong>suggested limit order prices</strong> derived from the nearest expiry OI wall,
+       with a small buffer (0.1–0.3%) so you don't place your order exactly at the wall
+       (which everyone can see).</p>
+    <ul style="margin-top:8px;padding-left:18px">
+      <li><strong>SELL limit</strong> = just below the call wall → sell before price hits resistance</li>
+      <li><strong>BUY limit</strong> = just above the put wall → buy near support</li>
+    </ul>
+
+    <div class="tip warn" style="margin-top:10px">
+      <span class="tip-icon">⚠️</span>
+      <span>These limits <em>only appear</em> when the wall is on the correct side of spot
+      (call wall above price, put wall below price). If the wall has already been breached,
+      no limit is shown — the signal is no longer valid.</span>
+    </div>
+
+    <div class="tip" style="margin-top:8px">
+      <span class="tip-icon">💡</span>
+      <span>Compare the SELL limit against the GEX Call Wall. If GEX agrees, the resistance is
+      more credible. If GEX shows a different level, treat the SELL limit with more caution.</span>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <h2 id="oi-jumps">8 · OI Jumps — new money moving in</h2>
+
+  <div class="card">
+    <span class="signal-label sl-amber">OI Jumps — shown below walls</span>
+    <h3>What is an OI Jump?</h3>
+    <p>OI (Open Interest) counts the number of active option contracts.
+       When OI jumps significantly overnight, it means <strong>new positions were opened</strong> —
+       someone put real money into a specific strike and expiry. This is one of the strongest signals
+       because it shows where <em>informed money</em> is positioned.</p>
+    <div class="example">
+      <strong>Example:</strong> <code>BTC260523C00105000 CALL $105,000 | +2,100 OI IV 0.35 → cheap, buy env</code><br><br>
+      Someone opened 2,100 new call contracts at BTC $105,000 expiring May 23.
+      IV is cheap, meaning they bought calls at a low premium.
+      This is a bullish bet that BTC will hit $105,000 by May 23.
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>How to interpret OI Jumps</h3>
+    <table class="interp">
+      <tr><th>Scenario</th><th>Meaning</th><th>Action</th></tr>
+      <tr><td>Large CALL OI jump, near-money, IV cheap</td>
+          <td class="bull">Strong bullish bet at low cost</td>
+          <td>Check squeeze probability. If ≤5% from spot and ≤5 DTE → potential squeeze.</td></tr>
+      <tr><td>Large PUT OI jump, near-money, IV cheap</td>
+          <td class="bear">Downside protection being bought cheaply</td>
+          <td>Bearish hedge being placed. Watch for price drop toward that put strike.</td></tr>
+      <tr><td>OI jump with IV rich (&gt;1.0)</td>
+          <td class="neut">Position opened at expensive premium</td>
+          <td>Less efficient bet. Could be a hedge rather than a directional trade.</td></tr>
+      <tr><td>OI jump far from spot (&gt;15%)</td>
+          <td class="neut">Far out-of-money lottery ticket</td>
+          <td>Low probability. Monitor but don't trade against it.</td></tr>
+    </table>
+    <p style="margin-top:10px;color:var(--muted);font-size:13px">
+      Threshold: only jumps ≥ 500 contracts are shown to filter out insignificant noise.
+    </p>
+  </div>
+
+
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <h2 id="unusual-vol">9 · Unusual Volume — activity spikes</h2>
+
+  <div class="card">
+    <span class="signal-label sl-teal">Unusual Volume — shown at bottom</span>
+    <h3>What is Unusual Volume?</h3>
+    <p>This flags options where <strong>today's trading volume is more than 2× the open interest</strong>.
+       Normally vol/OI ≈ 0.1–0.5. When it exceeds 2×, it means far more contracts traded today
+       than the total outstanding — a clear sign of unusual activity.</p>
+    <div class="example">
+      <strong>Example:</strong> <code>vol 4,200 / OI 1,800 (2.3×)</code><br><br>
+      4,200 contracts traded today, but only 1,800 are held total.
+      Someone is actively opening and/or closing large positions right now.
+    </div>
+    <p style="margin-top:10px;color:var(--muted);font-size:13px">
+      Filter: only options with OI ≥ 10 are considered — this removes single-contract trades
+      (OI = 1) that would create fake 100× ratios.
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>Unusual Volume vs OI Jump — what's the difference?</h3>
+    <table class="interp">
+      <tr><th>Signal</th><th>What it captures</th><th>Timeframe</th></tr>
+      <tr><td><strong>OI Jump</strong></td>
+          <td>New positions being <em>held overnight</em> — conviction bets</td>
+          <td>Persistent (shows up for days until positions close)</td></tr>
+      <tr><td><strong>Unusual Volume</strong></td>
+          <td>High activity <em>right now</em> — could be opening OR closing positions</td>
+          <td>Intraday snapshot (resets at market open)</td></tr>
+    </table>
+    <div class="tip" style="margin-top:10px">
+      <span class="tip-icon">💡</span>
+      <span>When the <em>same option</em> appears in both OI Jumps AND Unusual Volume,
+      it means someone opened a big position <em>and</em> is actively trading it today.
+      That's the strongest signal.</span>
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <h2 id="squeeze">10 · Squeeze Probability</h2>
+
+  <div class="card">
+    <span class="signal-label sl-amber">⚡ Squeeze — shown inside unusual volume rows</span>
+    <h3>What is a short squeeze (options-style)?</h3>
+    <p>When a heavily-bet call strike is very close to the current price AND expiry is just days away,
+       option sellers (who are short the calls) must <strong>buy the underlying to hedge</strong>
+       as price approaches the strike. This buying pressure can accelerate the move — a squeeze.</p>
+    <div class="example">
+      <strong>Conditions for HIGH squeeze probability:</strong><br><br>
+      ✅ Strike is within <strong>5%</strong> of current price (near-money)<br>
+      ✅ Expiry is within <strong>5 days</strong> (near-expiry = high gamma)<br><br>
+      If only one condition is met → LOW probability (shown in grey).
+    </div>
+  </div>
+
+  <div class="card">
+    <table class="interp">
+      <tr><th>Label</th><th>Meaning</th><th>What to do</th></tr>
+      <tr><td><code>⚡ HIGH squeeze probability</code></td>
+          <td>Both conditions met. Price is near a strike that expires very soon with large OI.</td>
+          <td>Strong signal. If it's a call, consider riding or buying. Tight stop.</td></tr>
+      <tr><td><code>near-money (DTE &gt; 5)</code></td>
+          <td>Strike is close but expiry is more than 5 days away. Time to squeeze is limited.</td>
+          <td>Monitor. Squeeze could still happen but less urgency.</td></tr>
+      <tr><td><code>expiry near (gap &gt; 5%)</code></td>
+          <td>Expiry is very soon but the strike is still far from price.</td>
+          <td>Low probability. The contract will likely expire worthless at current levels.</td></tr>
+    </table>
+  </div>
+
+
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <h2 id="decision">11 · Decision Flowchart — putting it all together</h2>
+
+  <div class="card">
+    <p style="margin-bottom:16px;color:var(--muted)">
+      Use this flow each morning when you open the email for a ticker.
+    </p>
+
+    <div class="flow">
+
+      <div class="flow-step">
+        <div class="flow-line">
+          <div class="flow-num">1</div>
+          <div class="flow-connector"></div>
+        </div>
+        <div class="flow-body">
+          <div class="flow-q">Is there an OI Jump ≥ 500 near-money (within 15% of spot)?</div>
+          <div class="flow-answers">
+            <span class="flow-yes">Yes → investigate (continue to step 2)</span>
+            <span class="flow-no">No → skip to P/C ratio for background lean</span>
+          </div>
+          <div class="example" style="margin-top:8px">
+            Large OI jumps = someone placed a real bet. Worth understanding before trading.
+          </div>
+        </div>
+      </div>
+
+      <div class="flow-step">
+        <div class="flow-line">
+          <div class="flow-num">2</div>
+          <div class="flow-connector"></div>
+        </div>
+        <div class="flow-body">
+          <div class="flow-q">What is the IV Trend in the header?</div>
+          <div class="flow-answers">
+            <span class="flow-yes">IV ↑ (rising) → buyers confirmed, go to step 3</span>
+            <span class="flow-no">IV ↓ (falling) → sellers active → covered call ceiling likely forming</span>
+            <span class="flow-neutral">IV → flat → check price action (is stock rising or falling?)</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="flow-step">
+        <div class="flow-line">
+          <div class="flow-num">3</div>
+          <div class="flow-connector"></div>
+        </div>
+        <div class="flow-body">
+          <div class="flow-q">What is the IV level for that specific option?</div>
+          <div class="flow-answers">
+            <span class="flow-no">IV &gt; 1.0 (rich) → seller environment; buyer paying expensive premium</span>
+            <span class="flow-yes">IV &lt; 0.5 (cheap) → buyer getting a good deal; trust the direction more</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="flow-step">
+        <div class="flow-line">
+          <div class="flow-num">4</div>
+          <div class="flow-connector"></div>
+        </div>
+        <div class="flow-body">
+          <div class="flow-q">If it's a CALL with IV ↑ and cheap premium — run the squeeze check:</div>
+          <div class="flow-answers">
+            <span class="flow-yes">Gap to strike ≤ 5%?</span>
+            <span class="flow-yes">Days to expiry ≤ 5?</span>
+          </div>
+          <div style="margin-top:8px;font-size:14px">
+            <span class="flow-yes" style="margin-right:8px">Both yes → ⚡ HIGH squeeze probability</span>
+            <span class="flow-neutral">One or neither → LOW probability, wait for confirmation</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="flow-step">
+        <div class="flow-line">
+          <div class="flow-num">5</div>
+          <div class="flow-connector"></div>
+        </div>
+        <div class="flow-body">
+          <div class="flow-q">Does the GEX Wall agree with the OI Wall?</div>
+          <div class="flow-answers">
+            <span class="flow-yes">Same strike → high confidence barrier, use the SELL/BUY limit</span>
+            <span class="flow-no">Different strike → trust GEX for this week, adjust limit accordingly</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="flow-step">
+        <div class="flow-line">
+          <div class="flow-num">6</div>
+        </div>
+        <div class="flow-body">
+          <div class="flow-q">Post-expiry check (next day after expiry):</div>
+          <div class="flow-answers">
+            <span class="flow-yes">Next cycle OI rising AND IV rising → thesis intact, roll position</span>
+            <span class="flow-no">OI flat/falling → smart money exited, step aside</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <!-- ══════════════════════════════════════════════════════════════ -->
+  <h2 id="quickref">12 · Quick Reference Table</h2>
+
+  <table class="qref">
+    <tr>
+      <th>Signal</th>
+      <th>Bullish reading</th>
+      <th>Bearish reading</th>
+      <th>Neutral / ignore</th>
+    </tr>
+    <tr>
+      <td><strong>IV Trend</strong></td>
+      <td class="bull">IV ↑ + call OI jump</td>
+      <td class="bear">IV ↑ + put OI jump</td>
+      <td class="neut">IV ↓ (sellers) or IV flat</td>
+    </tr>
+    <tr>
+      <td><strong>P/C OI Ratio</strong></td>
+      <td class="bull">&lt; 0.7 (heavy calls)</td>
+      <td class="bear">&gt; 1.3 (heavy puts)</td>
+      <td class="neut">0.7 – 1.0</td>
+    </tr>
+    <tr>
+      <td><strong>P/C Vol Ratio</strong></td>
+      <td class="bull">&lt; 0.7</td>
+      <td class="bear">&gt; 1.3</td>
+      <td class="neut">0.7 – 1.0</td>
+    </tr>
+    <tr>
+      <td><strong>Max Pain</strong></td>
+      <td class="bull">Price below MP → upward pull</td>
+      <td class="bear">Price above MP → downward pull</td>
+      <td class="neut">Price near MP → range-bound; far expiry → ignore</td>
+    </tr>
+    <tr>
+      <td><strong>Call Wall (OI)</strong></td>
+      <td class="bull">Breached ↑ → old resistance = new support</td>
+      <td class="bear">Above spot → ceiling, expect rejection</td>
+      <td class="neut">Low priority (&gt;15% away)</td>
+    </tr>
+    <tr>
+      <td><strong>Put Wall (OI)</strong></td>
+      <td class="bull">Below spot → floor, expect bounce</td>
+      <td class="bear">Breached ↓ → old support = new resistance</td>
+      <td class="neut">Low priority (&gt;15% away)</td>
+    </tr>
+    <tr>
+      <td><strong>GEX Wall</strong></td>
+      <td class="bull">Agrees with OI wall → high confidence</td>
+      <td class="bear">Diverges from OI wall → use GEX level</td>
+      <td class="neut">No GEX data → gamma column missing in CBOE data</td>
+    </tr>
+    <tr>
+      <td><strong>OI Jump (call)</strong></td>
+      <td class="bull">Near-money + IV cheap</td>
+      <td class="neut">Far from spot (&gt;15%) → lottery ticket</td>
+      <td class="neut">OI jump + IV rich → hedge, not directional</td>
+    </tr>
+    <tr>
+      <td><strong>OI Jump (put)</strong></td>
+      <td class="neut">Could be hedge by long holder</td>
+      <td class="bear">Near-money + IV cheap → downside bet</td>
+      <td class="neut">Far from spot → tail-risk protection</td>
+    </tr>
+    <tr>
+      <td><strong>Unusual Volume</strong></td>
+      <td class="bull">Call volume spike near-money</td>
+      <td class="bear">Put volume spike near-money</td>
+      <td class="neut">Same strike in OI jumps too → stronger signal</td>
+    </tr>
+    <tr>
+      <td><strong>⚡ Squeeze</strong></td>
+      <td class="bull">HIGH: gap ≤5% + DTE ≤5</td>
+      <td class="neut">LOW: only one condition</td>
+      <td class="neut">Neither → ignore</td>
+    </tr>
+    <tr>
+      <td><strong>IV level</strong></td>
+      <td class="bull">&lt; 0.5 cheap → good time to buy</td>
+      <td class="bear">&gt; 1.0 rich → good time to sell</td>
+      <td class="neut">0.5 – 1.0 → normal</td>
+    </tr>
+  </table>
+
+
+  <!-- ── Footer ── -->
+  <div style="margin-top:40px;padding-top:16px;border-top:1px solid var(--border);
+              color:var(--muted);font-size:12px;text-align:center">
+    Options Signal Guide · Generated for personal reference · CBOE delayed data (15–20 min lag) ·
+    Not financial advice
+  </div>
+
+</div>
+</body>
+</html>
