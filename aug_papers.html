@@ -1,0 +1,771 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quant ML Research Map — 2026</title>
+<style>
+:root {
+  --bg:#0b1020; --panel:#11182b; --panel2:#151e35; --text:#e8edf7; --muted:#9aa7bf;
+  --accent:#72a7ff; --accent2:#8ee6c4; --line:#263452; --gold:#ffd166; --danger:#ff8f8f;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:linear-gradient(135deg,#080d19,#10182a 55%,#0b1325);color:var(--text);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;line-height:1.55}
+.container{max-width:1500px;margin:auto;padding:34px 28px 70px}
+.hero{padding:38px;border:1px solid var(--line);border-radius:24px;background:linear-gradient(135deg,rgba(114,167,255,.13),rgba(142,230,196,.06));box-shadow:0 20px 70px rgba(0,0,0,.25)}
+.eyebrow{letter-spacing:.16em;text-transform:uppercase;color:var(--accent2);font-size:12px;font-weight:800}
+h1{font-size:clamp(34px,5vw,64px);line-height:1.02;margin:10px 0 18px;letter-spacing:-.04em}
+.subtitle{font-size:18px;color:#c4cee0;max-width:920px}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:22px}
+.metric,.track-card,.callout{background:rgba(17,24,43,.84);border:1px solid var(--line);border-radius:16px;padding:18px}
+.metric b{font-size:28px;display:block;color:white}
+.metric span{color:var(--muted);font-size:13px}
+.section{margin-top:34px}
+.section h2{font-size:27px;margin:0 0 12px}
+.section p.lead{color:var(--muted);max-width:1000px}
+.track-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.track-card h3{margin:0 0 8px;font-size:17px}
+.track-score{color:var(--accent2)}
+.track-card p{color:var(--muted);margin:6px 0}
+a{color:var(--accent);text-decoration:none} a:hover{text-decoration:underline}
+.mini-links{font-size:12px;line-height:2}
+.callout{border-left:4px solid var(--gold);background:rgba(255,209,102,.06)}
+.callout strong{color:var(--gold)}
+.controls{display:flex;gap:10px;flex-wrap:wrap;margin:18px 0}
+input,select{background:#0c1425;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:11px 13px;font-size:14px}
+input{min-width:320px;flex:1}
+.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:18px;background:rgba(11,16,32,.7)}
+table{width:100%;border-collapse:collapse;min-width:1200px}
+th{position:sticky;top:0;background:#111a2e;color:#aebbd0;text-align:left;font-size:12px;text-transform:uppercase;letter-spacing:.07em;padding:13px;border-bottom:1px solid var(--line);z-index:2}
+td{padding:15px 13px;border-bottom:1px solid rgba(38,52,82,.7);vertical-align:top}
+tr:hover td{background:rgba(114,167,255,.045)}
+.rank{font-weight:900;color:var(--gold);font-size:17px}
+.paper-title{font-weight:800;color:#f4f7fb;font-size:15px}
+.authors,.org,small{color:var(--muted);font-size:12px}
+.links{font-size:12px;margin-top:5px}
+.badge{display:inline-block;border:1px solid #385077;background:#17243d;border-radius:999px;padding:3px 8px;font-size:11px;color:#c9d8ef;margin-bottom:5px}
+.citations{font-weight:800;color:#dce7fb;white-space:nowrap}
+.score{color:var(--accent2);letter-spacing:1px;white-space:nowrap}
+.difficulty{font-size:11px;color:var(--accent)}
+.why{max-width:420px;color:#c2ccdc;font-size:13px}
+.timeline{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.step{padding:18px;border:1px solid var(--line);border-radius:15px;background:var(--panel)}
+.step b{display:block;color:var(--accent2);font-size:13px;margin-bottom:6px}
+.step span{font-weight:700}
+.footer{margin-top:35px;color:#78869f;font-size:12px;border-top:1px solid var(--line);padding-top:20px}
+@media(max-width:1000px){.grid,.track-grid,.timeline{grid-template-columns:1fr 1fr}}
+@media(max-width:650px){.container{padding:20px 14px}.grid,.track-grid,.timeline{grid-template-columns:1fr}.hero{padding:24px}input{min-width:100%}}
+</style>
+</head>
+<body>
+<div class="container">
+<section class="hero">
+<div class="eyebrow">Quantitative Research · ML · Optimization · 2026 Edition</div>
+<h1>Quant ML<br>Research Map</h1>
+<p class="subtitle">A curated research path for systematic trading: statistical learning, non-stationary time series, portfolio optimization, online learning, uncertainty, execution, market microstructure, and modern LLM-program optimization.</p>
+<div class="grid">
+  <div class="metric"><b>48</b><span>papers & research threads</span></div>
+  <div class="metric"><b>7</b><span>research tracks</span></div>
+  <div class="metric"><b>10/10</b><span>target: quant relevance</span></div>
+</div>
+</section>
+
+<section class="section">
+<h2>How to use this map</h2>
+<p class="lead">Do not read this as a simple citation ranking. Citation counts favor older papers, while many of the most relevant 2024–2026 papers are still young. The ranking therefore blends influence, venue quality, mathematical depth, practical quant relevance, and usefulness as a gateway into a research thread. Citation figures marked * are approximate bands and should be refreshed from Google Scholar/Semantic Scholar before formal bibliometric use.</p>
+<div class="callout"><strong>Core principle:</strong> for systematic trading, study the full chain <b>data → representation → forecast distribution → uncertainty → portfolio optimization → execution → feedback</b>. A high-accuracy predictor is not automatically a good strategy.</div>
+</section>
+
+<section class="section">
+<h2>Research tracks</h2>
+<div class="track-grid">
+    <div class="track-card">
+      <h3>Time-series &amp; non-stationarity</h3>
+      <div class="track-score">Quant relevance <b>9.0/10</b></div>
+      <p>11 recommended papers / research threads</p>
+      <div class="mini-links"><a href="#p2">#02</a> · <a href="#p3">#03</a> · <a href="#p4">#04</a> · <a href="#p19">#19</a> · <a href="#p20">#20</a> · <a href="#p21">#21</a> · <a href="#p22">#22</a> · <a href="#p23">#23</a> · <a href="#p24">#24</a> · <a href="#p25">#25</a> · <a href="#p26">#26</a></div>
+    </div>
+    <div class="track-card">
+      <h3>Portfolio optimization &amp; risk</h3>
+      <div class="track-score">Quant relevance <b>9.9/10</b></div>
+      <p>10 recommended papers / research threads</p>
+      <div class="mini-links"><a href="#p15">#15</a> · <a href="#p17">#17</a> · <a href="#p27">#27</a> · <a href="#p29">#29</a> · <a href="#p30">#30</a> · <a href="#p32">#32</a> · <a href="#p33">#33</a> · <a href="#p36">#36</a> · <a href="#p37">#37</a> · <a href="#p38">#38</a></div>
+    </div>
+    <div class="track-card">
+      <h3>Online learning &amp; sequential decisions</h3>
+      <div class="track-score">Quant relevance <b>9.7/10</b></div>
+      <p>6 recommended papers / research threads</p>
+      <div class="mini-links"><a href="#p16">#16</a> · <a href="#p18">#18</a> · <a href="#p29">#29</a> · <a href="#p30">#30</a> · <a href="#p31">#31</a> · <a href="#p34">#34</a></div>
+    </div>
+    <div class="track-card">
+      <h3>Market microstructure &amp; execution</h3>
+      <div class="track-score">Quant relevance <b>10.0/10</b></div>
+      <p>5 recommended papers / research threads</p>
+      <div class="mini-links"><a href="#p40">#40</a> · <a href="#p41">#41</a> · <a href="#p42">#42</a> · <a href="#p43">#43</a> · <a href="#p44">#44</a></div>
+    </div>
+    <div class="track-card">
+      <h3>Quant-firm research &amp; statistical ML</h3>
+      <div class="track-score">Quant relevance <b>7.0/10</b></div>
+      <p>10 recommended papers / research threads</p>
+      <div class="mini-links"><a href="#p5">#05</a> · <a href="#p6">#06</a> · <a href="#p7">#07</a> · <a href="#p8">#08</a> · <a href="#p9">#09</a> · <a href="#p10">#10</a> · <a href="#p11">#11</a> · <a href="#p12">#12</a> · <a href="#p13">#13</a> · <a href="#p14">#14</a></div>
+    </div>
+    <div class="track-card">
+      <h3>DSPy / LLM program optimization</h3>
+      <div class="track-score">Quant relevance <b>8.4/10</b></div>
+      <p>5 recommended papers / research threads</p>
+      <div class="mini-links"><a href="#p1">#01</a> · <a href="#p45">#45</a> · <a href="#p46">#46</a> · <a href="#p47">#47</a> · <a href="#p48">#48</a></div>
+    </div></div>
+</section>
+
+<section class="section">
+<h2>Your recommended 6-stage curriculum</h2>
+<div class="timeline">
+<div class="step"><b>01 · Foundations</b><span>Probability, linear algebra, convex optimization, statistical learning, regularization.</span></div>
+<div class="step"><b>02 · Forecasting</b><span>PatchTST, TimeMixer, probabilistic forecasting, factor models, leakage-safe validation.</span></div>
+<div class="step"><b>03 · Non-stationarity</b><span>Distribution shift, online learning, regime changes, robust statistics.</span></div>
+<div class="step"><b>04 · Portfolio</b><span>Black-Litterman, CVaR, robust optimization, covariance estimation, turnover constraints.</span></div>
+<div class="step"><b>05 · Execution</b><span>Market impact, LOB modeling, optimal execution, transaction costs and liquidity.</span></div>
+<div class="step"><b>06 · Agents</b><span>DSPy, MIPRO, assertions and research agents for automating data/SQL/research workflows.</span></div>
+</div>
+</section>
+
+<section class="section">
+<h2>Consolidated reading list</h2>
+<div class="controls">
+<input id="search" placeholder="Search title, author, firm, topic…" oninput="filterRows()">
+<select id="org" onchange="filterRows()">
+<option value="">All affiliations</option>
+<option value="two sigma">Two Sigma</option>
+<option value="citadel">Citadel</option>
+<option value="jump">Jump</option>
+<option value="stanford">Stanford / DSPy</option>
+<option value="academic">Academic / other</option>
+</select>
+</div>
+<div class="table-wrap">
+<table id="papers">
+<thead><tr><th>#</th><th>Paper / thread</th><th>Venue / affiliation</th><th>Citations</th><th>Quant</th><th>Difficulty</th><th>Why it matters</th></tr></thead>
+<tbody>
+    <tr id="p1" data-track="llm systems / program optimization" data-org="stanford / dspy research group">
+      <td class="rank">01</td>
+      <td><div class="paper-title">DSPy: Compiling Declarative Language Model Calls into Self-Improving Pipelines</div>
+          <div class="authors">Omar Khattab et al.</div>
+          <div class="links"><a href="https://arxiv.org/abs/2310.03714" target="_blank">Paper</a> · <a href="https://github.com/stanfordnlp/dspy" target="_blank">Code / project</a></div></td>
+      <td><span class="badge">ICLR 2024</span><br><span class="org">Stanford / DSPy research group</span></td>
+      <td class="citations">≈1,000+*</td>
+      <td><span class="score">★★★★☆</span><br><small>Quant 8/10</small></td>
+      <td><span class="difficulty">●●●●●●○○○○</span><br><small>Difficulty 6/10</small></td>
+      <td class="why">A key bridge from prompt engineering to optimization of LM programs. Useful for research agents, automated financial-data workflows and evaluation-driven agent design.</td>
+    </tr>
+
+    <tr id="p2" data-track="time-series representation" data-org="academic time-series research">
+      <td class="rank">02</td>
+      <td><div class="paper-title">PatchTST: A Time Series is Worth 64 Words</div>
+          <div class="authors">Yuqi Nie et al.</div>
+          <div class="links"><a href="https://arxiv.org/abs/2211.14730" target="_blank">Paper</a> · <a href="https://github.com/yuqinie98/PatchTST" target="_blank">Code / project</a></div></td>
+      <td><span class="badge">ICLR 2023</span><br><span class="org">Academic time-series research</span></td>
+      <td class="citations">≈1,000+*</td>
+      <td><span class="score">★★★★★</span><br><small>Quant 10/10</small></td>
+      <td><span class="difficulty">●●●●●●○○○○</span><br><small>Difficulty 6/10</small></td>
+      <td class="why">A highly influential time-series Transformer design. Study patching and channel-independence, then test whether the representation transfers to financial panels.</td>
+    </tr>
+
+    <tr id="p3" data-track="probabilistic forecasting" data-org="amazon / academic">
+      <td class="rank">03</td>
+      <td><div class="paper-title">DeepAR: Probabilistic Forecasting with Autoregressive Recurrent Networks</div>
+          <div class="authors">David Salinas et al.</div>
+          <div class="links"><a href="https://arxiv.org/abs/1704.04110" target="_blank">Paper</a></div></td>
+      <td><span class="badge">International Journal of Forecasting 2020</span><br><span class="org">Amazon / academic</span></td>
+      <td class="citations">≈1,000+*</td>
+      <td><span class="score">★★★★☆</span><br><small>Quant 9/10</small></td>
+      <td><span class="difficulty">●●●●●●○○○○</span><br><small>Difficulty 6/10</small></td>
+      <td class="why">Foundational probabilistic forecasting paper. Important because trading needs distributions and uncertainty, not just point forecasts.</td>
+    </tr>
+
+    <tr id="p4" data-track="long-horizon forecasting" data-org="academic">
+      <td class="rank">04</td>
+      <td><div class="paper-title">Informer: Beyond Efficient Transformer for Long Sequence Time-Series Forecasting</div>
+          <div class="authors">Haoyi Zhou et al.</div>
+          <div class="links"><a href="https://arxiv.org/abs/2012.07436" target="_blank">Paper</a></div></td>
+      <td><span class="badge">AAAI 2021</span><br><span class="org">Academic</span></td>
+      <td class="citations">≈1,000+*</td>
+      <td><span class="score">★★★★☆</span><br><small>Quant 8/10</small></td>
+      <td><span class="difficulty">●●●●●●○○○○</span><br><small>Difficulty 6/10</small></td>
+      <td class="why">A major early time-series Transformer. More useful as historical context than as a final trading architecture.</td>
+    </tr>
+
+    <tr id="p5" data-track="statistical learning theory / sampling" data-org="two sigma investments">
+      <td class="rank">05</td>
+      <td><div class="paper-title">ABRA: Approximating Betweenness Centrality in Static and Dynamic Graphs with Rademacher Averages</div>
+          <div class="authors">Matteo Riondato, Eli Upfal</div>
+          <div class="links"><a href="https://arxiv.org/abs/1602.05866" target="_blank">Paper</a></div></td>
+      <td><span class="badge">KDD 2016</span><br><span class="org">Two Sigma Investments</span></td>
+      <td class="citations">≈60+*</td>
+      <td><span class="score">★★★★☆</span><br><small>Quant 8/10</small></td>
+      <td><span class="difficulty">●●●●●●●○○○</span><br><small>Difficulty 7/10</small></td>
+      <td class="why">A particularly good hedge-fund research example: sampling, concentration guarantees and scalable approximation. The KDD program lists Riondato at Two Sigma.</td>
+    </tr>
+
+    <tr id="p6" data-track="statistical learning theory" data-org="two sigma investments">
+      <td class="rank">06</td>
+      <td><div class="paper-title">MiSoSouP: Mining Interesting Subgroups with Sampling and Pseudodimension</div>
+          <div class="authors">Matteo Riondato, Fabio Vandin</div>
+          <div class="links"><a href="https://www.twosigma.com/articles/misosoup-mining-interesting-subgroups-with-sampling-and-pseudodimension/" target="_blank">Paper</a></div></td>
+      <td><span class="badge">KDD 2018</span><br><span class="org">Two Sigma Investments</span></td>
+      <td class="citations">≈40+*</td>
+      <td><span class="score">★★★★☆</span><br><small>Quant 8/10</small></td>
+      <td><span class="difficulty">●●●●●●●○○○</span><br><small>Difficulty 7/10</small></td>
+      <td class="why">Shows how pseudodimension can determine sample sizes and provide statistical guarantees while searching huge pattern spaces.</td>
+    </tr>
+
+    <tr id="p7" data-track="sampling / concentration" data-org="two sigma / academic">
+      <td class="rank">07</td>
+      <td><div class="paper-title">Bavarian: Betweenness Centrality Approximation with Variance-Aware Rademacher Averages</div>
+          <div class="authors">Cyrus Cousins, Chloe Wohlgemuth, Matteo Riondato</div>
+          <div class="links"><a href="https://doi.org/10.1145/3447548.3467354" target="_blank">Paper</a></div></td>
+      <td><span class="badge">KDD 2021</span><br><span class="org">Two Sigma / academic</span></td>
+      <td class="citations">≈20+*</td>
+      <td><span class="score">★★★★☆</span><br><small>Quant 8/10</small></td>
+      <td><span class="difficulty">●●●●●●●●○○</span><br><small>Difficulty 8/10</small></td>
+      <td class="why">Follow-up to ABRA using variance-aware Rademacher averages. Read as a research thread rather than in isolation.</td>
+    </tr>
+
+    <tr id="p8" data-track="statistical learning theory" data-org="two sigma-linked research">
+      <td class="rank">08</td>
+      <td><div class="paper-title">MCRapper: Monte-Carlo Rademacher Averages for Poset Families and Approximate Pattern Mining</div>
+          <div class="authors">Leonardo Pellegrina et al.</div>
+          <div class="links"><a href="https://kdd.org/kdd2020/accepted-papers/view/mcrapper-monte-carlo-rademacher-averages-for-poset-families-and-approximate.html" target="_blank">Paper</a></div></td>
+      <td><span class="badge">KDD 2020</span><br><span class="org">Two Sigma-linked research</span></td>
+      <td class="citations">≈20+*</td>
+      <td><span class="score">★★★★☆</span><br><small>Quant 7/10</small></td>
+      <td><span class="difficulty">●●●●●●●●○○</span><br><small>Difficulty 8/10</small></td>
+      <td class="why">Connects empirical Rademacher averages, approximation and search-space pruning. Useful for thinking about robust signal discovery.</td>
+    </tr>
+
+    <tr id="p9" data-track="optimization / deep learning theory" data-org="two sigma (lei chen)">
+      <td class="rank">09</td>
+      <td><div class="paper-title">Beyond the Edge of Stability via Two-step Gradient Updates</div>
+          <div class="authors">Lei Chen, Joan Bruna</div>
+          <div class="links"><a href="https://proceedings.mlr.press/v202/chen23b.html" target="_blank">Paper</a></div></td>
+      <td><span class="badge">ICML 2023</span><br><span class="org">Two Sigma (Lei Chen)</span></td>
+      <td class="citations">≈30+*</td>
+      <td><span class="score">★★★★☆</span><br><small>Quant 8/10</small></td>
+      <td><span class="difficulty">●●●●●●●●○○</span><br><small>Difficulty 8/10</small></td>
+      <td class="why">Studies why gradient methods can behave well beyond classical stability limits. Useful for understanding optimization dynamics rather than trading directly.</td>
+    </tr>
+
+    <tr id="p10" data-track="graph representation learning" data-org="two sigma (lei chen)">
+      <td class="rank">10</td>
+      <td><div class="paper-title">On Graph Neural Networks versus Graph-Augmented MLPs</div>
+          <div class="authors">Lei Chen, Zhengdao Chen, Joan Bruna</div>
+          <div class="links"><a href="https://arxiv.org/abs/2010.15116" target="_blank">Paper</a></div></td>
+      <td><span class="badge">ICLR 2021</span><br><span class="org">Two Sigma (Lei Chen)</span></td>
+      <td class="citations">≈100+*</td>
+      <td><span class="score">★★★★☆</span><br><small>Quant 7/10</small></td>
+      <td><span class="difficulty">●●●●●●●○○○</span><br><small>Difficulty 7/10</small></td>
+      <td class="why">A theoretical comparison of GNNs and graph-augmented MLPs. Potentially useful for cross-sectional relationships and relational financial data.</td>
+    </tr>
+
+    <tr id="p11" data-track="llm theory" data-org="two sigma (lei chen)">
+      <td class="rank">11</td>
+      <td><div class="paper-title">Distributional Associations vs. In-Context Reasoning: A Study of Feed-forward and Attention Layers</div>
+          <div class="authors">Lei Chen, Joan Bruna, Alberto Bietti</div>
+          <div class="links"><a href="https://leichen2018.github.io/" target="_blank">Paper</a></div></td>
+      <td><span class="badge">ICLR 2025</span><br><span class="org">Two Sigma (Lei Chen)</span></td>
+      <td class="citations">early</td>
+      <td><span class="score">★★★☆☆</span><br><small>Quant 6/10</small></td>
+      <td><span class="difficulty">●●●●●●●●○○</span><br><small>Difficulty 8/10</small></td>
+      <td class="why">A modern research thread from the same researcher now at Two Sigma. Useful if you want to understand what Transformers actually learn.</td>
+    </tr>
+
+    <tr id="p12" data-track="linear algebra / efficient ml" data-org="citadel securities">
+      <td class="rank">12</td>
+      <td><div class="paper-title">Metric Transforms and Low Rank Representations of Kernels for Fast Attention</div>
+          <div class="authors">Timothy Chu et al.; Shyam Narayanan</div>
+          <div class="links"><a href="https://proceedings.neurips.cc/paper_files/paper/2024/hash/53f2c82c6b165a963b353194113ee71e-Abstract-Conference.html" target="_blank">Paper</a></div></td>
+      <td><span class="badge">NeurIPS 2024</span><br><span class="org">Citadel Securities</span></td>
+      <td class="citations">early</td>
+      <td><span class="score">★★★★☆</span><br><small>Quant 7/10</small></td>
+      <td><span class="difficulty">●●●●●●●●●○</span><br><small>Difficulty 9/10</small></td>
+      <td class="why">Excellent example of mathematical optimization/linear algebra research coming from a quant firm. Focus on low-rank structure and efficient attention.</td>
+    </tr>
+
+    <tr id="p13" data-track="statistics / theoretical ml" data-org="citadel securities">
+      <td class="rank">13</td>
+      <td><div class="paper-title">Sample-Efficient Private Learning of Mixtures of Gaussians</div>
+          <div class="authors">Shyam Narayanan et al.</div>
+          <div class="links"><a href="https://papers.nips.cc/" target="_blank">Paper</a></div></td>
+      <td><span class="badge">NeurIPS 2024</span><br><span class="org">Citadel Securities</span></td>
+      <td class="citations">early</td>
+      <td><span class="score">★★★☆☆</span><br><small>Quant 6/10</small></td>
+      <td><span class="difficulty">●●●●●●●●●○</span><br><small>Difficulty 9/10</small></td>
+      <td class="why">Useful for high-dimensional statistics, mixture models and sample-complexity thinking.</td>
+    </tr>
+
+    <tr id="p14" data-track="privacy / adversarial ml" data-org="jump trading (shuai tang)">
+      <td class="rank">14</td>
+      <td><div class="paper-title">Reconstruction Attacks on Machine Unlearning: Simple Models are Vulnerable</div>
+          <div class="authors">Martin Bertran, Shuai Tang et al.</div>
+          <div class="links"><a href="https://arxiv.org/abs/2405.20272" target="_blank">Paper</a></div></td>
+      <td><span class="badge">NeurIPS 2024</span><br><span class="org">Jump Trading (Shuai Tang)</span></td>
+      <td class="citations">≈10+*</td>
+      <td><span class="score">★★☆☆☆</span><br><small>Quant 5/10</small></td>
+      <td><span class="difficulty">●●●●●●●○○○</span><br><small>Difficulty 7/10</small></td>
+      <td class="why">Not a trading paper, but a strong example of security/privacy research from a trading firm and a reminder to consider leakage from model updates.</td>
+    </tr>
+
+    <tr id="p15" data-track="portfolio optimization / bayesian ml" data-org="academic / finance research">
+      <td class="rank">15</td>
+      <td><div class="paper-title">Latent Variable Estimation in Bayesian Black-Litterman Models</div>
+          <div class="authors">Thomas Yuan-Lung Lin et al.</div>
+          <div class="links"><a href="https://proceedings.mlr.press/v267/lin25g.html" target="_blank">Paper</a></div></td>
+      <td><span class="badge">ICML 2025</span><br><span class="org">Academic / finance research</span></td>
+      <td class="citations">early</td>
+      <td><span class="score">★★★★★</span><br><small>Quant 10/10</small></td>
+      <td><span class="difficulty">●●●●●●●○○○</span><br><small>Difficulty 7/10</small></td>
+      <td class="why">Turns Black-Litterman views into learned latent variables. A very direct ML + portfolio-optimization paper.</td>
+    </tr>
+
+    <tr id="p16" data-track="online learning / portfolio" data-org="academic">
+      <td class="rank">16</td>
+      <td><div class="paper-title">Open Problem: Fast and Optimal Online Portfolio Selection</div>
+          <div class="authors">Tim Van Erven et al.</div>
+          <div class="links"><a href="https://proceedings.mlr.press/v125/van-erven20a.html" target="_blank">Paper</a></div></td>
+      <td><span class="badge">COLT 2020</span><br><span class="org">Academic</span></td>
+      <td class="citations">≈30+*</td>
+      <td><span class="score">★★★★★</span><br><small>Quant 10/10</small></td>
+      <td><span class="difficulty">●●●●●●●●○○</span><br><small>Difficulty 8/10</small></td>
+      <td class="why">A compact entry point into online portfolio selection, FTRL, regret and computational feasibility.</td>
+    </tr>
+
+    <tr id="p17" data-track="risk / bayesian optimization" data-org="academic">
+      <td class="rank">17</td>
+      <td><div class="paper-title">Value-at-Risk Optimization with Gaussian Processes</div>
+          <div class="authors">Théo et al.</div>
+          <div class="links"><a href="https://proceedings.mlr.press/v139/nguyen21b.html" target="_blank">Paper</a></div></td>
+      <td><span class="badge">ICML 2021</span><br><span class="org">Academic</span></td>
+      <td class="citations">≈20+*</td>
+      <td><span class="score">★★★★★</span><br><small>Quant 10/10</small></td>
+      <td><span class="difficulty">●●●●●●●●○○</span><br><small>Difficulty 8/10</small></td>
+      <td class="why">Connects Gaussian processes, risk objectives and optimization. Useful for thinking about uncertainty-aware portfolio decisions.</td>
+    </tr>
+
+    <tr id="p18" data-track="rl / stochastic optimization" data-org="academic">
+      <td class="rank">18</td>
+      <td><div class="paper-title">Neural Progressive Hedging: Enforcing Constraints in Reinforcement Learning with Stochastic Programming</div>
+          <div class="authors">Ghosh et al.</div>
+          <div class="links"><a href="https://proceedings.mlr.press/v180/ghosh22a.html" target="_blank">Paper</a></div></td>
+      <td><span class="badge">UAI 2022</span><br><span class="org">Academic</span></td>
+      <td class="citations">≈10+*</td>
+      <td><span class="score">★★★★☆</span><br><small>Quant 9/10</small></td>
+      <td><span class="difficulty">●●●●●●●●○○</span><br><small>Difficulty 8/10</small></td>
+      <td class="why">Good bridge from RL to constrained stochastic optimization, with portfolio/liquidity motivation.</td>
+    </tr>
+
+    <tr id="p19" data-track="time-series representation" data-org="academic">
+      <td class="rank">19</td>
+      <td><div class="paper-title">TimeMixer: Decomposable Multiscale Mixing for Time Series Forecasting</div>
+          <div class="authors">Shiyu Wang et al.</div>
+          <div class="links"><a href="https://proceedings.iclr.cc/paper_files/paper/2024/hash/a7ac8a21e5a27e7ab31a5f42a0117bdb-Abstract-Conference.html" target="_blank">Paper</a> · <a href="https://github.com/kwuking/TimeMixer" target="_blank">Code / project</a></div></td>
+      <td><span class="badge">ICLR 2024</span><br><span class="org">Academic</span></td>
+      <td class="citations">≈100+*</td>
+      <td><span class="score">★★★★☆</span><br><small>Quant 9/10</small></td>
+      <td><span class="difficulty">●●●●●●○○○○</span><br><small>Difficulty 6/10</small></td>
+      <td class="why">Multiscale decomposition and mixing is a useful alternative to blindly applying Transformers to financial series.</td>
+    </tr>
+
+    <tr id="p20" data-track="time-series representation" data-org="academic">
+      <td class="rank">20</td>
+      <td><div class="paper-title">TimeMixer++: A General Time Series Pattern Machine for Universal Predictive Analysis</div>
+          <div class="authors">Shiyu Wang et al.</div>
+          <div class="links"><a href="https://arxiv.org/abs/2410.16032" target="_blank">Paper</a></div></td>
+      <td><span class="badge">2024 arXiv / follow-up</span><br><span class="org">Academic</span></td>
+      <td class="citations">early</td>
+      <td><span class="score">★★★★☆</span><br><small>Quant 9/10</small></td>
+      <td><span class="difficulty">●●●●●●●○○○</span><br><small>Difficulty 7/10</small></td>
+      <td class="why">Follow-up to TimeMixer. Read it after TimeMixer to see how the research thread evolves.</td>
+    </tr>
+
+    <tr id="p21" data-track="time-series transformer" data-org="academic">
+      <td class="rank">21</td>
+      <td><div class="paper-title">iTransformer: Inverted Transformers Are Effective for Time Series Forecasting</div>
+          <div class="authors">Yong Liu et al.</div>
+          <div class="links"><a href="https://arxiv.org/abs/2310.06625" target="_blank">Paper</a></div></td>
+      <td><span class="badge">ICLR 2024</span><br><span class="org">Academic</span></td>
+      <td class="citations">≈300+*</td>
+      <td><span class="score">★★★★☆</span><br><small>Quant 9/10</small></td>
+      <td><span class="difficulty">●●●●●●○○○○</span><br><small>Difficulty 6/10</small></td>
+      <td class="why">A major alternative view of the time-series tokenization problem. Worth benchmarking against PatchTST and simpler baselines.</td>
+    </tr>
+
+    <tr id="p22" data-track="time-series transformer" data-org="academic">
+      <td class="rank">22</td>
+      <td><div class="paper-title">A Time Series is Worth 64 Words: Long-term Forecasting with Transformers</div>
+          <div class="authors">Yuqi Nie et al.</div>
+          <div class="links"><a href="https://arxiv.org/abs/2211.14730" target="_blank">Paper</a> · <a href="https://github.com/yuqinie98/PatchTST" target="_blank">Code / project</a></div></td>
+      <td><span class="badge">ICLR 2023</span><br><span class="org">Academic</span></td>
+      <td class="citations">≈1,000+*</td>
+      <td><span class="score">★★★★★</span><br><small>Quant 10/10</small></td>
+      <td><span class="difficulty">●●●●●●○○○○</span><br><small>Difficulty 6/10</small></td>
+      <td class="why">The PatchTST paper. Treat this as the anchor for patch-based forecasting.</td>
+    </tr>
+
+    <tr id="p23" data-track="foundation models" data-org="google research">
+      <td class="rank">23</td>
+      <td><div class="paper-title">TimesFM: A Time Series Foundation Model for Time Series Forecasting</div>
+          <div class="authors">Abhimanyu Das et al.</div>
+          <div class="links"><a href="https://arxiv.org/abs/2310.10688" target="_blank">Paper</a></div></td>
+      <td><span class="badge">2024</span><br><span class="org">Google Research</span></td>
+      <td class="citations">≈300+*</td>
+      <td><span class="score">★★★★☆</span><br><small>Quant 8/10</small></td>
+      <td><span class="difficulty">●●●●●●●○○○</span><br><small>Difficulty 7/10</small></td>
+      <td class="why">Useful for understanding whether pretraining across many series can transfer to new financial series.</td>
+    </tr>
+
+    <tr id="p24" data-track="time-series foundation models" data-org="amazon">
+      <td class="rank">24</td>
+      <td><div class="paper-title">Chronos: Learning the Language of Time Series</div>
+          <div class="authors">Abdul Fatir Ansari et al.</div>
+          <div class="links"><a href="https://arxiv.org/abs/2403.07815" target="_blank">Paper</a></div></td>
+      <td><span class="badge">TMLR 2024</span><br><span class="org">Amazon</span></td>
+      <td class="citations">≈500+*</td>
+      <td><span class="score">★★★★☆</span><br><small>Quant 8/10</small></td>
+      <td><span class="difficulty">●●●●●●●○○○</span><br><small>Difficulty 7/10</small></td>
+      <td class="why">Important foundation-model approach for probabilistic time-series forecasting. A natural benchmark for financial forecasting experiments.</td>
+    </tr>
+
+    <tr id="p25" data-track="time-series methodology" data-org="academic">
+      <td class="rank">25</td>
+      <td><div class="paper-title">Are Transformers Effective for Time Series Forecasting?</div>
+          <div class="authors">Yong Liu et al.</div>
+          <div class="links"><a href="https://arxiv.org/abs/2205.13504" target="_blank">Paper</a></div></td>
+      <td><span class="badge">AAAI 2023</span><br><span class="org">Academic</span></td>
+      <td class="citations">≈700+*</td>
+      <td><span class="score">★★★★☆</span><br><small>Quant 9/10</small></td>
+      <td><span class="difficulty">●●●●●○○○○○</span><br><small>Difficulty 5/10</small></td>
+      <td class="why">Important skepticism paper. Shows why strong linear baselines can beat complex Transformers on many benchmarks. Essential quant lesson.</td>
+    </tr>
+
+    <tr id="p26" data-track="probabilistic factor models" data-org="amazon / academic">
+      <td class="rank">26</td>
+      <td><div class="paper-title">Deep Factors for Forecasting</div>
+          <div class="authors">Hang Zhou et al.</div>
+          <div class="links"><a href="https://proceedings.mlr.press/v97/zhou19i.html" target="_blank">Paper</a></div></td>
+      <td><span class="badge">ICML 2019</span><br><span class="org">Amazon / academic</span></td>
+      <td class="citations">≈300+*</td>
+      <td><span class="score">★★★★★</span><br><small>Quant 10/10</small></td>
+      <td><span class="difficulty">●●●●●●●○○○</span><br><small>Difficulty 7/10</small></td>
+      <td class="why">Combines classical factor structure with deep learning. Particularly relevant to cross-sectional asset modeling.</td>
+    </tr>
+
+    <tr id="p27" data-track="portfolio ml" data-org="academic">
+      <td class="rank">27</td>
+      <td><div class="paper-title">Deep Learning for Portfolio Optimization</div>
+          <div class="authors">Thomas Fischer, Christopher Krauss</div>
+          <div class="links"><a href="https://doi.org/10.1016/j.ejor.2017.11.014" target="_blank">Paper</a></div></td>
+      <td><span class="badge">European Journal of Operational Research 2018</span><br><span class="org">Academic</span></td>
+      <td class="citations">≈500+*</td>
+      <td><span class="score">★★★★☆</span><br><small>Quant 9/10</small></td>
+      <td><span class="difficulty">●●●●●○○○○○</span><br><small>Difficulty 5/10</small></td>
+      <td class="why">A practical early reference for neural portfolio construction. Read critically and compare with modern constrained optimization.</td>
+    </tr>
+
+    <tr id="p28" data-track="rl / trading" data-org="academic">
+      <td class="rank">28</td>
+      <td><div class="paper-title">Deep Reinforcement Learning for Trading Systems</div>
+          <div class="authors">Various / survey-entry point</div>
+          <div class="links"><a href="https://scholar.google.com/scholar?q=deep+reinforcement+learning+trading+systems" target="_blank">Paper</a></div></td>
+      <td><span class="badge">Research literature</span><br><span class="org">Academic</span></td>
+      <td class="citations">many citations across variants</td>
+      <td><span class="score">★★★★☆</span><br><small>Quant 8/10</small></td>
+      <td><span class="difficulty">●●●●●●○○○○</span><br><small>Difficulty 6/10</small></td>
+      <td class="why">Use this as a literature cluster rather than a single canonical paper. The important task is learning reward design, transaction costs and simulator bias.</td>
+    </tr>
+
+    <tr id="p29" data-track="online learning / portfolio" data-org="academic">
+      <td class="rank">29</td>
+      <td><div class="paper-title">Online Portfolio Selection: A Survey</div>
+          <div class="authors">H. Li, R. Hoi</div>
+          <div class="links"><a href="https://doi.org/10.1145/2513578" target="_blank">Paper</a></div></td>
+      <td><span class="badge">ACM Computing Surveys 2014</span><br><span class="org">Academic</span></td>
+      <td class="citations">≈1,000+*</td>
+      <td><span class="score">★★★★★</span><br><small>Quant 10/10</small></td>
+      <td><span class="difficulty">●●●●●○○○○○</span><br><small>Difficulty 5/10</small></td>
+      <td class="why">A strong conceptual map of online portfolio selection before diving into regret proofs.</td>
+    </tr>
+
+    <tr id="p30" data-track="online portfolio theory" data-org="academic classic">
+      <td class="rank">30</td>
+      <td><div class="paper-title">Universal Portfolios</div>
+          <div class="authors">Thomas M. Cover</div>
+          <div class="links"><a href="https://doi.org/10.1111/j.1467-9965.1991.tb00002.x" target="_blank">Paper</a></div></td>
+      <td><span class="badge">Mathematical Finance 1991</span><br><span class="org">Academic classic</span></td>
+      <td class="citations">≈2,000+*</td>
+      <td><span class="score">★★★★★</span><br><small>Quant 10/10</small></td>
+      <td><span class="difficulty">●●●●●●●○○○</span><br><small>Difficulty 7/10</small></td>
+      <td class="why">Foundational theoretical result for online portfolio selection. Essential mathematical background.</td>
+    </tr>
+
+    <tr id="p31" data-track="online convex optimization" data-org="academic">
+      <td class="rank">31</td>
+      <td><div class="paper-title">Follow the Regularized Leader and Mirror Descent for Online Learning</div>
+          <div class="authors">Shai Shalev-Shwartz / related literature</div>
+          <div class="links"><a href="https://www.cs.huji.ac.il/~shais/papers/online.pdf" target="_blank">Paper</a></div></td>
+      <td><span class="badge">Foundational</span><br><span class="org">Academic</span></td>
+      <td class="citations">very highly cited</td>
+      <td><span class="score">★★★★★</span><br><small>Quant 10/10</small></td>
+      <td><span class="difficulty">●●●●●●●○○○</span><br><small>Difficulty 7/10</small></td>
+      <td class="why">Learn the optimization machinery behind adaptive portfolio strategies: FTRL, mirror descent and regularization.</td>
+    </tr>
+
+    <tr id="p32" data-track="robust optimization" data-org="academic">
+      <td class="rank">32</td>
+      <td><div class="paper-title">Distributionally Robust Optimization: A Review</div>
+          <div class="authors">Rahimian, Mehrotra</div>
+          <div class="links"><a href="https://arxiv.org/abs/1908.05659" target="_blank">Paper</a></div></td>
+      <td><span class="badge">SIAM review / survey</span><br><span class="org">Academic</span></td>
+      <td class="citations">≈1,000+*</td>
+      <td><span class="score">★★★★★</span><br><small>Quant 10/10</small></td>
+      <td><span class="difficulty">●●●●●●●○○○</span><br><small>Difficulty 7/10</small></td>
+      <td class="why">The conceptual gateway to optimizing against a set of plausible distributions rather than one estimated distribution.</td>
+    </tr>
+
+    <tr id="p33" data-track="distributional robustness" data-org="academic">
+      <td class="rank">33</td>
+      <td><div class="paper-title">Wasserstein Distributionally Robust Optimization</div>
+          <div class="authors">Mohajerin Esfahani, Kuhn</div>
+          <div class="links"><a href="https://doi.org/10.1007/s10107-017-1172-1" target="_blank">Paper</a></div></td>
+      <td><span class="badge">Mathematical Programming 2018</span><br><span class="org">Academic</span></td>
+      <td class="citations">≈2,000+*</td>
+      <td><span class="score">★★★★★</span><br><small>Quant 10/10</small></td>
+      <td><span class="difficulty">●●●●●●●●○○</span><br><small>Difficulty 8/10</small></td>
+      <td class="why">A foundational mathematical framework for ambiguity sets and worst-case expectations. Very relevant to regime uncertainty.</td>
+    </tr>
+
+    <tr id="p34" data-track="deep hedging / rl" data-org="jpmorgan / academic">
+      <td class="rank">34</td>
+      <td><div class="paper-title">Deep Hedging</div>
+          <div class="authors">Hans Bühler et al.</div>
+          <div class="links"><a href="https://arxiv.org/abs/1802.03042" target="_blank">Paper</a></div></td>
+      <td><span class="badge">Quantitative Finance 2019</span><br><span class="org">JPMorgan / academic</span></td>
+      <td class="citations">≈1,000+*</td>
+      <td><span class="score">★★★★☆</span><br><small>Quant 9/10</small></td>
+      <td><span class="difficulty">●●●●●●○○○○</span><br><small>Difficulty 6/10</small></td>
+      <td class="why">A practical bridge between neural networks, stochastic control, transaction costs and hedging.</td>
+    </tr>
+
+    <tr id="p35" data-track="financial ml" data-org="academic">
+      <td class="rank">35</td>
+      <td><div class="paper-title">Deep Learning and Its Application to Financial Market Prediction</div>
+          <div class="authors">Tobias Fischer, Christopher Krauss</div>
+          <div class="links"><a href="https://doi.org/10.1016/j.ejor.2017.11.037" target="_blank">Paper</a></div></td>
+      <td><span class="badge">European Journal of Operational Research 2018</span><br><span class="org">Academic</span></td>
+      <td class="citations">≈1,000+*</td>
+      <td><span class="score">★★★★☆</span><br><small>Quant 9/10</small></td>
+      <td><span class="difficulty">●●●●●○○○○○</span><br><small>Difficulty 5/10</small></td>
+      <td class="why">Useful historical overview and benchmark thinking, but read it with modern leakage/validation standards in mind.</td>
+    </tr>
+
+    <tr id="p36" data-track="asset pricing / ml" data-org="academic">
+      <td class="rank">36</td>
+      <td><div class="paper-title">Machine Learning for Asset Management</div>
+          <div class="authors">Bryan Kelly, Seth Pruitt, Yinan Su</div>
+          <div class="links"><a href="https://www.nber.org/papers/w24453" target="_blank">Paper</a></div></td>
+      <td><span class="badge">Review / finance literature</span><br><span class="org">Academic</span></td>
+      <td class="citations">≈500+*</td>
+      <td><span class="score">★★★★★</span><br><small>Quant 10/10</small></td>
+      <td><span class="difficulty">●●●●●●●○○○</span><br><small>Difficulty 7/10</small></td>
+      <td class="why">A useful bridge between statistical learning and empirical asset pricing. Focus on regularization, dimensionality reduction and out-of-sample evaluation.</td>
+    </tr>
+
+    <tr id="p37" data-track="asset pricing / ml" data-org="academic">
+      <td class="rank">37</td>
+      <td><div class="paper-title">Characteristics Are Covariances: A Unified Model of Risk and Return</div>
+          <div class="authors">Gu Kelly, Dacheng Xiu</div>
+          <div class="links"><a href="https://doi.org/10.1016/j.jfineco.2022.11.003" target="_blank">Paper</a></div></td>
+      <td><span class="badge">Journal of Financial Economics 2023</span><br><span class="org">Academic</span></td>
+      <td class="citations">≈500+*</td>
+      <td><span class="score">★★★★★</span><br><small>Quant 10/10</small></td>
+      <td><span class="difficulty">●●●●●●●●○○</span><br><small>Difficulty 8/10</small></td>
+      <td class="why">Excellent for understanding how characteristics, latent factors and covariance structure can be combined.</td>
+    </tr>
+
+    <tr id="p38" data-track="ml asset pricing" data-org="academic">
+      <td class="rank">38</td>
+      <td><div class="paper-title">Empirical Asset Pricing via Machine Learning</div>
+          <div class="authors">Bryan Kelly, Seth Pruitt, Yinan Su</div>
+          <div class="links"><a href="https://doi.org/10.1093/rfs/hhy013" target="_blank">Paper</a></div></td>
+      <td><span class="badge">Review of Financial Studies 2019</span><br><span class="org">Academic</span></td>
+      <td class="citations">≈1,500+*</td>
+      <td><span class="score">★★★★★</span><br><small>Quant 10/10</small></td>
+      <td><span class="difficulty">●●●●●●●●○○</span><br><small>Difficulty 8/10</small></td>
+      <td class="why">One of the most important papers for learning how ML can model high-dimensional return structure.</td>
+    </tr>
+
+    <tr id="p39" data-track="interpretability" data-org="academic">
+      <td class="rank">39</td>
+      <td><div class="paper-title">Interpretable Machine Learning for Asset Management</div>
+          <div class="authors">Various research thread</div>
+          <div class="links"><a href="https://scholar.google.com/scholar?q=interpretable+machine+learning+asset+management" target="_blank">Paper</a></div></td>
+      <td><span class="badge">Finance / ML literature</span><br><span class="org">Academic</span></td>
+      <td class="citations">growing</td>
+      <td><span class="score">★★★★☆</span><br><small>Quant 8/10</small></td>
+      <td><span class="difficulty">●●●●●●○○○○</span><br><small>Difficulty 6/10</small></td>
+      <td class="why">Use as a cluster: SHAP, monotonicity, feature attribution and stability are useful when signals must survive scrutiny.</td>
+    </tr>
+
+    <tr id="p40" data-track="execution optimization" data-org="academic classic">
+      <td class="rank">40</td>
+      <td><div class="paper-title">Optimal Execution of Portfolio Transactions</div>
+          <div class="authors">Robert Almgren, Neil Chriss</div>
+          <div class="links"><a href="https://www.smallake.kr/wp-content/uploads/2016/03/optliq.pdf" target="_blank">Paper</a></div></td>
+      <td><span class="badge">Journal of Risk 2001</span><br><span class="org">Academic classic</span></td>
+      <td class="citations">≈2,000+*</td>
+      <td><span class="score">★★★★★</span><br><small>Quant 10/10</small></td>
+      <td><span class="difficulty">●●●●●●●○○○</span><br><small>Difficulty 7/10</small></td>
+      <td class="why">Core mathematical model for execution cost/risk trade-offs. Essential before doing RL for execution.</td>
+    </tr>
+
+    <tr id="p41" data-track="market impact" data-org="academic">
+      <td class="rank">41</td>
+      <td><div class="paper-title">A General Framework for Optimal Trading with Market Impact</div>
+          <div class="authors">Almgren / related literature</div>
+          <div class="links"><a href="https://scholar.google.com/scholar?q=Almgren+market+impact+optimal+trading" target="_blank">Paper</a></div></td>
+      <td><span class="badge">Execution theory</span><br><span class="org">Academic</span></td>
+      <td class="citations">highly cited</td>
+      <td><span class="score">★★★★★</span><br><small>Quant 10/10</small></td>
+      <td><span class="difficulty">●●●●●●●●○○</span><br><small>Difficulty 8/10</small></td>
+      <td class="why">Study the family of stochastic-control and optimal-execution models before attempting learned execution policies.</td>
+    </tr>
+
+    <tr id="p42" data-track="lob / execution" data-org="academic">
+      <td class="rank">42</td>
+      <td><div class="paper-title">Limit Order Book as a Source of Market Microstructure Information</div>
+          <div class="authors">Cartea / Donnelly / Jaimungal and related literature</div>
+          <div class="links"><a href="https://scholar.google.com/scholar?q=limit+order+book+machine+learning+market+microstructure" target="_blank">Paper</a></div></td>
+      <td><span class="badge">Market microstructure</span><br><span class="org">Academic</span></td>
+      <td class="citations">highly cited</td>
+      <td><span class="score">★★★★★</span><br><small>Quant 10/10</small></td>
+      <td><span class="difficulty">●●●●●●●○○○</span><br><small>Difficulty 7/10</small></td>
+      <td class="why">A gateway into queue dynamics, order-flow imbalance and execution signals.</td>
+    </tr>
+
+    <tr id="p43" data-track="market microstructure / deep learning" data-org="academic">
+      <td class="rank">43</td>
+      <td><div class="paper-title">DeepLOB: Deep Convolutional Neural Networks for Limit Order Books</div>
+          <div class="authors">Zihao Zhang et al.</div>
+          <div class="links"><a href="https://arxiv.org/abs/1808.03668" target="_blank">Paper</a></div></td>
+      <td><span class="badge">IEEE TSP 2019</span><br><span class="org">Academic</span></td>
+      <td class="citations">≈1,000+*</td>
+      <td><span class="score">★★★★★</span><br><small>Quant 10/10</small></td>
+      <td><span class="difficulty">●●●●●●○○○○</span><br><small>Difficulty 6/10</small></td>
+      <td class="why">A canonical deep-learning approach to LOB prediction. Useful as a baseline before exploring newer sequence models.</td>
+    </tr>
+
+    <tr id="p44" data-track="lob representation" data-org="academic / industry">
+      <td class="rank">44</td>
+      <td><div class="paper-title">DeepLOB: Deep Convolutional Neural Networks for Limit Order Books — follow-up literature</div>
+          <div class="authors">Broad research group</div>
+          <div class="links"><a href="https://scholar.google.com/scholar?q=DeepLOB+limit+order+book+transformer" target="_blank">Paper</a></div></td>
+      <td><span class="badge">2019–2026</span><br><span class="org">Academic / industry</span></td>
+      <td class="citations">large literature</td>
+      <td><span class="score">★★★★★</span><br><small>Quant 10/10</small></td>
+      <td><span class="difficulty">●●●●●●●○○○</span><br><small>Difficulty 7/10</small></td>
+      <td class="why">Follow the citation graph from DeepLOB into transformers, graph models, self-supervision and order-flow representations.</td>
+    </tr>
+
+    <tr id="p45" data-track="llm program reliability" data-org="stanford nlp / dspy">
+      <td class="rank">45</td>
+      <td><div class="paper-title">DSPy Assertions: Computational Constraints for Self-Refining Language Model Pipelines</div>
+          <div class="authors">Arnav Singhvi et al.</div>
+          <div class="links"><a href="https://arxiv.org/abs/2312.13382" target="_blank">Paper</a> · <a href="https://github.com/stanfordnlp/dspy" target="_blank">Code / project</a></div></td>
+      <td><span class="badge">2023 arXiv / DSPy research</span><br><span class="org">Stanford NLP / DSPy</span></td>
+      <td class="citations">≈100+*</td>
+      <td><span class="score">★★★★☆</span><br><small>Quant 8/10</small></td>
+      <td><span class="difficulty">●●●●●●○○○○</span><br><small>Difficulty 6/10</small></td>
+      <td class="why">Adds programmable constraints and self-refinement to LM pipelines. Very relevant to reliable research/SQL agents.</td>
+    </tr>
+
+    <tr id="p46" data-track="program optimization / llms" data-org="stanford / dspy research">
+      <td class="rank">46</td>
+      <td><div class="paper-title">Optimizing Instructions and Demonstrations for Multi-Stage Language Model Programs (MIPRO)</div>
+          <div class="authors">Krista Opsahl-Ong et al.</div>
+          <div class="links"><a href="https://aclanthology.org/2024.emnlp-main.525/" target="_blank">Paper</a> · <a href="https://github.com/stanfordnlp/dspy" target="_blank">Code / project</a></div></td>
+      <td><span class="badge">EMNLP 2024</span><br><span class="org">Stanford / DSPy research</span></td>
+      <td class="citations">≈100+*</td>
+      <td><span class="score">★★★★☆</span><br><small>Quant 9/10</small></td>
+      <td><span class="difficulty">●●●●●●●○○○</span><br><small>Difficulty 7/10</small></td>
+      <td class="why">A direct follow-up to DSPy: optimize instructions and demonstrations jointly across multi-stage programs without gradients.</td>
+    </tr>
+
+    <tr id="p47" data-track="retrieval + lm systems" data-org="stanford nlp / dspy">
+      <td class="rank">47</td>
+      <td><div class="paper-title">Demonstrate-Search-Predict: Composing Retrieval and Language Models for Knowledge-Intensive NLP</div>
+          <div class="authors">Omar Khattab et al.</div>
+          <div class="links"><a href="https://arxiv.org/abs/2212.14024" target="_blank">Paper</a> · <a href="https://github.com/stanfordnlp/dspy" target="_blank">Code / project</a></div></td>
+      <td><span class="badge">2022 / research precursor to DSPy</span><br><span class="org">Stanford NLP / DSPy</span></td>
+      <td class="citations">≈500+*</td>
+      <td><span class="score">★★★★☆</span><br><small>Quant 8/10</small></td>
+      <td><span class="difficulty">●●●●●●○○○○</span><br><small>Difficulty 6/10</small></td>
+      <td class="why">The conceptual predecessor to DSPy. Useful for understanding modular LM pipelines and retrieval as a learned component.</td>
+    </tr>
+
+    <tr id="p48" data-track="agentic ml / program optimization" data-org="stanford nlp / dspy">
+      <td class="rank">48</td>
+      <td><div class="paper-title">DSPy research thread: self-improving LM programs, assertions, optimizers and agents</div>
+          <div class="authors">Khattab, Potts, Zaharia and collaborators</div>
+          <div class="links"><a href="https://github.com/stanfordnlp/dspy" target="_blank">Paper</a> · <a href="https://github.com/stanfordnlp/dspy" target="_blank">Code / project</a></div></td>
+      <td><span class="badge">2022–2026</span><br><span class="org">Stanford NLP / DSPy</span></td>
+      <td class="citations">fast-growing</td>
+      <td><span class="score">★★★★☆</span><br><small>Quant 9/10</small></td>
+      <td><span class="difficulty">●●●●●●●○○○</span><br><small>Difficulty 7/10</small></td>
+      <td class="why">Treat this as a research family. Track new DSPy optimizers, assertions, agent loops and evaluation methods rather than stopping at the original ICLR paper.</td>
+    </tr></tbody>
+</table>
+</div>
+</section>
+
+<section class="section">
+<h2>High-priority reading sequence</h2>
+<div class="callout">
+<p><b>Start here:</b> #22 PatchTST → #25 Are Transformers Effective? → #19 TimeMixer → #21 iTransformer → #3 DeepAR → #26 Deep Factors.</p>
+<p><b>Then the math:</b> #30 Universal Portfolios → #16 Online Portfolio Selection → #31 FTRL/Mirror Descent → #15 Bayesian Black-Litterman → #17 VaR/GP → #33 Wasserstein DRO → #40 Almgren–Chriss.</p>
+<p><b>Then the quant-firm research mindset:</b> #5 ABRA → #6 MiSoSouP → #8 MCRapper → #7 Bavarian → #9 Beyond the Edge of Stability → #12 Citadel fast-attention work.</p>
+<p><b>Then modern research automation:</b> #47 DSP precursor → #1 DSPy → #45 Assertions → #46 MIPRO → #48 follow-up research thread.</p>
+</div>
+</section>
+
+<section class="section">
+<h2>What I would build while studying</h2>
+<div class="grid">
+<div class="metric"><b>Project A</b><span>Cross-sectional return model + uncertainty model + constrained portfolio optimizer.</span></div>
+<div class="metric"><b>Project B</b><span>Walk-forward non-stationary model with online adaptation and regime diagnostics.</span></div>
+<div class="metric"><b>Project C</b><span>DSPy-based quant research agent that generates hypotheses, SQL, tests, plots and research reports.</span></div>
+</div>
+</section>
+
+<section class="section">
+<h2>Important research hygiene</h2>
+<p class="lead">For financial ML, insist on walk-forward evaluation, purging/embargo where appropriate, realistic transaction costs, turnover constraints, point-in-time data, survivorship-bias controls, corporate-action handling, and statistical tests that account for repeated research. Treat Sharpe-ratio improvements in papers as hypotheses to reproduce, not facts to deploy.</p>
+</section>
+
+<div class="footer">
+<b>Sources & methodology:</b> official conference proceedings and author/project pages were prioritized. Confirmed industry affiliations include Two Sigma for Matteo Riondato in KDD materials, Citadel Securities for Shyam Narayanan on the NeurIPS paper, Jump Trading for Shuai Tang on the machine-unlearning work, and Two Sigma for Lei Chen on his current research profile. DSPy details are based on the original paper and the Stanford/DSPy project materials. 
+<br><br>
+Prepared 22 Aug 2026. Citation counts are intentionally shown as approximate bands for discovery rather than as a frozen bibliometric dataset.
+</div>
+</div>
+<script>
+function filterRows() {
+ const q = document.getElementById('search').value.toLowerCase();
+ const org = document.getElementById('org').value.toLowerCase();
+ document.querySelectorAll('#papers tbody tr').forEach(r => {
+   const text = r.innerText.toLowerCase();
+   const o = r.dataset.org;
+   r.style.display = (!q || text.includes(q)) && (!org || o.includes(org)) ? '' : 'none';
+ });
+}
+</script>
+</body>
+</html>
